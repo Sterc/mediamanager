@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model package="mediamanager" baseClass="xPDOObject" platform="mysql" defaultEngine="InnoDB" phpdoc-package="mediamanager">
+    <object class="MediamanagerContexts" table="mediamanager_contexts" extends="xPDOSimpleObject">
+        <field key="name" dbtype="varchar" precision="50" phptype="string" null="false" default="" />
+        <field key="is_deleted" dbtype="tinyint" precision="1" attributes="unsigned" phptype="boolean" null="false" default="0" index="index" />
+        <field key="is_all" dbtype="tinyint" precision="1" attributes="unsigned" phptype="boolean" null="false" default="0" index="index" />
+        <field key="is_main" dbtype="tinyint" precision="1" attributes="unsigned" phptype="boolean" null="false" default="0" index="index" />
+
+        <composite alias="CategoriesExcludes" class="MediamanagerCategoriesExcludes" local="id" foreign="mediamanager_contexts_id" cardinality="many" owner="local" />
+    </object>
+
+    <object class="MediamanagerCategories" table="mediamanager_categories" extends="xPDOSimpleObject">
+        <field key="parent_id" dbtype="int" precision="10" attributes="unsigned" phptype="integer" null="false" default="0" index="index" />
+        <field key="name" dbtype="varchar" precision="50" phptype="string" null="false" default="" />
+        <field key="rank" dbtype="mediumint" precision="6" attributes="unsigned" phptype="integer" null="false" default="0"  />
+        <field key="is_deleted" dbtype="tinyint" precision="1" attributes="unsigned" phptype="boolean" null="false" default="0" index="index" />
+
+        <composite alias="CategoriesExcludes" class="MediamanagerCategoriesExcludes" local="id" foreign="mediamanager_categories_id" cardinality="many" owner="local" />
+        <composite alias="Files" class="MediamanagerFilesCategories" local="id" foreign="mediamanager_categories_id" cardinality="many" owner="local" />
+    </object>
+
+    <object class="MediamanagerTags" table="mediamanager_tags" extends="xPDOSimpleObject">
+        <field key="mediamanager_contexts_id" dbtype="int" precision="10" attributes="unsigned" phptype="integer" null="true" default="NULL"  />
+        <field key="name" dbtype="varchar" precision="50" phptype="string" null="false" default="" />
+        <field key="is_deleted" dbtype="tinyint" precision="1" attributes="unsigned" phptype="boolean" null="false" default="0" index="index" />
+
+        <aggregate alias="Context" class="MediamanagerContexts" local="mediamanager_contexts_id" foreign="id" cardinality="one" owner="foreign" />
+        <composite alias="Files" class="MediamanagerFilesTags" local="id" foreign="mediamanager_tags_id" cardinality="many" owner="local" />
+    </object>
+
+    <object class="MediamanagerFiles" table="mediamanager_files" extends="xPDOSimpleObject">
+        <field key="name" dbtype="varchar" precision="255" phptype="string" null="false" default="" index="index" />
+        <field key="path" dbtype="varchar" precision="255" phptype="string" null="false" default="" />
+        <field key="file_type" dbtype="varchar" precision="10" phptype="string" null="false" default="" index="index" />
+        <field key="file_size" dbtype="int" precision="11" phptype="integer" null="false" default="" />
+        <field key="file_dimensions" dbtype="varchar" precision="15" phptype="string" null="false" default="" />
+        <field key="file_hash" dbtype="varchar" precision="32" phptype="string" null="false" default="" index="index" />
+        <field key="upload_date" dbtype="timestamp" phptype="timestamp" null="false" attributes="CURRENT_TIMESTAMP" index="index" />
+        <field key="uploaded_by" dbtype="int" precision="10" phptype="integer" null="false" default="" index="index" />
+        <field key="is_archived" dbtype="tinyint" precision="1" phptype="boolean" null="false" default="" index="index" />
+        <field key="archive_date" dbtype="timestamp" phptype="timestamp" null="true" default="NULL" />
+        <field key="archive_path" dbtype="varchar" precision="255" phptype="string" null="true" default="NULL" />
+
+        <composite alias="Categories" class="MediamanagerFilesCategories" local="id" foreign="mediamanager_files_id" cardinality="many" owner="local" />
+        <composite alias="Tags" class="MediamanagerFilesTags" local="id" foreign="mediamanager_files_id" cardinality="many" owner="local" />
+        <composite alias="Content" class="MediamanagerFilesContent" local="id" foreign="mediamanager_files_id" cardinality="many" owner="local" />
+        <composite alias="Relations" class="MediamanagerFilesRelations" local="id" foreign="mediamanager_files_id" cardinality="many" owner="local" />
+        <composite alias="Relations2" class="MediamanagerFilesRelations" local="id" foreign="mediamanager_files_id_relation" cardinality="many" owner="local" />
+    </object>
+
+    <object class="MediamanagerDownloads" table="mediamanager_downloads" extends="xPDOSimpleObject">
+        <field key="created_on" dbtype="timestamp" phptype="timestamp" null="false" attributes="CURRENT_TIMESTAMP" />
+        <field key="expires_on" dbtype="timestamp" phptype="timestamp" null="false" />
+        <field key="path" dbtype="varchar" precision="255" phptype="string" null="false" default="" />
+        <field key="hash" dbtype="varchar" precision="32" phptype="string" null="false" default="" />
+        <field key="is_deleted" dbtype="tinyint" precision="1" attributes="unsigned" phptype="boolean" null="false" default="0" index="index" />
+    </object>
+
+    <object class="MediamanagerCategoriesExcludes" table="mediamanager_categories_excludes" extends="xPDOSimpleObject">
+        <field key="mediamanager_contexts_id" dbtype="int" precision="10" attributes="unsigned" phptype="integer" null="false" default="0" index="index" />
+        <field key="mediamanager_categories_id" dbtype="int" precision="10" attributes="unsigned" phptype="integer" null="false" default="0" index="index" />
+
+        <aggregate alias="Context" class="MediamanagerContexts" local="mediamanager_contexts_id" foreign="id" cardinality="one" owner="foreign" />
+        <aggregate alias="Category" class="MediamanagerCategories" local="mediamanager_categories_id" foreign="id" cardinality="one" owner="foreign" />
+    </object>
+
+    <object class="MediamanagerFilesCategories" table="mediamanager_files_categories" extends="xPDOSimpleObject">
+        <field key="mediamanager_files_id" dbtype="int" precision="10" attributes="unsigned" phptype="integer" null="false" default="0" index="index" />
+        <field key="mediamanager_categories_id" dbtype="int" precision="10" attributes="unsigned" phptype="integer" null="false" default="0" index="index" />
+
+        <aggregate alias="File" class="MediamanagerFiles" local="mediamanager_files_id" foreign="id" cardinality="one" owner="foreign" />
+        <aggregate alias="Category" class="MediamanagerCategories" local="mediamanager_categories_id" foreign="id" cardinality="one" owner="foreign" />
+    </object>
+
+    <object class="MediamanagerFilesTags" table="mediamanager_files_tags" extends="xPDOSimpleObject">
+        <field key="mediamanager_files_id" dbtype="int" precision="10" attributes="unsigned" phptype="integer" null="false" default="0" index="index" />
+        <field key="mediamanager_tags_id" dbtype="int" precision="10" attributes="unsigned" phptype="integer" null="false" default="0" index="index" />
+
+        <aggregate alias="File" class="MediamanagerFiles" local="mediamanager_files_id" foreign="id" cardinality="one" owner="foreign" />
+        <aggregate alias="Tag" class="MediamanageMediamanagerTagsrFiles" local="mediamanager_tags_id" foreign="id" cardinality="one" owner="foreign" />
+    </object>
+
+    <object class="MediamanagerFilesContent" table="mediamanager_files_content" extends="xPDOSimpleObject">
+        <field key="mediamanager_files_id" dbtype="int" precision="10" attributes="unsigned" phptype="integer" null="false" default="0"  />
+        <field key="site_content_id" dbtype="int" precision="10" phptype="integer" null="false" default="0" index="index" />
+        <field key="site_tmplvars_id" dbtype="int" precision="10" phptype="integer" null="false" default="0" index="index" />
+        <field key="is_tmplvar" dbtype="tinyint" precision="1" attributes="unsigned" phptype="boolean" null="false" default="0" index="index" />
+
+        <aggregate alias="File" class="MediamanagerFiles" local="mediamanager_files_id" foreign="id" cardinality="one" owner="foreign" />
+        <aggregate alias="Content" class="modResource" local="site_content_id" foreign="id" cardinality="one" owner="foreign" />
+        <aggregate alias="TemplateVariable" class="modTemplateVar" local="site_tmplvars_id" foreign="id" cardinality="one" owner="foreign" />
+    </object>
+
+    <object class="MediamanagerFilesRelations" table="mediamanager_files_relations" extends="xPDOSimpleObject">
+        <field key="mediamanager_files_id" dbtype="int" precision="10" attributes="unsigned" phptype="integer" null="false" default="0" index="index" />
+        <field key="mediamanager_files_id_relation" dbtype="int" precision="10" attributes="unsigned" phptype="integer" null="false" default="0" index="index" />
+
+        <aggregate alias="File" class="MediamanagerFiles" local="mediamanager_files_id" foreign="id" cardinality="one" owner="foreign" />
+        <aggregate alias="File2" class="MediamanagerFiles" local="mediamanager_files_id_relation" foreign="id" cardinality="one" owner="foreign" />
+    </object>
+</model>

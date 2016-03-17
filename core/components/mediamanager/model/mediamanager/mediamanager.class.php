@@ -1,5 +1,11 @@
 <?php
 
+require_once __DIR__ . '/classes/categories.class.php';
+require_once __DIR__ . '/classes/contexts.class.php';
+require_once __DIR__ . '/classes/files.class.php';
+require_once __DIR__ . '/classes/permissions.class.php';
+require_once __DIR__ . '/classes/tags.class.php';
+
 /**
  * Media Manager Main Class
  *
@@ -21,6 +27,12 @@ class MediaManager
      * Holds all configs values.
      */
     public $config = array();
+
+    public $categories = null;
+    public $contexts = null;
+    public $files = null;
+    public $permissions = null;
+    public $tags = null;
 
     /**
      * Initialize the class.
@@ -53,5 +65,11 @@ class MediaManager
 
         $this->modx->addPackage('mediamanager', $this->config['model_path']);
         $this->modx->lexicon->load('mediamanager:default');
+
+        $this->categories   = new MediaManagerCategories($this);
+        $this->contexts     = new MediaManagerContexts($this);
+        $this->files        = new MediaManagerFiles($this);
+        $this->permissions  = new MediaManagerPermissions($this);
+        $this->tags         = new MediaManagerTags($this);
     }
 }
