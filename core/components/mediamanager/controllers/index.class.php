@@ -22,6 +22,13 @@ abstract class MediaManagerManagerController extends modExtraManagerController
         });
         </script>');*/
 
+        $this->addHtml('<script type="text/javascript">
+            Ext.onReady(function() {
+                Ext.getCmp("modx-layout").hideLeftbar(true, false);
+                MediaManager.config.connector_url = "'.$this->mediaManager->config['connectorUrl'].'";
+            });
+        </script>');
+
         return parent::initialize();
     }
 
@@ -33,16 +40,6 @@ abstract class MediaManagerManagerController extends modExtraManagerController
     public function checkPermissions()
     {
         return true;
-    }
-
-}
-
-class ControllerIndexManagerController extends MediaManagerManagerController
-{
-
-    public static function getDefaultController()
-    {
-        return 'home';
     }
 
 }
