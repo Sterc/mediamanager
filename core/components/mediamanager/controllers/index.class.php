@@ -10,22 +10,19 @@ abstract class MediaManagerManagerController extends modExtraManagerController
     {
         $this->mediaManager = new MediaManager($this->modx);
 
-        /*$this->addJavascript('https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js');
-        $this->addJavascript($this->mediamanager->config['assetsUrl'].'libs/bootstrap/js/bootstrap.min.js');
-        $this->addCss($this->mediamanager->config['assetsUrl'].'libs/bootstrap/css/bootstrap.min.css');
-        $this->addCss($this->mediamanager->config['assetsUrl'].'libs/bootstrap/css/bootstrap-theme.min.css');
-        $this->addCss($this->mediamanager->config['cssUrl'].'mgr/mediamanager.css');
-        $this->addHtml('<script type="text/javascript">
-        Ext.onReady(function() {
-            Ext.getCmp("modx-layout").hideLeftbar(true, false);
-            MediaManager.config.connector_url = "'.$this->mediamanager->config['connectorUrl'].'";
-        });
-        </script>');*/
+        /**
+         * Add the CSS.
+         */
+        $this->addCss($this->mediaManager->config['css_url'] . 'mgr/mediamanager.css');
 
+        /**
+         * Add the javascript.
+         */
+        $this->addJavascript($this->mediaManager->config['assets_path'] . 'libs/jquery/jquery-1.12.1.min.js');
         $this->addHtml('<script type="text/javascript">
             Ext.onReady(function() {
                 Ext.getCmp("modx-layout").hideLeftbar(true, false);
-                MediaManager.config.connector_url = "'.$this->mediaManager->config['connectorUrl'].'";
+                MediaManager.config.connector_url = "'.$this->mediaManager->config['connector_url'].'";
             });
         </script>');
 
