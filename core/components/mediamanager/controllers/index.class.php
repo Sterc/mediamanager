@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/model/mediamanager/mediamanager.class.php';
+require_once __DIR__ . '/../model/mediamanager/mediamanager.class.php';
 
 abstract class MediaManagerManagerController extends modExtraManagerController
 {
@@ -37,7 +37,7 @@ abstract class MediaManagerManagerController extends modExtraManagerController
 
 }
 
-class IndexManagerController extends MediaManagerManagerController
+class ControllerIndexManagerController extends MediaManagerManagerController
 {
 
     public static function getDefaultController()
