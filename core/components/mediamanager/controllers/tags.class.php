@@ -35,8 +35,6 @@ class MediaManagerTagsManagerController extends MediaManagerManagerController
         $ph['files_list'] = $files_list;
 
         $this->setPlaceholders($ph);*/
-
-        echo 'Jesse';
     }
 
     public function getPageTitle()
@@ -45,7 +43,7 @@ class MediaManagerTagsManagerController extends MediaManagerManagerController
     }
     public function getTemplateFile()
     {
-        //return $this->mediamanager->config['templatesPath'].'home.tpl';
+        return $this->mediamanager->config['templatesPath'] . 'tags.tpl';
     }
 
     public function loadCustomCssJs()
