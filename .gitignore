@@ -1,0 +1,4 @@
+.DS_Store
+
+# Ignore various IDE project files and folders
+.idea
