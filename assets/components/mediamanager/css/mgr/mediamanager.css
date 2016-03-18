@@ -1,0 +1,20 @@
+
+.mediamanager-browser .dropzone:after,
+.mediamanager-browser .dropzone .dropzone-actions:after,
+.mediamanager-browser .dropzone .dz-preview:after { content: ""; display: table; clear: both; }
+
+
+.mediamanager-browser { margin: 15px; }
+.mediamanager-browser h1 { margin-bottom: 40px; }
+.mediamanager-browser h1 span { margin-right: 20px; }
+.mediamanager-browser .select-context { margin-bottom: 20px; }
+.mediamanager-browser .search-form { margin-bottom: 20px; }
+.mediamanager-browser .advanced-search-filters { display: none; }
+
+.mediamanager-browser .dropzone { display: none; margin-bottom: 20px; text-align: center; border: 4px dashed #ddd; }
+.mediamanager-browser .dropzone .dz-preview { margin: 0 10px; padding: 10px 0; border-top: 1px solid #ddd; }
+.mediamanager-browser .dropzone .dz-preview > div { float: left; }
+
+.mediamanager-browser .dropzone .dropzone-actions { display:none; margin: 0 10px; padding: 10px 0; border-top: 1px solid #ddd; }
+
+

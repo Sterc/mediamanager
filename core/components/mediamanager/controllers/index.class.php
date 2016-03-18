@@ -30,6 +30,7 @@ abstract class MediaManagerManagerController extends modExtraManagerController
         $this->addJavascript($this->mediaManager->config['assets_path'] . 'libs/select2/4.0.2/js/select2.min.js');
         $this->addJavascript($this->mediaManager->config['assets_path'] . 'libs/dropzone/4.3.0/js/dropzone.min.js');
         $this->addJavascript($this->mediaManager->config['assets_path'] . 'libs/jquery-cropper/2.3.0/js/cropper.min.js');
+        $this->addJavascript($this->mediaManager->config['js_url'] . 'mgr/mediamanager.js');
 
         $this->addHtml('<script type="text/javascript">
             Ext.onReady(function() {

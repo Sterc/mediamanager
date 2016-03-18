@@ -39,8 +39,9 @@ class MediaManagerHomeManagerController extends MediaManagerManagerController
 
     public function getPageTitle()
     {
-        //return $this->modx->lexicon('mediamanager');
+        return $this->modx->lexicon('mediamanager');
     }
+
     public function getTemplateFile()
     {
         return $this->mediamanager->config['templatesPath'] . 'home.tpl';
