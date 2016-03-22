@@ -1,6 +1,6 @@
 <?php
 
-class MediaManagerCategories
+class MediaManagerCategoriesHelper
 {
     private $mediaManager = null;
 

@@ -1,6 +1,6 @@
 <?php
 
-class MediaManagerContexts
+class MediaManagerContextsHelper
 {
     private $mediaManager = null;
 
