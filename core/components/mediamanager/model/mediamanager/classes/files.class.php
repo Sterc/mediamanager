@@ -3,11 +3,6 @@
 class MediaManagerFilesHelper
 {
     /**
-     * The modX object.
-     */
-    public $modx = null;
-
-    /**
      * The mediaManager object.
      */
     private $mediaManager = null;
@@ -17,6 +12,9 @@ class MediaManagerFilesHelper
      */
     private $mediaSource = null;
 
+    /**
+     * Upload paths.
+     */
     private $uploadUrl = null;
     private $uploadDirectory = null;
     private $uploadDirectoryYear = null;
@@ -25,31 +23,77 @@ class MediaManagerFilesHelper
     /**
      * MediaManagerFilesHelper constructor.
      *
-     * @param modX $modx
      * @param MediaManager $mediaManager
      */
-    public function __construct(modX &$modx, MediaManager $mediaManager)
+    public function __construct(MediaManager $mediaManager)
     {
-        $this->modx =& $modx;
         $this->mediaManager = $mediaManager;
     }
 
     /**
-     * Process files.
+     * Get files.
+     *
+     * @param int $context
+     * @param array $filters
+     * @param array $sorting
+     *
+     * @return array
+     */
+    public function getList($context = 0, $filters = array(), $sorting = array())
+    {
+        $sortColumn = 'upload_date';
+        $sortDirection = 'ASC';
+        $where = array(
+            'context' => (int) $context
+        );
+
+        if (!empty($filters)) {
+            foreach ($filters as $key => $value) {
+                $where[$key] = $value;
+            }
+        }
+
+        if (!empty($sorting)) {
+            $sortColumn = $sorting[0];
+            $sortDirection = $sorting[1];
+        }
+
+        // @TODO: Fix where, filters and sorting
+
+//        $c = $this->mediaManager->modx->newQuery('MediamanagerFiles');
+//        $c->where($where);
+//        $c->sortby($sortColumn, $sortDirection);
+//        $c->toSql();
+
+        $files = $this->mediaManager->modx->getCollection('MediamanagerFiles');
+
+        $html = '';
+        foreach ($files as $file) {
+            $html .= $this->mediaManager->getChunk('files/file', $file->toArray());
+        }
+
+        if (empty($html)) {
+            $html = $this->mediaManager->modx->lexicon('mediamanager.files.error.no_files_found');
+        }
+
+        return [
+            'error' => false,
+            'html'  => $html
+        ];
+    }
+
+    /**
+     * Add file.
      *
      * @return bool
      */
-    public function processFiles()
+    public function addFile()
     {
-        $result = array(
-            'status' => 'success'
-        );
-
-//        var_dump($_REQUEST);
-//        var_dump($_FILES);
+        // Get file
+        $file = $_FILES['file'];
 
         // Get media source settings
-        $source = $this->modx->getObject('modMediaSource', $this->modx->getOption('mediamanager.media_source'));
+        $source = $this->mediaManager->modx->getObject('modMediaSource', $this->mediaManager->modx->getOption('mediamanager.media_source'));
         $this->mediaSource = json_decode(json_encode($source->getProperties()));
 
         // Set upload directory, year and month
@@ -65,55 +109,65 @@ class MediaManagerFilesHelper
 
         // Create upload directory
         if (!$this->createUploadDirectory()) {
-            $result['status'] = 'error';
-            $result['message'] = 'Could not create upload directory.';
-            return $result;
+            return [
+                'error'   => true,
+                'message' => 'Could not create upload directory.'
+            ];
         }
 
-        // Process files
-        $files = $_FILES;
-        foreach ($files as $file) {
-            // Check if file hash exists
-            $file['hash'] = $this->getFileHashByPath($file['tmp_name']);
-            if ($this->fileHashExists($file['hash'])) {
-                $result['status'] = 'error';
-                $result['files'][$file['name']] = 'File already exists.';
-                continue;
-            }
+        // Check if file hash exists
+        $file['hash'] = $this->getFileHashByPath($file['tmp_name']);
 
-            // Add unique id to file name if needed
-            $fileInformation = pathinfo($file['name']);
-            $fileName = $this->createUniqueFile($this->sanitizeFileName($fileInformation['filename']), $fileInformation['extension']);
-
-            $file['extension'] = $fileInformation['extension'];
-            $file['unique_name'] = $fileName;
-
-            // Upload file
-            if (!$this->uploadFile($file)) {
-                $result['status'] = 'error';
-                $result['files'][$file['name']] = 'File could not be uploaded.';
-                continue;
-            }
-
-            // Add file to database
-            $this->addFile($file);
+        if ($this->fileHashExists($file['hash'])) {
+            return [
+                'error'   => true,
+                'message' => 'File already exists.'
+            ];
         }
 
-        return $result;
+        // Add unique id to file name if needed
+        $fileInformation = pathinfo($file['name']);
+        $fileName = $this->createUniqueFile($this->sanitizeFileName($fileInformation['filename']), $fileInformation['extension']);
+
+        $file['extension'] = $fileInformation['extension'];
+        $file['unique_name'] = $fileName;
+
+        // Upload file
+        if (!$this->uploadFile($file)) {
+            return [
+                'error'   => true,
+                'message' => 'File could not be uploaded.'
+            ];
+        }
+
+        // Add file to database
+        if (!$this->insertFile($file)) {
+            // @TODO: Remove file from sever
+            return [
+                'error'   => true,
+                'message' => 'File not added to database.'
+            ];
+        }
+
+        return [
+            'error'   => false,
+            'message' => 'File uploaded.'
+        ];
     }
 
-    public function addFile($file) {
-        $newFile = $this->modx->newObject('MediamanagerFiles');
+    private function insertFile($file) {
+        $newFile = $this->mediaManager->modx->newObject('MediamanagerFiles');
 
         $newFile->set('name', $file['unique_name']);
         $newFile->set('path', $this->uploadUrl . $file['unique_name']);
         $newFile->set('file_type', $file['extension']);
         $newFile->set('file_size', $file['size']);
         $newFile->set('file_hash', $file['hash']);
-        $newFile->set('uploaded_by', $this->modx->getUser()->get('id'));
+        $newFile->set('uploaded_by', $this->mediaManager->modx->getUser()->get('id'));
 
-        // If image set dimensions
+        // If file type is image set dimensions
         if (false) {
+            // getimagesize()
             $dimensions = '';
             $newFile->set('file_dimensions', $dimensions);
         }
@@ -147,7 +201,7 @@ class MediaManagerFilesHelper
      *
      * @return bool
      */
-    public function createUploadDirectory()
+    private function createUploadDirectory()
     {
         if (!file_exists($this->uploadDirectory)) {
             if (!$this->createDirectory($this->uploadDirectory)) return false;
@@ -172,7 +226,7 @@ class MediaManagerFilesHelper
      *
      * @return bool
      */
-    public function createDirectory($directoryPath, $mode = 0755)
+    private function createDirectory($directoryPath, $mode = 0755)
     {
         return mkdir($directoryPath, $mode);
     }
@@ -183,7 +237,7 @@ class MediaManagerFilesHelper
      * @param array $file
      * @return bool
      */
-    public function uploadFile($file)
+    private function uploadFile($file)
     {
         $target = $this->uploadDirectoryMonth . $file['unique_name'];
         $uploadFile = move_uploaded_file($file['tmp_name'], $target);
@@ -237,7 +291,7 @@ class MediaManagerFilesHelper
      */
     public function fileHashExists($fileHash)
     {
-        $fileObject = $this->modx->getObject('MediamanagerFiles',
+        $fileObject = $this->mediaManager->modx->getObject('MediamanagerFiles',
             array(
                 'file_hash' => $fileHash
             )

@@ -6,6 +6,7 @@ $xpdo_meta_map['MediamanagerFiles']= array (
   'extends' => 'xPDOSimpleObject',
   'fields' => 
   array (
+    'mediamanager_contexts_id' => 0,
     'name' => '',
     'path' => '',
     'file_type' => '',
@@ -20,6 +21,16 @@ $xpdo_meta_map['MediamanagerFiles']= array (
   ),
   'fieldMeta' => 
   array (
+    'mediamanager_contexts_id' => 
+    array (
+      'dbtype' => 'int',
+      'precision' => '10',
+      'attributes' => 'unsigned',
+      'phptype' => 'integer',
+      'null' => false,
+      'default' => 0,
+      'index' => 'index',
+    ),
     'name' => 
     array (
       'dbtype' => 'varchar',
