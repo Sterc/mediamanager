@@ -45,13 +45,13 @@ $(document).ready(function() {
 });
 
 Dropzone.options.dropzone = {
-    maxFilesize: 10,
-    maxThumbnailFilesize: 2,
-    autoProcessQueue: true,
+    maxFilesize: 100,
+    maxThumbnailFilesize: 1,
+    autoQueue: false,
     dictDefaultMessage: '',
     previewsContainer: '.dropzone-previews',
-    headers: {
-        action: 'mgr/file/upload' // @TODO: need to be in the body
+    params: {
+        action: 'mgr/file/upload'
     },
     init: function() {
         this.on('addedfile', function(file) {

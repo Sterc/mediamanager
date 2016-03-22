@@ -9,6 +9,7 @@ $xpdo_meta_map['MediamanagerCategories']= array (
     'parent_id' => 0,
     'name' => '',
     'rank' => 0,
+    'icon' => '',
     'is_deleted' => 0,
   ),
   'fieldMeta' => 
@@ -39,6 +40,14 @@ $xpdo_meta_map['MediamanagerCategories']= array (
       'phptype' => 'integer',
       'null' => false,
       'default' => 0,
+    ),
+    'icon' => 
+    array (
+      'dbtype' => 'varchar',
+      'precision' => '3',
+      'phptype' => 'string',
+      'null' => false,
+      'default' => '',
     ),
     'is_deleted' => 
     array (

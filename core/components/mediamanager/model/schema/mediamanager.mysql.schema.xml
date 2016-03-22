@@ -12,7 +12,8 @@
     <object class="MediamanagerCategories" table="mediamanager_categories" extends="xPDOSimpleObject">
         <field key="parent_id" dbtype="int" precision="10" attributes="unsigned" phptype="integer" null="false" default="0" index="index" />
         <field key="name" dbtype="varchar" precision="50" phptype="string" null="false" default="" />
-        <field key="rank" dbtype="mediumint" precision="6" attributes="unsigned" phptype="integer" null="false" default="0"  />
+        <field key="rank" dbtype="mediumint" precision="6" attributes="unsigned" phptype="integer" null="false" default="0" />
+        <field key="icon" dbtype="varchar" precision="3" phptype="string" null="false" default="" />
         <field key="is_deleted" dbtype="tinyint" precision="1" attributes="unsigned" phptype="boolean" null="false" default="0" index="index" />
 
         <composite alias="CategoriesExcludes" class="MediamanagerCategoriesExcludes" local="id" foreign="mediamanager_categories_id" cardinality="many" owner="local" />
@@ -20,7 +21,7 @@
     </object>
 
     <object class="MediamanagerTags" table="mediamanager_tags" extends="xPDOSimpleObject">
-        <field key="mediamanager_contexts_id" dbtype="int" precision="10" attributes="unsigned" phptype="integer" null="true" default="NULL"  />
+        <field key="mediamanager_contexts_id" dbtype="int" precision="10" attributes="unsigned" phptype="integer" null="true" default="NULL" />
         <field key="name" dbtype="varchar" precision="50" phptype="string" null="false" default="" />
         <field key="is_deleted" dbtype="tinyint" precision="1" attributes="unsigned" phptype="boolean" null="false" default="0" index="index" />
 
@@ -35,9 +36,9 @@
         <field key="file_size" dbtype="int" precision="11" phptype="integer" null="false" default="" />
         <field key="file_dimensions" dbtype="varchar" precision="15" phptype="string" null="false" default="" />
         <field key="file_hash" dbtype="varchar" precision="32" phptype="string" null="false" default="" index="index" />
-        <field key="upload_date" dbtype="timestamp" phptype="timestamp" null="false" attributes="CURRENT_TIMESTAMP" index="index" />
+        <field key="upload_date" dbtype="timestamp" phptype="timestamp" null="false" default="CURRENT_TIMESTAMP" index="index" />
         <field key="uploaded_by" dbtype="int" precision="10" phptype="integer" null="false" default="" index="index" />
-        <field key="is_archived" dbtype="tinyint" precision="1" phptype="boolean" null="false" default="" index="index" />
+        <field key="is_archived" dbtype="tinyint" precision="1" attributes="unsigned" phptype="boolean" null="false" default="" index="index" />
         <field key="archive_date" dbtype="timestamp" phptype="timestamp" null="true" default="NULL" />
         <field key="archive_path" dbtype="varchar" precision="255" phptype="string" null="true" default="NULL" />
 
@@ -49,7 +50,7 @@
     </object>
 
     <object class="MediamanagerDownloads" table="mediamanager_downloads" extends="xPDOSimpleObject">
-        <field key="created_on" dbtype="timestamp" phptype="timestamp" null="false" attributes="CURRENT_TIMESTAMP" />
+        <field key="created_on" dbtype="timestamp" phptype="timestamp" null="false" default="CURRENT_TIMESTAMP" />
         <field key="expires_on" dbtype="timestamp" phptype="timestamp" null="false" />
         <field key="path" dbtype="varchar" precision="255" phptype="string" null="false" default="" />
         <field key="hash" dbtype="varchar" precision="32" phptype="string" null="false" default="" />

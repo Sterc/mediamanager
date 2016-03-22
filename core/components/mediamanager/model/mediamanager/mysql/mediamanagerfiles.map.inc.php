@@ -12,7 +12,7 @@ $xpdo_meta_map['MediamanagerFiles']= array (
     'file_size' => 0,
     'file_dimensions' => '',
     'file_hash' => '',
-    'upload_date' => NULL,
+    'upload_date' => 'CURRENT_TIMESTAMP',
     'uploaded_by' => 0,
     'is_archived' => 0,
     'archive_date' => NULL,
@@ -76,7 +76,7 @@ $xpdo_meta_map['MediamanagerFiles']= array (
       'dbtype' => 'timestamp',
       'phptype' => 'timestamp',
       'null' => false,
-      'attributes' => 'CURRENT_TIMESTAMP',
+      'default' => 'CURRENT_TIMESTAMP',
       'index' => 'index',
     ),
     'uploaded_by' => 
@@ -92,6 +92,7 @@ $xpdo_meta_map['MediamanagerFiles']= array (
     array (
       'dbtype' => 'tinyint',
       'precision' => '1',
+      'attributes' => 'unsigned',
       'phptype' => 'boolean',
       'null' => false,
       'default' => 0,
