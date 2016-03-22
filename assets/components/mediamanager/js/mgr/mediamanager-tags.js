@@ -9,7 +9,10 @@
         $createFeedback : 'div[data-create-feedback]',
         $listing        : 'div[data-listing]',
 
-        $edit           : 'a[data-delete-tag]',
+        $edit           : 'a[data-edit-tag]',
+        $editForm       : 'form[data-edit-form]',
+
+        $cancel         : 'a[data-cancel-tag]',
 
         $delete         : 'a[data-delete-tag]',
         $deleteConfirm  : '[data-delete-confirm]',
@@ -66,7 +69,40 @@
         },
 
         edit : function(e) {
-            console.log('fdfdd');
+            $(e.target).parents('tr').find('form').removeClass('hidden');
+            $(e.target).parents('tr').find('.mediamanager-tag').addClass('hidden');
+        },
+
+        editForm : function(e) {
+            var self  = this,
+                form  = $(e.target),
+                tag   = form.find('input[name="tag"]').val(),
+                tagId = form.find('input[name="tag_id"]').val();
+
+            $.ajax ({
+                type: 'POST',
+                url: $(self.$createForm).attr('action'),
+                data: {
+                    action       : $('input[name="action"]', self.$createForm).val(),
+                    HTTP_MODAUTH : $('input[name="HTTP_MODAUTH"]', self.$createForm).val(),
+                    method       : 'edit',
+                    tag          : tag,
+                    tag_id       : tagId
+                },
+                success: function(data) {
+                    $(e.target).parents('tr').find('form').addClass('hidden');
+                    $(e.target).parents('tr').find('.mediamanager-tag').removeClass('hidden').text(tag);
+                }
+            });
+        },
+
+        cancel : function(e) {
+            $(e.target).parents('tr').find('form').addClass('hidden');
+            $(e.target).parents('tr').find('.mediamanager-tag').removeClass('hidden');
+
+            $(e.target).parents('tr').find('input[name="tag"]').val(
+                $(e.target).parents('tr').find('.mediamanager-tag').text()
+            );
         },
 
         delete : function(e) {
@@ -129,6 +165,14 @@
     $(document).on({
         click : $.proxy(MediaManagerTags, 'edit')
     }, MediaManagerTags.$edit);
+
+    $(document).on({
+        submit : $.proxy(MediaManagerTags, 'editForm')
+    }, MediaManagerTags.$editForm);
+
+    $(document).on({
+        click : $.proxy(MediaManagerTags, 'cancel')
+    }, MediaManagerTags.$cancel);
 
     $(document).on({
         click : $.proxy(MediaManagerTags, 'delete')

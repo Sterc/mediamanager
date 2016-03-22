@@ -63,6 +63,8 @@ class MediaManager
             'css_url'         => $assetsUrl . 'css/',
             'assets_url'      => $assetsUrl,
             'connector_url'   => $assetsUrl . 'connector.php',
+            'chunks_path'     => $basePath . 'templates/chunks/',
+            'chunk_suffix'    => '.chunk.tpl',
         ), $config);
 
         $this->modx->addPackage('mediamanager', $this->config['model_path']);

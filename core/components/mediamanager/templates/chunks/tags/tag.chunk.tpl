@@ -7,7 +7,7 @@
                 <input type="text" class="form-control" name="tag" value="[[+name]]">
             </div>
             <button type="submit" class="btn btn-success">[[%mediamanager.tags.save]]</button>
-            <button type="submit" class="btn btn-default">[[%mediamanager.tags.cancel]]</button>
+            <a href="javascript:void(0)" class="btn btn-default" data-cancel-tag>[[%mediamanager.tags.cancel]]</a>
         </form>
     </th>
     <td>
