@@ -4,7 +4,7 @@ require_once __DIR__ . '/../model/mediamanager/mediamanager.class.php';
 abstract class MediaManagerManagerController extends modExtraManagerController
 {
 
-    private $mediaManager = null;
+    protected $mediaManager = null;
 
     public function initialize()
     {

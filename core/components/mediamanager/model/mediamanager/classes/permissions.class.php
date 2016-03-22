@@ -1,6 +1,6 @@
 <?php
 
-class MediaManagerPermissions
+class MediaManagerPermissionsHelper
 {
     private $mediaManager = null;
 
