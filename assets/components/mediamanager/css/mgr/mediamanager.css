@@ -1,8 +1,6 @@
 
-.mediamanager-browser .dropzone:after,
-.mediamanager-browser .dropzone .dropzone-actions:after,
-.mediamanager-browser .dropzone .dz-preview:after { content: ""; display: table; clear: both; }
-
+.mediamanager-browser .dropzone-form:after,
+.mediamanager-browser .dropzone-form .dropzone-actions:after { content: ""; display: table; clear: both; }
 
 .mediamanager-browser { margin: 15px; }
 .mediamanager-browser h1 { margin-bottom: 40px; }
@@ -11,10 +9,9 @@
 .mediamanager-browser .search-form { margin-bottom: 20px; }
 .mediamanager-browser .advanced-search-filters { display: none; }
 
-.mediamanager-browser .dropzone { display: none; margin-bottom: 20px; text-align: center; border: 4px dashed #ddd; }
-.mediamanager-browser .dropzone .dz-preview { margin: 0 10px; padding: 10px 0; border-top: 1px solid #ddd; }
-.mediamanager-browser .dropzone .dz-preview > div { float: left; }
+.mediamanager-browser .dropzone-form { display: none; margin-bottom: 20px; text-align: center; border: 4px dashed #ddd; }
+.mediamanager-browser .dropzone-form .dz-preview { margin: 0 10px; padding: 10px 0; border-top: 1px solid #ddd; text-align: left; }
+.mediamanager-browser .dropzone-form .dz-preview .alert { display: none; margin-top: 10px; margin-bottom: 0; }
+.mediamanager-browser .dropzone-form .dropzone-actions { display:none; margin: 0 10px; padding: 10px 0; border-top: 1px solid #ddd; }
 
-.mediamanager-browser .dropzone .dropzone-actions { display:none; margin: 0 10px; padding: 10px 0; border-top: 1px solid #ddd; }
-
-
+.mediamanager-browser .media-container .file img { max-width: 100%; }
