@@ -9,6 +9,8 @@
         $createFeedback : 'div[data-create-feedback]',
         $listing        : 'div[data-listing]',
 
+        $edit           : 'a[data-delete-tag]',
+
         $delete         : 'a[data-delete-tag]',
         $deleteConfirm  : '[data-delete-confirm]',
 
@@ -61,6 +63,10 @@
             });
 
             return false;
+        },
+
+        edit : function(e) {
+            console.log('fdfdd');
         },
 
         delete : function(e) {
@@ -119,6 +125,10 @@
     $(document).on({
         submit : $.proxy(MediaManagerTags, 'create')
     }, MediaManagerTags.$createForm);
+
+    $(document).on({
+        click : $.proxy(MediaManagerTags, 'edit')
+    }, MediaManagerTags.$edit);
 
     $(document).on({
         click : $.proxy(MediaManagerTags, 'delete')

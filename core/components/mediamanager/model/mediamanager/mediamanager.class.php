@@ -68,10 +68,10 @@ class MediaManager
         $this->modx->addPackage('mediamanager', $this->config['model_path']);
         $this->modx->lexicon->load('mediamanager:default');
 
-        $this->categories   = new MediaManagerCategories($this);
-        $this->contexts     = new MediaManagerContexts($this);
+        $this->categories   = new MediaManagerCategoriesHelper($this);
+        $this->contexts     = new MediaManagerContextsHelper($this);
         $this->files        = new MediaManagerFilesHelper($modx, $this);
-        $this->permissions  = new MediaManagerPermissions($this);
-        $this->tags         = new MediaManagerTags($this);
+        $this->permissions  = new MediaManagerPermissionsHelper($this);
+        $this->tags         = new MediaManagerTagsHelper($this);
     }
 }

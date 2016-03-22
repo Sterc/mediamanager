@@ -11,7 +11,7 @@
         </form>
     </th>
     <td>
-        <a href="javascript:void(0)">
+        <a href="javascript:void(0)" data-edit-tag>
             [[%mediamanager.tags.edit]]
         </a> -
         <a href="javascript:void(0)" data-delete-tag="[[+id]]" data-delete-message="[[%mediamanager.tags.delete_confirm_message? &name=`[[+name]]`]]" data-delete-title="[[%mediamanager.tags.delete_confirm_title]]" data-delete-confirm="[[%mediamanager.tags.delete]]" data-delete-cancel="[[%mediamanager.tags.cancel]]">
