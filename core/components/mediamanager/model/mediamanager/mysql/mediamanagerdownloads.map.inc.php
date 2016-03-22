@@ -6,7 +6,7 @@ $xpdo_meta_map['MediamanagerDownloads']= array (
   'extends' => 'xPDOSimpleObject',
   'fields' => 
   array (
-    'created_on' => NULL,
+    'created_on' => 'CURRENT_TIMESTAMP',
     'expires_on' => NULL,
     'path' => '',
     'hash' => '',
@@ -19,7 +19,7 @@ $xpdo_meta_map['MediamanagerDownloads']= array (
       'dbtype' => 'timestamp',
       'phptype' => 'timestamp',
       'null' => false,
-      'attributes' => 'CURRENT_TIMESTAMP',
+      'default' => 'CURRENT_TIMESTAMP',
     ),
     'expires_on' => 
     array (

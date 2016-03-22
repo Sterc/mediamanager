@@ -3,9 +3,9 @@
     <div class="row">
         <div class="col-sm-12">
             <h1>
-                <span>Media Manager</span>
-                <button type="button" class="btn btn-success upload-media">Upload Media</button>
-                <button type="button" class="btn btn-default new-category">New Category</button>
+                <span>{$_lang.mediamanager}</span>
+                <button type="button" class="btn btn-success upload-media">{$_lang.mediamanager_upload_media}</button>
+                <button type="button" class="btn btn-default new-category">{$_lang.mediamanager_new_category}</button>
             </h1>
         </div>
     </div>
@@ -14,17 +14,16 @@
         <div class="col-sm-12">
 
             <form action="/mediamanager/assets/components/mediamanager/connector.php" class="dropzone" id="dropzone">
-                <h2>Drop files here to upload</h2>
-                <button type="button" class="btn btn-default btn-lg">Or select files</button>
+                <input type="hidden" name="HTTP_MODAUTH" value="{$token}">
+                <h2>{$_lang.mediamanager_dropzone_title}</h2>
+                <button type="button" class="btn btn-default btn-lg">{$_lang.mediamanager_dropzone_button}</button>
                 <div class="fallback">
                     <input name="file" type="file" multiple />
                 </div>
-                <p class="max-upload-size">Maximum upload file size: 10 MB.</p>
-
+                <p class="max-upload-size">{$_lang.mediamanager_dropzone_maximum_upload_size}</p>
                 <div class="dropzone-previews"></div>
-
                 <div class="dropzone-actions">
-                    <button type="button" class="btn btn-success pull-right upload-selected-files">Upload Selected Files</button>
+                    <button type="button" class="btn btn-success pull-right upload-selected-files">{$_lang.mediamanager_upload_selected_files}</button>
                 </div>
             </form>
 
@@ -52,8 +51,8 @@
                         <select class="form-control">
                             <option>Sorting</option>
                         </select>
-                        <input type="input" class="form-control" placeholder="Search">
-                        <button type="button" class="btn btn-default advanced-search">Advanced Search</button>
+                        <input type="input" class="form-control" placeholder="{$_lang.mediamanager_search}">
+                        <button type="button" class="btn btn-default advanced-search">{$_lang.mediamanager_advanced_search}</button>
                     </div>
 
                     <div class="clearfix"></div>
