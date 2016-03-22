@@ -50,6 +50,8 @@ class MediaManagerTagsHelper
             $tag->set('name', $name);
             $tag->save();
         }
+
+        return ['error' => false, 'message' => ''];
     }
 
     public function deleteTag($id)

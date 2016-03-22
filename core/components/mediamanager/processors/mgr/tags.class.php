@@ -45,7 +45,7 @@ class MediaManagerTagsProcessor extends modProcessor
     private function edit()
     {
 
-        return $this->mediaManager->tags->editTag($this->getProperty('tag'), $this->getProperty('tag_id'));
+        return $this->mediaManager->tags->editTag($this->getProperty('tag_id'), $this->getProperty('tag'));
     }
 
     private function delete()
