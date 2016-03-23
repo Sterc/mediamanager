@@ -35,11 +35,31 @@ class MediaManagerCategoriesManagerController extends MediaManagerManagerControl
         $ph['files_list'] = $files_list;
 
         $this->setPlaceholders($ph);*/
+
+        $lexicon = $this->modx->lexicon->fetch('mediamanager');
+        // print_r($lexicon);exit;
+
+        $placeholders = [
+            'pagetitle'          => $this->getPageTitle(),
+            // 'create_title'       => $this->modx->lexicon('mediamanager.categories.title'),
+            // 'create_label'       => $this->modx->lexicon('mediamanager.categories.label'),
+            // 'create_placeholder' => $this->modx->lexicon('mediamanager.categories.placeholder'),
+            // 'create_button'      => $this->modx->lexicon('mediamanager.categories.button'),
+            'list'               => $this->mediaManager->tags->getList(),
+            'token'              => $this->modx->user->getUserToken($this->modx->context->get('key')),
+            // '_lang'              => $lexicon
+        ];
+
+        // echo '<pre>';
+        // print_r(array_merge($placeholders, $this->mediaManager->config,$lexicon));exit;
+
+        $this->setPlaceholders(array_merge($placeholders, $this->mediaManager->config,$lexicon));
+
     }
 
     public function getPageTitle()
     {
-        //return $this->modx->lexicon('mediamanager');
+        return $this->modx->lexicon('mediamanager.categories');
     }
     public function getTemplateFile()
     {
