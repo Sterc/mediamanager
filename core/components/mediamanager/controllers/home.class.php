@@ -8,20 +8,18 @@ class MediaManagerHomeManagerController extends MediaManagerManagerController
     public function process(array $scriptProperties = array())
     {
         $placeholders = array(
-            '_lang' => array(
-                'mediamanager' => $this->modx->lexicon('mediamanager'),
-                'mediamanager_upload_media' => $this->modx->lexicon('mediamanager.upload_media'),
-                'mediamanager_new_category' => $this->modx->lexicon('mediamanager.new_category'),
-                'mediamanager_advanced_search' => $this->modx->lexicon('mediamanager.advanced_search'),
-                'mediamanager_upload_selected_files' => $this->modx->lexicon('mediamanager.upload_selected_files'),
-                'mediamanager_search' => $this->modx->lexicon('mediamanager.search'),
-                'mediamanager_dropzone_maximum_upload_size' => $this->modx->lexicon('mediamanager.dropzone.maximum_upload_size'),
-                'mediamanager_dropzone_button' => $this->modx->lexicon('mediamanager.dropzone.button'),
-                'mediamanager_dropzone_title' => $this->modx->lexicon('mediamanager.dropzone.title'),
-            ),
-            'token' => $this->modx->user->getUserToken($this->modx->context->get('key'))
+            'pagetitle'                    => $this->modx->lexicon('mediamanager'),
+            'upload_media'                 => $this->modx->lexicon('mediamanager.files.upload_media'),
+            'advanced_search'              => $this->modx->lexicon('mediamanager.files.advanced_search'),
+            'upload_selected_files'        => $this->modx->lexicon('mediamanager.files.upload_selected_files'),
+            'search'                       => $this->modx->lexicon('mediamanager.files.search'),
+            'dropzone_maximum_upload_size' => $this->modx->lexicon('mediamanager.files.dropzone_maximum_upload_size'),
+            'dropzone_button'              => $this->modx->lexicon('mediamanager.files.dropzone_button'),
+            'dropzone_title'               => $this->modx->lexicon('mediamanager.files.dropzone_title'),
+            'token'                        => $this->modx->user->getUserToken($this->modx->context->get('key'))
         );
-        $this->setPlaceholders($placeholders);
+
+        $this->setPlaceholders(array_merge($placeholders, $this->mediaManager->config));
     }
 
     public function getPageTitle()
@@ -36,7 +34,7 @@ class MediaManagerHomeManagerController extends MediaManagerManagerController
 
     public function loadCustomCssJs()
     {
-
+        $this->addJavascript($this->mediaManager->config['js_url'] . 'mgr/mediamanager-files.js');
     }
 
 }

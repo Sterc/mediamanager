@@ -30,6 +30,7 @@
     </object>
 
     <object class="MediamanagerFiles" table="mediamanager_files" extends="xPDOSimpleObject">
+        <field key="mediamanager_contexts_id" dbtype="int" precision="10" attributes="unsigned" phptype="integer" null="false" default="0" index="index" />
         <field key="name" dbtype="varchar" precision="255" phptype="string" null="false" default="" index="index" />
         <field key="path" dbtype="varchar" precision="255" phptype="string" null="false" default="" />
         <field key="file_type" dbtype="varchar" precision="10" phptype="string" null="false" default="" index="index" />

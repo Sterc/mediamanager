@@ -72,7 +72,7 @@ class MediaManager
 
         $this->categories   = new MediaManagerCategoriesHelper($this);
         $this->contexts     = new MediaManagerContextsHelper($this);
-        $this->files        = new MediaManagerFilesHelper($modx, $this);
+        $this->files        = new MediaManagerFilesHelper($this);
         $this->permissions  = new MediaManagerPermissionsHelper($this);
         $this->tags         = new MediaManagerTagsHelper($this);
     }
