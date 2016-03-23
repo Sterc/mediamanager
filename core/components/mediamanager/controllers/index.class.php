@@ -34,7 +34,6 @@ abstract class MediaManagerManagerController extends modExtraManagerController
         $this->addHtml('<script type="text/javascript">
             Ext.onReady(function() {
                 Ext.getCmp("modx-layout").hideLeftbar(true, false);
-                MediaManager.config.connector_url = "'.$this->mediaManager->config['connector_url'].'";
             });
         </script>');
 
