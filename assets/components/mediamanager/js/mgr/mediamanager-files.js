@@ -16,8 +16,6 @@
         $advancedSearchFilters : 'div[data-advanced-search-filters]',
 
         init: function() {
-            console.log(this.getContext());
-
             this.dropzone();
             this.getCategories();
             this.getList();
