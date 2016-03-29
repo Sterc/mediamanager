@@ -8,8 +8,14 @@
 
 $_lang['mediamanager'] = 'Media Manager';
 $_lang['mediamanager.desc'] = 'View, upload and manage media';
-$_lang['mediamanager.categories'] = 'Media Categories';
-$_lang['mediamanager.categories.desc'] = 'Manage media categories';
+$_lang['mediamanager.global.create'] = 'Create';
+$_lang['mediamanager.global.add'] = 'Add';
+$_lang['mediamanager.global.edit'] = 'Edit';
+$_lang['mediamanager.global.delete'] = 'Delete';
+$_lang['mediamanager.global.delete_confirm'] = 'Are you sure you want to delete this';
+$_lang['mediamanager.global.search'] = 'Search';
+
+/* Tags */
 $_lang['mediamanager.tags'] = 'Media Tags';
 $_lang['mediamanager.tags.desc'] = 'Manage media tags';
 $_lang['mediamanager.tags.title'] = 'Create tag';
@@ -26,6 +32,8 @@ $_lang['mediamanager.tags.cancel'] = 'Cancel';
 $_lang['mediamanager.tags.delete_success'] = 'Tag is deleted.';
 $_lang['mediamanager.tags.delete_confirm_title'] = 'Delete';
 $_lang['mediamanager.tags.delete_confirm_message'] = 'Are you sure you want to delete the tag `[[+name]]`.';
+
+/* Files */
 $_lang['mediamanager.files.upload_media'] = 'Upload Media';
 $_lang['mediamanager.files.new_category'] = 'New Category';
 $_lang['mediamanager.files.advanced_search'] = 'Advanced Search';
@@ -35,4 +43,11 @@ $_lang['mediamanager.files.dropzone.maximum_upload_size'] = 'Maximum upload file
 $_lang['mediamanager.files.dropzone.button'] = 'Or select files';
 $_lang['mediamanager.files.dropzone.title'] = 'Drop files here to upload';
 $_lang['mediamanager.files.error.no_files_found'] = 'No files found.';
+
+/* Categories */
+$_lang['mediamanager.categories'] = 'Media Categories';
+$_lang['mediamanager.categories.desc'] = 'Manage media categories';
+$_lang['mediamanager.categories.category'] = 'Category';
+
+/* Contexts */
 $_lang['mediamanager.contexts.error.no_contexts_found'] = 'No contexts found.';
