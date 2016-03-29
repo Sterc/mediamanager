@@ -34,7 +34,7 @@
         <div class="col-sm-3 col-md-2">
 
             <select class="form-control select-context" data-select-context>
-                <option>Media Context</option>
+                {$context_list}
             </select>
 
             <div data-category-tree></div>

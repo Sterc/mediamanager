@@ -1,8 +1,8 @@
 <?php
 /**
- * Files processor
+ * Contexts processor
  */
-class MediaManagerFilesProcessor extends modProcessor
+class MediaManagerContextsProcessor extends modProcessor
 {
 
     private $mediaManager = null;
@@ -20,10 +20,6 @@ class MediaManagerFilesProcessor extends modProcessor
         $data   = array();
 
         switch ($method) {
-            case 'add':
-                $data = $this->addFile();
-
-                break;
             case 'list':
                 $data = $this->getList();
 
@@ -33,16 +29,11 @@ class MediaManagerFilesProcessor extends modProcessor
         return $this->outputArray($data);
     }
 
-    private function addFile()
-    {
-        return $this->mediaManager->files->addFile();
-    }
-
     private function getList()
     {
-        return $this->mediaManager->files->getListHtml();
+        return $this->mediaManager->contexts->getListHtml();
     }
 
 }
 
-return 'MediaManagerFilesProcessor';
+return 'MediaManagerContextsProcessor';

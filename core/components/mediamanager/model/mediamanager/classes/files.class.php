@@ -33,18 +33,18 @@ class MediaManagerFilesHelper
     /**
      * Get files.
      *
-     * @param int $context
      * @param array $filters
      * @param array $sorting
      *
      * @return array
      */
-    public function getList($context = 0, $filters = array(), $sorting = array())
+    public function getList($filters = array(), $sorting = array())
     {
         $sortColumn = 'upload_date';
         $sortDirection = 'ASC';
         $where = array(
-            'context' => (int) $context
+            'mediamanager_contexts_id' => $this->mediaManager->contexts->getCurrentContext(),
+            'is_archived' => 0
         );
 
         if (!empty($filters)) {
@@ -58,14 +58,24 @@ class MediaManagerFilesHelper
             $sortDirection = $sorting[1];
         }
 
-        // @TODO: Fix where, filters and sorting
+        $q = $this->mediaManager->modx->newQuery('MediamanagerFiles');
+        $q->where($where);
+        $q->sortby($sortColumn, $sortDirection);
 
-//        $c = $this->mediaManager->modx->newQuery('MediamanagerFiles');
-//        $c->where($where);
-//        $c->sortby($sortColumn, $sortDirection);
-//        $c->toSql();
+        return $this->mediaManager->modx->getIterator('MediamanagerFiles', $q);
+    }
 
-        $files = $this->mediaManager->modx->getCollection('MediamanagerFiles');
+    /**
+     * Get files html.
+     *
+     * @param array $filters
+     * @param array $sorting
+     *
+     * @return array
+     */
+    public function getListHtml($filters = array(), $sorting = array())
+    {
+        $files = $this->getList($filters, $sorting);
 
         $html = '';
         foreach ($files as $file) {
@@ -155,24 +165,25 @@ class MediaManagerFilesHelper
         ];
     }
 
-    private function insertFile($file) {
-        $newFile = $this->mediaManager->modx->newObject('MediamanagerFiles');
+    private function insertFile($data) {
+        $file = $this->mediaManager->modx->newObject('MediamanagerFiles');
 
-        $newFile->set('name', $file['unique_name']);
-        $newFile->set('path', $this->uploadUrl . $file['unique_name']);
-        $newFile->set('file_type', $file['extension']);
-        $newFile->set('file_size', $file['size']);
-        $newFile->set('file_hash', $file['hash']);
-        $newFile->set('uploaded_by', $this->mediaManager->modx->getUser()->get('id'));
+        $file->set('name', $data['unique_name']);
+        $file->set('path', $this->uploadUrl . $data['unique_name']);
+        $file->set('file_type', $data['extension']);
+        $file->set('file_size', $data['size']);
+        $file->set('file_hash', $data['hash']);
+        $file->set('uploaded_by', $this->mediaManager->modx->getUser()->get('id'));
+        $file->set('mediamanager_contexts_id', $this->mediaManager->contexts->getCurrentContext());
 
         // If file type is image set dimensions
         if (false) {
             // getimagesize()
             $dimensions = '';
-            $newFile->set('file_dimensions', $dimensions);
+            $file->set('file_dimensions', $dimensions);
         }
 
-        $newFile->save();
+        $file->save();
 
         return true;
     }

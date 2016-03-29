@@ -8,12 +8,16 @@
         $uploadMedia           : 'button[data-upload-media]',
         $uploadSelectedFiles   : '.upload-selected-files',
 
+        $selectContext         : 'select[data-select-context]',
+
         $categoryTree          : 'div[data-category-tree]',
 
         $advancedSearch        : 'button[data-advanced-search]',
         $advancedSearchFilters : 'div[data-advanced-search-filters]',
 
         init: function() {
+            console.log(this.getContext());
+
             this.dropzone();
             this.getCategories();
             this.getList();
@@ -123,11 +127,36 @@
                 data: {
                     action       : $('input[name="action"]', self.$dropzoneForm).val(),
                     HTTP_MODAUTH : $('input[name="HTTP_MODAUTH"]', self.$dropzoneForm).val(),
-                    method       : 'list'
+                    method       : 'list',
+                    context      : self.getContext()
                 }
             }).success(function(data) {
                 $('.media-container .panel-body').html(data.results.html);
             });
+        },
+
+        getContext: function() {
+            var context = /context=([^&]+)/.exec(window.location.href);
+            if (context === null) {
+                return 0;
+            }
+            return context[1];
+        },
+
+        changeContext: function(e) {
+            var self = this;
+            window.location.href = self.updateQueryStringParameter(window.location.href, 'context', e.target.value);
+        },
+
+        updateQueryStringParameter: function (uri, key, value) {
+            var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
+            var separator = uri.indexOf('?') !== -1 ? "&" : "?";
+            if (uri.match(re)) {
+                return uri.replace(re, '$1' + key + "=" + value + '$2');
+            }
+            else {
+                return uri + separator + key + "=" + value;
+            }
         }
 
     }
@@ -147,5 +176,9 @@
     $(document).on({
         click : $.proxy(MediaManagerFiles, 'advancedSearchOpen')
     }, MediaManagerFiles.$advancedSearch);
+
+    $(document).on({
+        change : $.proxy(MediaManagerFiles, 'changeContext')
+    }, MediaManagerFiles.$selectContext);
 
 }(jQuery);
