@@ -114,7 +114,7 @@ class MediaManagerContextsHelper
     /**
      * Get contexts html.
      *
-     * @return array
+     * @return string
      */
     public function getListHtml()
     {
@@ -136,9 +136,6 @@ class MediaManagerContextsHelper
             $html = $this->mediaManager->modx->lexicon('mediamanager.contexts.error.no_contexts_found');
         }
 
-        return [
-            'error' => false,
-            'html'  => $html
-        ];
+        return $html;
     }
 }

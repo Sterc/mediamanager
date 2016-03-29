@@ -8,7 +8,7 @@ class MediaManagerHomeManagerController extends MediaManagerManagerController
     public function process(array $scriptProperties = array())
     {
         $contextList = $this->mediaManager->contexts->getListHtml();
-        $contextList = $contextList['html'];
+        $sortOptions = $this->mediaManager->files->getSortOptionsHtml();
 
         $placeholders = array(
             'pagetitle'                    => $this->modx->lexicon('mediamanager'),
@@ -20,8 +20,12 @@ class MediaManagerHomeManagerController extends MediaManagerManagerController
             'dropzone_button'              => $this->modx->lexicon('mediamanager.files.dropzone.button'),
             'dropzone_title'               => $this->modx->lexicon('mediamanager.files.dropzone.title'),
             'token'                        => $this->modx->user->getUserToken($this->modx->context->get('key')),
-            'context_list'                 => $contextList
+            'context_list'                 => $contextList,
+            'sort_options'                 => $sortOptions
         );
+
+        $filters = $this->mediaManager->getChunk('files/filters', $placeholders);
+        $placeholders['filters'] = $filters;
 
         $this->setPlaceholders(array_merge($placeholders, $this->mediaManager->config));
     }

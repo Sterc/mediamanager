@@ -12,10 +12,19 @@
 
         $categoryTree          : 'div[data-category-tree]',
 
+        $search                : 'input[data-search]',
         $advancedSearch        : 'button[data-advanced-search]',
         $advancedSearchFilters : 'div[data-advanced-search-filters]',
 
+        $selectSorting         : 'select[data-sorting]',
+
+        $currentContext        : 0,
+        $currentSearch         : '',
+        $currentSorting        : [],
+        $currentFilters        : [],
+
         init: function() {
+            this.setContext();
             this.dropzone();
             this.getCategories();
             this.getList();
@@ -90,6 +99,20 @@
 
         getCategories: function() {
             var self = this;
+
+            //$.ajax({
+            //    url: $(self.$dropzoneForm).attr('action'),
+            //    method: 'post',
+            //    data: {
+            //        action       : 'mgr/categories',
+            //        HTTP_MODAUTH : $('input[name="HTTP_MODAUTH"]', self.$dropzoneForm).val(),
+            //        method       : 'list',
+            //        context      : self.$currentContext
+            //    }
+            //}).success(function(data) {
+            //
+            //});
+
             var tree = [
                 {
                     text: "Home"
@@ -126,19 +149,25 @@
                     action       : $('input[name="action"]', self.$dropzoneForm).val(),
                     HTTP_MODAUTH : $('input[name="HTTP_MODAUTH"]', self.$dropzoneForm).val(),
                     method       : 'list',
-                    context      : self.getContext()
+                    context      : self.$currentContext,
+                    search       : self.$currentSearch,
+                    filters      : self.$currentFilters,
+                    sorting      : self.$currentSorting
                 }
             }).success(function(data) {
-                $('.media-container .panel-body').html(data.results.html);
+                $('.media-container .panel-body').html(data.results);
             });
         },
 
-        getContext: function() {
+        setContext: function() {
+            var self = this;
             var context = /context=([^&]+)/.exec(window.location.href);
+
             if (context === null) {
-                return 0;
+                return;
             }
-            return context[1];
+
+            return self.$currentContext = context[1];
         },
 
         changeContext: function(e) {
@@ -147,13 +176,34 @@
         },
 
         updateQueryStringParameter: function (uri, key, value) {
-            var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
-            var separator = uri.indexOf('?') !== -1 ? "&" : "?";
+            var re = new RegExp('([?&])' + key + '=.*?(&|$)', 'i');
+            var separator = uri.indexOf('?') !== -1 ? '&' : '?';
             if (uri.match(re)) {
-                return uri.replace(re, '$1' + key + "=" + value + '$2');
+                return uri.replace(re, '$1' + key + '=' + value + '$2');
+            } else {
+                return uri + separator + key + '=' + value;
             }
-            else {
-                return uri + separator + key + "=" + value;
+        },
+
+        changeSorting: function(e) {
+            var self = this;
+            var option = $(e.target).find(':selected');
+
+            self.$currentSorting = [
+                option.data('sort-field'),
+                option.data('sort-direction')
+            ];
+
+            self.getList();
+        },
+
+        changeSearch: function(e) {
+            var self = this;
+            var search = e.target.value;
+
+            if ((search.length > 2 && self.$currentSearch !== search) || (self.$currentSearch.length > 2 && search.length == 0)) {
+                self.$currentSearch = search;
+                self.getList();
             }
         }
 
@@ -178,5 +228,13 @@
     $(document).on({
         change : $.proxy(MediaManagerFiles, 'changeContext')
     }, MediaManagerFiles.$selectContext);
+
+    $(document).on({
+        keyup : $.proxy(MediaManagerFiles, 'changeSearch')
+    }, MediaManagerFiles.$search);
+
+    $(document).on({
+        change : $.proxy(MediaManagerFiles, 'changeSorting')
+    }, MediaManagerFiles.$selectSorting);
 
 }(jQuery);

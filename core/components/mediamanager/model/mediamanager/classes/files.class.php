@@ -20,6 +20,8 @@ class MediaManagerFilesHelper
     private $uploadDirectoryYear = null;
     private $uploadDirectoryMonth = null;
 
+    private $sortOptions = array();
+
     /**
      * MediaManagerFilesHelper constructor.
      *
@@ -28,24 +30,31 @@ class MediaManagerFilesHelper
     public function __construct(MediaManager $mediaManager)
     {
         $this->mediaManager = $mediaManager;
+
+        $this->setSortOptions();
     }
 
     /**
      * Get files.
      *
+     * @param string $search
      * @param array $filters
      * @param array $sorting
      *
      * @return array
      */
-    public function getList($filters = array(), $sorting = array())
+    public function getList($search = '', $filters = array(), $sorting = array())
     {
         $sortColumn = 'upload_date';
-        $sortDirection = 'ASC';
+        $sortDirection = 'DESC';
         $where = array(
             'mediamanager_contexts_id' => $this->mediaManager->contexts->getCurrentContext(),
             'is_archived' => 0
         );
+
+        if (!empty($search) && strlen($search) > 2) {
+            $where['name:LIKE'] = '%' . $search . '%';
+        }
 
         if (!empty($filters)) {
             foreach ($filters as $key => $value) {
@@ -68,14 +77,15 @@ class MediaManagerFilesHelper
     /**
      * Get files html.
      *
+     * @param string $search
      * @param array $filters
      * @param array $sorting
      *
-     * @return array
+     * @return string
      */
-    public function getListHtml($filters = array(), $sorting = array())
+    public function getListHtml($search = '', $filters = array(), $sorting = array())
     {
-        $files = $this->getList($filters, $sorting);
+        $files = $this->getList($search, $filters, $sorting);
 
         $html = '';
         foreach ($files as $file) {
@@ -86,10 +96,51 @@ class MediaManagerFilesHelper
             $html = $this->mediaManager->modx->lexicon('mediamanager.files.error.no_files_found');
         }
 
-        return [
-            'error' => false,
-            'html'  => $html
-        ];
+        return $html;
+    }
+
+    /**
+     * Get sort options html.
+     *
+     * @return string
+     */
+    public function getSortOptionsHtml()
+    {
+        $html = '';
+        foreach ($this->sortOptions as $option) {
+            $html .= $this->mediaManager->getChunk('files/sort_option', $option);
+        }
+
+        return $html;
+    }
+
+    /**
+     * Set sort options.
+     */
+    private function setSortOptions()
+    {
+        $this->sortOptions = array(
+            array(
+                'name' => 'Date new - old', // @TODO: Add lexicons
+                'field' => 'upload_date',
+                'direction' => 'DESC'
+            ),
+            array(
+                'name' => 'Date old - new',
+                'field' => 'upload_date',
+                'direction' => 'ASC'
+            ),
+            array(
+                'name' => 'Name A - Z',
+                'field' => 'name',
+                'direction' => 'ASC'
+            ),
+            array(
+                'name' => 'Name Z - A',
+                'field' => 'name',
+                'direction' => 'DESC'
+            )
+        );
     }
 
     /**
@@ -197,7 +248,7 @@ class MediaManagerFilesHelper
      *
      * @return string
      */
-    public function createUniqueFile($name, $extension, $uniqueId = '') {
+    private function createUniqueFile($name, $extension, $uniqueId = '') {
         $file = $this->uploadDirectoryMonth . $name . $uniqueId . '.' . $extension;
         if (file_exists($file)) {
             $uniqueId = uniqid('-');
