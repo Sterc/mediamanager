@@ -2,34 +2,41 @@
 
     var MediaManagerFiles = {
 
-        $connectorUrl          : null,
-        $httpModAuth           : null,
+        $connectorUrl            : null,
+        $httpModAuth             : null,
 
-        $dropzone              : null,
-        $dropzoneForm          : 'form[data-dropzone-form]',
+        $dropzone                : null,
+        $dropzoneForm            : 'form[data-dropzone-form]',
 
-        $uploadMedia           : 'button[data-upload-media]',
-        $uploadSelectedFiles   : '.upload-selected-files',
+        $uploadMedia             : 'button[data-upload-media]',
+        $uploadSelectedFiles     : '.upload-selected-files',
 
-        $selectContext         : 'select[data-select-context]',
+        $fileContainer           : '.file',
+        $fileCategories          : 'select[data-file-categories]',
+        $fileTags                : 'select[data-file-tags]',
 
-        $categoryTree          : 'div[data-category-tree]',
+        $selectContext           : 'select[data-select-context]',
 
-        $search                : 'input[data-search]',
-        $advancedSearch        : 'button[data-advanced-search]',
-        $advancedSearchFilters : 'div[data-advanced-search-filters]',
+        $categoryTree            : 'div[data-category-tree]',
 
-        $selectSorting         : 'select[data-sorting]',
+        $search                  : 'input[data-search]',
+        $advancedSearch          : 'button[data-advanced-search]',
+        $advancedSearchFilters   : 'div[data-advanced-search-filters]',
 
-        $filterType            : 'select[data-filter-type]',
-        $filterCategories      : 'select[data-filter-categories]',
-        $filterTags            : 'select[data-filter-tags]',
-        $filterUser            : 'select[data-filter-user]',
+        $selectSorting           : 'select[data-sorting]',
 
-        $currentContext        : 0,
-        $currentSearch         : '',
-        $currentSorting        : [],
-        $currentFilters        : {
+        $filterType              : 'select[data-filter-type]',
+        $filterCategories        : 'select[data-filter-categories]',
+        $filterTags              : 'select[data-filter-tags]',
+        $filterUser              : 'select[data-filter-user]',
+
+        $filterCategoriesOptions : null,
+        $filterTagsOptions       : null,
+
+        $currentContext          : 0,
+        $currentSearch           : '',
+        $currentSorting          : [],
+        $currentFilters          : {
             categories: [],
             tags: [],
             type: '',
@@ -63,6 +70,19 @@
                 init: function() {
                     this.on('addedfile', function(file) {
                         $('.dropzone-actions').show(); // @TODO: Only activate button if categories are linked to media files
+
+                        $(self.$fileCategories).select2(self.$filterCategoriesOptions);
+                        $(self.$fileTags).select2(self.$filterTagsOptions);
+                    });
+
+                    this.on('complete', function(file) {
+                        this.removeFile(file);
+                    });
+
+                    this.on('queuecomplete', function() {
+                        $('.dropzone-actions').hide();
+                        self.dropzoneOpen();
+                        self.getList();
                     });
                 },
                 previewTemplate:
@@ -77,10 +97,10 @@
                         '</div>' +
                         '<div class="col-sm-4">' +
                             '<div class="categories">' +
-                                '<input type="text" name="categories">' +
+                                '<select name="categories[]" class="form-control" multiple="multiple" data-placeholder="Categories" data-file-categories></select>' +
                             '</div>' +
                             '<div class="tags">' +
-                                '<input type="text" name="tags">' +
+                                '<select name="tags[]" class="form-control" multiple="multiple" data-placeholder="Tags" data-file-tags></select>' +
                             '</div>' +
                         '</div>' +
                         '<div class="col-sm-2">' +
@@ -112,7 +132,7 @@
         setSelect2: function() {
             var self = this;
 
-            $(self.$filterCategories).select2({
+            self.$filterCategoriesOptions = {
                 ajax: {
                     url: self.$connectorUrl,
                     dataType: 'json',
@@ -134,9 +154,9 @@
                     cache: true
                 },
                 minimumInputLength: 1
-            });
+            };
 
-            $(self.$filterTags).select2({
+            self.$filterTagsOptions = {
                 ajax: {
                     url: self.$connectorUrl,
                     dataType: 'json',
@@ -158,10 +178,18 @@
                     cache: true
                 },
                 minimumInputLength: 1
-            });
+            };
+
+            $(self.$filterCategories).select2(self.$filterCategoriesOptions);
+            $(self.$filterTags).select2(self.$filterTagsOptions);
 
             $(self.$filterTags).on('select2:select', function(e) {
                 self.$currentFilters.tags.push(e.params.data.id);
+                self.getList();
+            });
+
+            $(self.$filterCategories).on('select2:select', function(e) {
+                self.$currentFilters.categories.push(e.params.data.id);
                 self.getList();
             });
 
@@ -172,11 +200,6 @@
                         break;
                     }
                 }
-                self.getList();
-            });
-
-            $(self.$filterCategories).on('select2:select', function(e) {
-                self.$currentFilters.categories.push(e.params.data.id);
                 self.getList();
             });
 
@@ -241,12 +264,13 @@
                 }
             }).success(function(data) {
                 $('.media-container .panel-body').html(data.results);
+                self.resizeFileContainer();
             });
         },
 
         setContext: function() {
-            var self = this;
-            var context = /context=([^&]+)/.exec(window.location.href);
+            var self = this,
+                context = /context=([^&]+)/.exec(window.location.href);
 
             if (context === null) {
                 return;
@@ -271,8 +295,8 @@
         },
 
         changeSorting: function(e) {
-            var self = this;
-            var option = $(e.target).find(':selected');
+            var self = this,
+                option = $(e.target).find(':selected');
 
             self.$currentSorting = [
                 option.data('sort-field'),
@@ -283,8 +307,8 @@
         },
 
         changeSearch: function(e) {
-            var self = this;
-            var search = e.target.value;
+            var self = this,
+                search = e.target.value;
 
             if ((search.length > 2 && self.$currentSearch !== search) || (self.$currentSearch.length > 2 && search.length == 0)) {
                 self.$currentSearch = search;
@@ -309,6 +333,13 @@
             }
 
             self.getList();
+        },
+
+        resizeFileContainer: function() {
+            var self = this,
+                width = $(self.$fileContainer).width();
+
+            $(self.$fileContainer).height(width);
         }
 
     }
@@ -348,6 +379,10 @@
     $(document).on({
         change : $.proxy(MediaManagerFiles, 'changeFilter')
     }, MediaManagerFiles.$filterType);
+
+    $(window).on({
+        resize : $.proxy(MediaManagerFiles, 'resizeFileContainer')
+    }, window);
 
 }(jQuery);
 

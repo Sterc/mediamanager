@@ -249,8 +249,9 @@ class MediaManagerFilesHelper
      */
     public function addFile()
     {
-        // Get file
+        // Get file and data
         $file = $_FILES['file'];
+        $data = $_REQUEST;
 
         // Get media source settings
         $source = $this->mediaManager->modx->getObject('modMediaSource', $this->mediaManager->modx->getOption('mediamanager.media_source'));
@@ -301,7 +302,7 @@ class MediaManagerFilesHelper
         }
 
         // Add file to database
-        if (!$this->insertFile($file)) {
+        if (!$this->insertFile($file, $data)) {
             // @TODO: Remove file from sever
             return [
                 'error'   => true,
@@ -315,14 +316,14 @@ class MediaManagerFilesHelper
         ];
     }
 
-    private function insertFile($data) {
+    private function insertFile($fileData, $data) {
         $file = $this->mediaManager->modx->newObject('MediamanagerFiles');
 
-        $file->set('name', $data['unique_name']);
-        $file->set('path', $this->uploadUrl . $data['unique_name']);
-        $file->set('file_type', $data['extension']);
-        $file->set('file_size', $data['size']);
-        $file->set('file_hash', $data['hash']);
+        $file->set('name', $fileData['unique_name']);
+        $file->set('path', $this->uploadUrl . $fileData['unique_name']);
+        $file->set('file_type', $fileData['extension']);
+        $file->set('file_size', $fileData['size']);
+        $file->set('file_hash', $fileData['hash']);
         $file->set('uploaded_by', $this->mediaManager->modx->getUser()->get('id'));
         $file->set('mediamanager_contexts_id', $this->mediaManager->contexts->getCurrentContext());
 
@@ -334,6 +335,22 @@ class MediaManagerFilesHelper
         }
 
         $file->save();
+
+        $fileId = $file->get('id');
+
+        foreach ($data['categories'] as $categoryId) {
+            $category = $this->mediaManager->modx->newObject('MediamanagerFilesCategories');
+            $category->set('mediamanager_files_id', $fileId);
+            $category->set('mediamanager_categories_id', $categoryId);
+            $category->save();
+        }
+
+        foreach ($data['tags'] as $tagId) {
+            $tag = $this->mediaManager->modx->newObject('MediamanagerFilesTags');
+            $tag->set('mediamanager_files_id', $fileId);
+            $tag->set('mediamanager_tags_id', $tagId);
+            $tag->save();
+        }
 
         return true;
     }
