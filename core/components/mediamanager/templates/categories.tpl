@@ -1,11 +1,11 @@
-<div id="mediamanager-tags" class="mediamanager-tags">
+<div id="mediamanager-categories" class="mediamanager-categories">
     <div class="row">
         <div class="col-xs-12">
             <h1>{$pagetitle}</h1>
         </div>
         <div class="col-xs-3">
             <div class="panel panel-default">
-                <div class="panel-heading">
+                <div class="panel-heading">-
                     <h4 class="panel-title">{$create_title}</h4>
                 </div>
                 <div class="panel-body">
@@ -14,6 +14,13 @@
                         <input type="hidden" class="form-control" name="action" value="mgr/tags">
                         <input type="hidden" class="form-control" name="method" value="create">
                         <input type="hidden" name="HTTP_MODAUTH" value="{$token}">
+
+                        <div class="form-group">
+                            <label>{$create_parent_label}</label>
+                            <select class="form-control" name="parent">
+
+                            </select>
+                        </div>
 
                         <div class="form-group">
                             <label>{$create_label}</label>

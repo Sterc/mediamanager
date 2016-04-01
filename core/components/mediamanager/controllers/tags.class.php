@@ -33,4 +33,5 @@ class MediaManagerTagsManagerController extends MediaManagerManagerController
     {
         $this->addJavascript($this->mediaManager->config['js_url'] . 'mgr/mediamanager-tags.js');
     }
+    
 }

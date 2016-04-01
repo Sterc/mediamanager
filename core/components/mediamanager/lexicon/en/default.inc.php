@@ -27,6 +27,23 @@ $_lang['mediamanager.tags.cancel'] = 'Cancel';
 $_lang['mediamanager.tags.delete_success'] = 'Tag is deleted.';
 $_lang['mediamanager.tags.delete_confirm_title'] = 'Delete';
 $_lang['mediamanager.tags.delete_confirm_message'] = 'Are you sure you want to delete the tag `[[+name]]`.';
+
+$_lang['mediamanager.categories.title'] = 'Create category';
+$_lang['mediamanager.categories.label'] = 'Category';
+$_lang['mediamanager.categories.parent_label'] = 'Parent category';
+$_lang['mediamanager.categories.save'] = 'Save';
+$_lang['mediamanager.categories.placeholder'] = 'example: Products';
+$_lang['mediamanager.categories.button'] = 'Create';
+$_lang['mediamanager.categories.error.empty'] = 'Cannot create category because the name is empty.';
+$_lang['mediamanager.categories.error.exists'] = 'Cannot create category because it already exists.';
+$_lang['mediamanager.categories.success'] = 'Category `[[+name]]` is created.';
+$_lang['mediamanager.categories.delete'] = 'Delete';
+$_lang['mediamanager.categories.edit'] = 'Edit';
+$_lang['mediamanager.categories.cancel'] = 'Cancel';
+$_lang['mediamanager.categories.delete_success'] = 'Category is deleted.';
+$_lang['mediamanager.categories.delete_confirm_title'] = 'Delete';
+$_lang['mediamanager.categories.delete_confirm_message'] = 'Are you sure you want to delete the category `[[+name]]`.';
+
 $_lang['mediamanager.files.upload_media'] = 'Upload Media';
 $_lang['mediamanager.files.new_category'] = 'New Category';
 $_lang['mediamanager.files.advanced_search'] = 'Advanced Search';
