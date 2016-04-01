@@ -1,7 +1,7 @@
 <div id="mediamanager-categories" class="mediamanager-categories">
     <div class="row">
         <div class="col-xs-12">
-            <h1>{$pagetitle}</h1>
+            <h1>{$pagetitle} {$mediamanager.categories.category}</h1>
         </div>
         <div class="col-xs-3">
             <div class="panel panel-default">

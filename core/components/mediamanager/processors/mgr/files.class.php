@@ -40,7 +40,23 @@ class MediaManagerFilesProcessor extends modProcessor
 
     private function getList()
     {
-        return $this->mediaManager->files->getList();
+        $search = '';
+        $filters = array();
+        $sorting = array();
+
+        if ($this->getProperty('search') !== null) {
+            $search = $this->getProperty('search');
+        }
+
+        if ($this->getProperty('filters') !== null) {
+            $filters = $this->getProperty('filters');
+        }
+
+        if ($this->getProperty('sorting') !== null) {
+            $sorting = $this->getProperty('sorting');
+        }
+
+        return (array) $this->mediaManager->files->getListHtml($search, $filters, $sorting);
     }
 
 }

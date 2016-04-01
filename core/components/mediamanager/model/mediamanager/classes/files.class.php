@@ -20,6 +20,9 @@ class MediaManagerFilesHelper
     private $uploadDirectoryYear = null;
     private $uploadDirectoryMonth = null;
 
+    private $sortOptions = array();
+    private $filterOptions = array();
+
     /**
      * MediaManagerFilesHelper constructor.
      *
@@ -28,44 +31,92 @@ class MediaManagerFilesHelper
     public function __construct(MediaManager $mediaManager)
     {
         $this->mediaManager = $mediaManager;
+
+        $this->setSortOptions();
+        $this->setFilterOptions();
     }
 
     /**
      * Get files.
      *
-     * @param int $context
+     * @param string $search
      * @param array $filters
      * @param array $sorting
      *
      * @return array
      */
-    public function getList($context = 0, $filters = array(), $sorting = array())
+    public function getList($search = '', $filters = array(), $sorting = array())
     {
-        $sortColumn = 'upload_date';
-        $sortDirection = 'ASC';
-        $where = array(
-            'context' => (int) $context
-        );
+        $q = $this->mediaManager->modx->newQuery('MediamanagerFiles');
+
+        $sortColumn = 'MediamanagerFiles.upload_date';
+        $sortDirection = 'DESC';
+
+        $where = array();
+        $where[]['MediamanagerFiles.mediamanager_contexts_id'] = $this->mediaManager->contexts->getCurrentContext();
+        $where[]['MediamanagerFiles.is_archived'] = 0;
+
+        if (!empty($search) && strlen($search) > 2) {
+            $where[]['name:LIKE'] = '%' . $search . '%';
+        }
 
         if (!empty($filters)) {
             foreach ($filters as $key => $value) {
-                $where[$key] = $value;
+                if (empty($value)) {
+                    continue;
+                }
+
+                switch ($key) {
+                    case 'type' :
+                        $where[]['MediamanagerFiles.file_type'] = $value;
+                        break;
+
+                    case 'user' :
+                        $where[]['MediamanagerFiles.uploaded_by'] = (int) $value;
+                        break;
+
+                    case 'categories' : // OR filter
+                        $q->innerJoin('MediamanagerFilesCategories', 'Categories');
+                        $i = 0;
+                        foreach ($value as $categoryId) {
+                            $where[][($i++ === 0 ? '' : 'OR:') . 'Categories.mediamanager_categories_id:='] = (int) $categoryId;
+                        }
+                        break;
+
+                    case 'tags' : // AND filter
+                        $q->innerJoin('MediamanagerFilesTags', 'Tags');
+                        foreach ($value as $tagId) {
+                            $where[]['Tags.mediamanager_tags_id'] = (int) $tagId;
+                        }
+                        break;
+                }
             }
         }
 
         if (!empty($sorting)) {
-            $sortColumn = $sorting[0];
+            $sortColumn = 'MediamanagerFiles.' . $sorting[0];
             $sortDirection = $sorting[1];
         }
 
-        // @TODO: Fix where, filters and sorting
+        $q->select($this->mediaManager->modx->getSelectColumns('MediamanagerFiles', 'MediamanagerFiles'));
+        $q->where($where);
+        $q->sortby($sortColumn, $sortDirection);
 
-//        $c = $this->mediaManager->modx->newQuery('MediamanagerFiles');
-//        $c->where($where);
-//        $c->sortby($sortColumn, $sortDirection);
-//        $c->toSql();
+        return $this->mediaManager->modx->getIterator('MediamanagerFiles', $q);
+    }
 
-        $files = $this->mediaManager->modx->getCollection('MediamanagerFiles');
+    /**
+     * Get files html.
+     *
+     * @param string $search
+     * @param array $filters
+     * @param array $sorting
+     *
+     * @return string
+     */
+    public function getListHtml($search = '', $filters = array(), $sorting = array())
+    {
+        $files = $this->getList($search, $filters, $sorting);
 
         $html = '';
         foreach ($files as $file) {
@@ -76,10 +127,119 @@ class MediaManagerFilesHelper
             $html = $this->mediaManager->modx->lexicon('mediamanager.files.error.no_files_found');
         }
 
-        return [
-            'error' => false,
-            'html'  => $html
-        ];
+        return $html;
+    }
+
+    /**
+     * Get sort options html.
+     *
+     * @return string
+     */
+    public function getSortOptionsHtml()
+    {
+        $html = '';
+        foreach ($this->sortOptions as $option) {
+            $html .= $this->mediaManager->getChunk('files/sort_option', $option);
+        }
+
+        return $html;
+    }
+
+    /**
+     * Set sort options.
+     */
+    private function setSortOptions()
+    {
+        $this->sortOptions = array(
+            array(
+                'name' => 'Date new - old', // @TODO: Add lexicons
+                'field' => 'upload_date',
+                'direction' => 'DESC'
+            ),
+            array(
+                'name' => 'Date old - new',
+                'field' => 'upload_date',
+                'direction' => 'ASC'
+            ),
+            array(
+                'name' => 'Name A - Z',
+                'field' => 'name',
+                'direction' => 'ASC'
+            ),
+            array(
+                'name' => 'Name Z - A',
+                'field' => 'name',
+                'direction' => 'DESC'
+            )
+        );
+    }
+
+    /**
+     * Get filter options.
+     *
+     * @return array
+     */
+    public function getFilterOptionsHtml()
+    {
+        $html = array();
+        foreach ($this->filterOptions as $key => $options) {
+            $html[$key] = '';
+            foreach ($options as $option) {
+                $html[$key] .= $this->mediaManager->getChunk('files/filter_option', $option);
+            }
+        }
+
+        return $html;
+    }
+
+    /**
+     * Set filter options.
+     */
+    private function setFilterOptions()
+    {
+        $options = array(
+            xPDO::OPT_CACHE_KEY => 'mediamanager',
+        );
+
+        $filters = $this->mediaManager->modx->cacheManager->get('filters', $options);
+        if ($filters) {
+            return $this->filterOptions = $filters;
+        }
+
+        $filters = array(
+            'users' => array(
+                array(
+                    'value' => '',
+                    'name' => 'All users'
+                )
+            ),
+            'type' => array(
+                array(
+                    'value' => '',
+                    'name' => 'All types'
+                )
+            )
+        );
+
+        $users = $this->mediaManager->modx->getIterator('modUser');
+        foreach ($users as $user) {
+            $filters['users'][] = array(
+                'value' => $user->get('id'),
+                'name' => $user->get('username')
+            );
+        }
+
+        $filters['type'][] = array(
+            'value' => 'png',
+            'name' => 'PNG'
+        );
+        $filters['type'][] = array(
+            'value' => 'txt',
+            'name' => 'TXT'
+        );
+
+        $this->mediaManager->modx->cacheManager->set('filters', $filters, 3600, $options);
+        return $this->filterOptions = $filters;
     }
 
     /**
@@ -89,8 +249,9 @@ class MediaManagerFilesHelper
      */
     public function addFile()
     {
-        // Get file
+        // Get file and data
         $file = $_FILES['file'];
+        $data = $_REQUEST;
 
         // Get media source settings
         $source = $this->mediaManager->modx->getObject('modMediaSource', $this->mediaManager->modx->getOption('mediamanager.media_source'));
@@ -141,7 +302,7 @@ class MediaManagerFilesHelper
         }
 
         // Add file to database
-        if (!$this->insertFile($file)) {
+        if (!$this->insertFile($file, $data)) {
             // @TODO: Remove file from sever
             return [
                 'error'   => true,
@@ -155,24 +316,41 @@ class MediaManagerFilesHelper
         ];
     }
 
-    private function insertFile($file) {
-        $newFile = $this->mediaManager->modx->newObject('MediamanagerFiles');
+    private function insertFile($fileData, $data) {
+        $file = $this->mediaManager->modx->newObject('MediamanagerFiles');
 
-        $newFile->set('name', $file['unique_name']);
-        $newFile->set('path', $this->uploadUrl . $file['unique_name']);
-        $newFile->set('file_type', $file['extension']);
-        $newFile->set('file_size', $file['size']);
-        $newFile->set('file_hash', $file['hash']);
-        $newFile->set('uploaded_by', $this->mediaManager->modx->getUser()->get('id'));
+        $file->set('name', $fileData['unique_name']);
+        $file->set('path', $this->uploadUrl . $fileData['unique_name']);
+        $file->set('file_type', $fileData['extension']);
+        $file->set('file_size', $fileData['size']);
+        $file->set('file_hash', $fileData['hash']);
+        $file->set('uploaded_by', $this->mediaManager->modx->getUser()->get('id'));
+        $file->set('mediamanager_contexts_id', $this->mediaManager->contexts->getCurrentContext());
 
         // If file type is image set dimensions
         if (false) {
             // getimagesize()
             $dimensions = '';
-            $newFile->set('file_dimensions', $dimensions);
+            $file->set('file_dimensions', $dimensions);
         }
 
-        $newFile->save();
+        $file->save();
+
+        $fileId = $file->get('id');
+
+        foreach ($data['categories'] as $categoryId) {
+            $category = $this->mediaManager->modx->newObject('MediamanagerFilesCategories');
+            $category->set('mediamanager_files_id', $fileId);
+            $category->set('mediamanager_categories_id', $categoryId);
+            $category->save();
+        }
+
+        foreach ($data['tags'] as $tagId) {
+            $tag = $this->mediaManager->modx->newObject('MediamanagerFilesTags');
+            $tag->set('mediamanager_files_id', $fileId);
+            $tag->set('mediamanager_tags_id', $tagId);
+            $tag->save();
+        }
 
         return true;
     }
@@ -186,7 +364,7 @@ class MediaManagerFilesHelper
      *
      * @return string
      */
-    public function createUniqueFile($name, $extension, $uniqueId = '') {
+    private function createUniqueFile($name, $extension, $uniqueId = '') {
         $file = $this->uploadDirectoryMonth . $name . $uniqueId . '.' . $extension;
         if (file_exists($file)) {
             $uniqueId = uniqid('-');

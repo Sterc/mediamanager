@@ -132,4 +132,29 @@ class MediaManagerTagsHelper
             'navigation' => $navigationHtml
         ];
     }
+
+    /**
+     * Get tags by name.
+     *
+     * @param string $search
+     * @return array
+     */
+    public function getTagsByName($search)
+    {
+        $tags = $this->mediaManager->modx->getIterator('MediamanagerTags', [
+            'is_deleted' => 0,
+            'mediamanager_contexts_id' => 0,
+            'name:LIKE' => '%' . $search . '%'
+        ]);
+
+        $result = array();
+        foreach ($tags as $tag) {
+            $result[] = array(
+                'id' => $tag->get('id'),
+                'text' => $tag->get('name')
+            );
+        }
+
+        return $result;
+    }
 }

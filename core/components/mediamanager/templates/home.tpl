@@ -12,7 +12,6 @@
         <div class="col-xs-12">
 
             <form action="{$connector_url}" class="dropzone-form" id="mediaManagerDropzone" data-dropzone-form>
-                <input type="hidden" name="action" value="mgr/files">
                 <input type="hidden" name="HTTP_MODAUTH" value="{$token}">
 
                 <h2>{$dropzone_title}</h2>
@@ -34,7 +33,7 @@
         <div class="col-sm-3 col-md-2">
 
             <select class="form-control select-context" data-select-context>
-                <option>Media Context</option>
+                {$context_list}
             </select>
 
             <div data-category-tree></div>
@@ -43,59 +42,13 @@
 
         <div class="col-sm-9 col-md-10">
 
-            <div class="media-header">
-
-                <div class="form-inline">
-
-                    <div class="search-form pull-right">
-                        <select class="form-control">
-                            <option>Sorting</option>
-                        </select>
-                        <input type="input" class="form-control" placeholder="{$search}">
-                        <button type="button" class="btn btn-default advanced-search" data-advanced-search>{$advanced_search}</button>
-                    </div>
-
-                    <div class="clearfix"></div>
-
-                    <div class="panel panel-default advanced-search-filters" data-advanced-search-filters>
-                        <div class="panel-body">
-
-                            <select class="form-control">
-                                <option>Media type</option>
-                            </select>
-
-                            <select class="form-control">
-                                <option>Categories</option>
-                            </select>
-
-                            <select class="form-control">
-                                <option>Tags</option>
-                            </select>
-
-                            <select class="form-control">
-                                <option>Uploaded by</option>
-                            </select>
-
-                            <select class="form-control">
-                                <option>Date</option>
-                            </select>
-
-                        </div>
-                    </div>
-
-                </div>
-
-            </div>
+            {$filters}
 
             <div class="media-container">
 
                 <div class="panel panel-default">
                     <div class="panel-body"></div>
                 </div>
-
-            </div>
-
-            <div class="media-footer">
 
             </div>
 

@@ -32,6 +32,10 @@ class MediaManagerTagsProcessor extends modProcessor
                 $data = $this->delete();
 
                 break;
+            case 'getTagsByName':
+                $data = $this->getTagsByName();
+
+                break;
         }
 
         return $this->outputArray($data);
@@ -51,6 +55,11 @@ class MediaManagerTagsProcessor extends modProcessor
     private function delete()
     {
         return $this->mediaManager->tags->deleteTag($this->getProperty('tag_id'));
+    }
+
+    private function getTagsByName()
+    {
+        return $this->mediaManager->tags->getTagsByName($this->getProperty('search'));
     }
 }
 

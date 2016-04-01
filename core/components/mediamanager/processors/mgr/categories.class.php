@@ -30,6 +30,10 @@ class MediaManagerCategoriesProcessor extends modProcessor
                 break;
             case 'delete':
                 $data = $this->delete();
+                
+                break;
+            case 'getCategoriesByName':
+                $data = $this->getCategoriesByName();
 
                 break;
         }
@@ -51,6 +55,11 @@ class MediaManagerCategoriesProcessor extends modProcessor
     private function delete()
     {
         return $this->mediaManager->tags->deleteTag($this->getProperty('tag_id'));
+    }
+
+    private function getCategoriesByName()
+    {
+        return $this->mediaManager->categories->getCategoriesByName($this->getProperty('search'));
     }
 }
 
