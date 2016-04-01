@@ -2,6 +2,9 @@
 
     var MediaManagerFiles = {
 
+        $connectorUrl          : null,
+        $httpModAuth           : null,
+
         $dropzone              : null,
         $dropzoneForm          : 'form[data-dropzone-form]',
 
@@ -18,19 +21,33 @@
 
         $selectSorting         : 'select[data-sorting]',
 
+        $filterType            : 'select[data-filter-type]',
+        $filterCategories      : 'select[data-filter-categories]',
+        $filterTags            : 'select[data-filter-tags]',
+        $filterUser            : 'select[data-filter-user]',
+
         $currentContext        : 0,
         $currentSearch         : '',
         $currentSorting        : [],
-        $currentFilters        : [],
+        $currentFilters        : {
+            categories: [],
+            tags: [],
+            type: '',
+            user: ''
+        },
 
         init: function() {
+            this.$connectorUrl = $(this.$dropzoneForm).attr('action');
+            this.$httpModAuth = $('input[name="HTTP_MODAUTH"]', this.$dropzoneForm).val();
+
             this.setContext();
-            this.dropzone();
+            this.setDropzone();
+            this.setSelect2();
             this.getCategories();
             this.getList();
         },
 
-        dropzone: function() {
+        setDropzone: function() {
             var self = this;
 
             self.$dropzone = new Dropzone(document.getElementById('mediaManagerDropzone'), {
@@ -92,6 +109,88 @@
             self.$dropzone.processQueue();
         },
 
+        setSelect2: function() {
+            var self = this;
+
+            $(self.$filterCategories).select2({
+                ajax: {
+                    url: self.$connectorUrl,
+                    dataType: 'json',
+                    method: 'post',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            action: 'mgr/categories',
+                            method: 'getCategoriesByName',
+                            HTTP_MODAUTH : self.$httpModAuth,
+                            search: params.term
+                        };
+                    },
+                    processResults: function (data, params) {
+                        return {
+                            results: data.results
+                        };
+                    },
+                    cache: true
+                },
+                minimumInputLength: 1
+            });
+
+            $(self.$filterTags).select2({
+                ajax: {
+                    url: self.$connectorUrl,
+                    dataType: 'json',
+                    method: 'post',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            action: 'mgr/tags',
+                            method: 'getTagsByName',
+                            HTTP_MODAUTH : self.$httpModAuth,
+                            search: params.term
+                        };
+                    },
+                    processResults: function (data, params) {
+                        return {
+                            results: data.results
+                        };
+                    },
+                    cache: true
+                },
+                minimumInputLength: 1
+            });
+
+            $(self.$filterTags).on('select2:select', function(e) {
+                self.$currentFilters.tags.push(e.params.data.id);
+                self.getList();
+            });
+
+            $(self.$filterTags).on('select2:unselect', function(e) {
+                for (var key in self.$currentFilters.tags) {
+                    if (self.$currentFilters.tags[key] == e.params.data.id) {
+                        self.$currentFilters.tags.splice(key, 1);
+                        break;
+                    }
+                }
+                self.getList();
+            });
+
+            $(self.$filterCategories).on('select2:select', function(e) {
+                self.$currentFilters.categories.push(e.params.data.id);
+                self.getList();
+            });
+
+            $(self.$filterCategories).on('select2:unselect', function(e) {
+                for (var key in self.$currentFilters.categories) {
+                    if (self.$currentFilters.categories[key] == e.params.data.id) {
+                        self.$currentFilters.categories.splice(key, 1);
+                        break;
+                    }
+                }
+                self.getList();
+            });
+        },
+
         advancedSearchOpen: function() {
             var self = this;
             $(self.$advancedSearchFilters).slideToggle();
@@ -99,20 +198,6 @@
 
         getCategories: function() {
             var self = this;
-
-            //$.ajax({
-            //    url: $(self.$dropzoneForm).attr('action'),
-            //    method: 'post',
-            //    data: {
-            //        action       : 'mgr/categories',
-            //        HTTP_MODAUTH : $('input[name="HTTP_MODAUTH"]', self.$dropzoneForm).val(),
-            //        method       : 'list',
-            //        context      : self.$currentContext
-            //    }
-            //}).success(function(data) {
-            //
-            //});
-
             var tree = [
                 {
                     text: "Home"
@@ -143,12 +228,12 @@
             var self = this;
 
             $.ajax({
-                url: $(self.$dropzoneForm).attr('action'),
+                url: self.$connectorUrl,
                 method: 'post',
                 data: {
-                    action       : $('input[name="action"]', self.$dropzoneForm).val(),
-                    HTTP_MODAUTH : $('input[name="HTTP_MODAUTH"]', self.$dropzoneForm).val(),
+                    action       : 'mgr/files',
                     method       : 'list',
+                    HTTP_MODAUTH : self.$httpModAuth,
                     context      : self.$currentContext,
                     search       : self.$currentSearch,
                     filters      : self.$currentFilters,
@@ -205,6 +290,25 @@
                 self.$currentSearch = search;
                 self.getList();
             }
+        },
+
+        changeFilter: function(e) {
+            var self = this;
+
+            switch (Object.keys(e.target.dataset)[0]) {
+                case 'filterUser' :
+                    self.$currentFilters.user = e.target.value;
+                    break;
+
+                case 'filterType' :
+                    self.$currentFilters.type = e.target.value;
+                    break;
+
+                default :
+                    return false;
+            }
+
+            self.getList();
         }
 
     }
@@ -237,4 +341,13 @@
         change : $.proxy(MediaManagerFiles, 'changeSorting')
     }, MediaManagerFiles.$selectSorting);
 
+    $(document).on({
+        change : $.proxy(MediaManagerFiles, 'changeFilter')
+    }, MediaManagerFiles.$filterUser);
+
+    $(document).on({
+        change : $.proxy(MediaManagerFiles, 'changeFilter')
+    }, MediaManagerFiles.$filterType);
+
 }(jQuery);
+

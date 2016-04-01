@@ -13,11 +13,10 @@
         <div class="panel panel-default advanced-search-filters" data-advanced-search-filters>
             <div class="panel-body">
 
-                <select class="form-control" data-filter-type></select>
-                <input class="form-control" placeholder="Categories" data-filter-category>
-                <input class="form-control" placeholder="Tags" data-filter-tag>
-                <select class="form-control" data-filter-uploaded-by></select>
-                <select class="form-control" data-filter-date></select>
+                <select class="form-control" data-filter-type>[[+filter_options.type]]</select>
+                <select class="form-control" multiple="multiple" data-placeholder="Categories" data-filter-categories></select>
+                <select class="form-control" multiple="multiple" data-placeholder="Tags" data-filter-tags></select>
+                <select class="form-control" data-filter-user>[[+filter_options.users]]</select>
 
             </div>
         </div>

@@ -9,6 +9,7 @@ class MediaManagerHomeManagerController extends MediaManagerManagerController
     {
         $contextList = $this->mediaManager->contexts->getListHtml();
         $sortOptions = $this->mediaManager->files->getSortOptionsHtml();
+        $filterOptions = $this->mediaManager->files->getFilterOptionsHtml();
 
         $placeholders = array(
             'pagetitle'                    => $this->modx->lexicon('mediamanager'),
@@ -21,7 +22,8 @@ class MediaManagerHomeManagerController extends MediaManagerManagerController
             'dropzone_title'               => $this->modx->lexicon('mediamanager.files.dropzone.title'),
             'token'                        => $this->modx->user->getUserToken($this->modx->context->get('key')),
             'context_list'                 => $contextList,
-            'sort_options'                 => $sortOptions
+            'sort_options'                 => $sortOptions,
+            'filter_options'               => $filterOptions
         );
 
         $filters = $this->mediaManager->getChunk('files/filters', $placeholders);

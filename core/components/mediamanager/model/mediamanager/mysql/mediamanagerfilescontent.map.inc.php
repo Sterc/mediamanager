@@ -53,7 +53,7 @@ $xpdo_meta_map['MediamanagerFilesContent']= array (
   ),
   'aggregates' => 
   array (
-    'File' => 
+    'Files' =>
     array (
       'class' => 'MediamanagerFiles',
       'local' => 'mediamanager_files_id',
@@ -69,7 +69,7 @@ $xpdo_meta_map['MediamanagerFilesContent']= array (
       'cardinality' => 'one',
       'owner' => 'foreign',
     ),
-    'TemplateVariable' => 
+    'TemplateVariable' =>
     array (
       'class' => 'modTemplateVar',
       'local' => 'site_tmplvars_id',

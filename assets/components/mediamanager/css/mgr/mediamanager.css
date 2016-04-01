@@ -31,6 +31,11 @@
     display: none;
 }
 
+.mediamanager-browser .advanced-search-filters .form-control,
+.mediamanager-browser .advanced-search-filters .select2-container{
+    width: 19.5% !important;
+}
+
 .mediamanager-browser .dropzone-form {
     display: none;
     margin-bottom: 20px;

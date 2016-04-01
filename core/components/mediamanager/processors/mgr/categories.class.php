@@ -20,8 +20,8 @@ class MediaManagerCategoriesProcessor extends modProcessor
         $data   = array();
 
         switch ($method) {
-            case 'list':
-                $data = $this->getList();
+            case 'getCategoriesByName':
+                $data = $this->getCategoriesByName();
 
                 break;
         }
@@ -29,9 +29,9 @@ class MediaManagerCategoriesProcessor extends modProcessor
         return $this->outputArray($data);
     }
 
-    private function getList()
+    private function getCategoriesByName()
     {
-        return $this->mediaManager->categories->getListJson();
+        return $this->mediaManager->categories->getCategoriesByName($this->getProperty('search'));
     }
 
 }

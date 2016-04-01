@@ -21,6 +21,7 @@ class MediaManagerFilesHelper
     private $uploadDirectoryMonth = null;
 
     private $sortOptions = array();
+    private $filterOptions = array();
 
     /**
      * MediaManagerFilesHelper constructor.
@@ -32,6 +33,7 @@ class MediaManagerFilesHelper
         $this->mediaManager = $mediaManager;
 
         $this->setSortOptions();
+        $this->setFilterOptions();
     }
 
     /**
@@ -45,29 +47,58 @@ class MediaManagerFilesHelper
      */
     public function getList($search = '', $filters = array(), $sorting = array())
     {
-        $sortColumn = 'upload_date';
+        $q = $this->mediaManager->modx->newQuery('MediamanagerFiles');
+
+        $sortColumn = 'MediamanagerFiles.upload_date';
         $sortDirection = 'DESC';
-        $where = array(
-            'mediamanager_contexts_id' => $this->mediaManager->contexts->getCurrentContext(),
-            'is_archived' => 0
-        );
+
+        $where = array();
+        $where[]['MediamanagerFiles.mediamanager_contexts_id'] = $this->mediaManager->contexts->getCurrentContext();
+        $where[]['MediamanagerFiles.is_archived'] = 0;
 
         if (!empty($search) && strlen($search) > 2) {
-            $where['name:LIKE'] = '%' . $search . '%';
+            $where[]['name:LIKE'] = '%' . $search . '%';
         }
 
         if (!empty($filters)) {
             foreach ($filters as $key => $value) {
-                $where[$key] = $value;
+                if (empty($value)) {
+                    continue;
+                }
+
+                switch ($key) {
+                    case 'type' :
+                        $where[]['MediamanagerFiles.file_type'] = $value;
+                        break;
+
+                    case 'user' :
+                        $where[]['MediamanagerFiles.uploaded_by'] = (int) $value;
+                        break;
+
+                    case 'categories' : // OR filter
+                        $q->innerJoin('MediamanagerFilesCategories', 'Categories');
+                        $i = 0;
+                        foreach ($value as $categoryId) {
+                            $where[][($i++ === 0 ? '' : 'OR:') . 'Categories.mediamanager_categories_id:='] = (int) $categoryId;
+                        }
+                        break;
+
+                    case 'tags' : // AND filter
+                        $q->innerJoin('MediamanagerFilesTags', 'Tags');
+                        foreach ($value as $tagId) {
+                            $where[]['Tags.mediamanager_tags_id'] = (int) $tagId;
+                        }
+                        break;
+                }
             }
         }
 
         if (!empty($sorting)) {
-            $sortColumn = $sorting[0];
+            $sortColumn = 'MediamanagerFiles.' . $sorting[0];
             $sortDirection = $sorting[1];
         }
 
-        $q = $this->mediaManager->modx->newQuery('MediamanagerFiles');
+        $q->select($this->mediaManager->modx->getSelectColumns('MediamanagerFiles', 'MediamanagerFiles'));
         $q->where($where);
         $q->sortby($sortColumn, $sortDirection);
 
@@ -141,6 +172,74 @@ class MediaManagerFilesHelper
                 'direction' => 'DESC'
             )
         );
+    }
+
+    /**
+     * Get filter options.
+     *
+     * @return array
+     */
+    public function getFilterOptionsHtml()
+    {
+        $html = array();
+        foreach ($this->filterOptions as $key => $options) {
+            $html[$key] = '';
+            foreach ($options as $option) {
+                $html[$key] .= $this->mediaManager->getChunk('files/filter_option', $option);
+            }
+        }
+
+        return $html;
+    }
+
+    /**
+     * Set filter options.
+     */
+    private function setFilterOptions()
+    {
+        $options = array(
+            xPDO::OPT_CACHE_KEY => 'mediamanager',
+        );
+
+        $filters = $this->mediaManager->modx->cacheManager->get('filters', $options);
+        if ($filters) {
+            return $this->filterOptions = $filters;
+        }
+
+        $filters = array(
+            'users' => array(
+                array(
+                    'value' => '',
+                    'name' => 'All users'
+                )
+            ),
+            'type' => array(
+                array(
+                    'value' => '',
+                    'name' => 'All types'
+                )
+            )
+        );
+
+        $users = $this->mediaManager->modx->getIterator('modUser');
+        foreach ($users as $user) {
+            $filters['users'][] = array(
+                'value' => $user->get('id'),
+                'name' => $user->get('username')
+            );
+        }
+
+        $filters['type'][] = array(
+            'value' => 'png',
+            'name' => 'PNG'
+        );
+        $filters['type'][] = array(
+            'value' => 'txt',
+            'name' => 'TXT'
+        );
+
+        $this->mediaManager->modx->cacheManager->set('filters', $filters, 3600, $options);
+        return $this->filterOptions = $filters;
     }
 
     /**

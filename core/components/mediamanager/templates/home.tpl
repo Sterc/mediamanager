@@ -12,7 +12,6 @@
         <div class="col-xs-12">
 
             <form action="{$connector_url}" class="dropzone-form" id="mediaManagerDropzone" data-dropzone-form>
-                <input type="hidden" name="action" value="mgr/files">
                 <input type="hidden" name="HTTP_MODAUTH" value="{$token}">
 
                 <h2>{$dropzone_title}</h2>
