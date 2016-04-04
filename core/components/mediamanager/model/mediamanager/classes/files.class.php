@@ -52,6 +52,8 @@ class MediaManagerFilesHelper
         $sortColumn = 'MediamanagerFiles.upload_date';
         $sortDirection = 'DESC';
 
+        $select = $this->mediaManager->modx->getSelectColumns('MediamanagerFiles', 'MediamanagerFiles');
+
         $where = array();
         $where[]['MediamanagerFiles.mediamanager_contexts_id'] = $this->mediaManager->contexts->getCurrentContext();
         $where[]['MediamanagerFiles.is_archived'] = 0;
@@ -98,7 +100,7 @@ class MediaManagerFilesHelper
             $sortDirection = $sorting[1];
         }
 
-        $q->select($this->mediaManager->modx->getSelectColumns('MediamanagerFiles', 'MediamanagerFiles'));
+        $q->select($select);
         $q->where($where);
         $q->sortby($sortColumn, $sortDirection);
 
@@ -111,19 +113,40 @@ class MediaManagerFilesHelper
      * @param string $search
      * @param array $filters
      * @param array $sorting
+     * @param string $viewMode
      *
      * @return string
      */
-    public function getListHtml($search = '', $filters = array(), $sorting = array())
+    public function getListHtml($search = '', $filters = array(), $sorting = array(), $viewMode = 'grid')
     {
         $files = $this->getList($search, $filters, $sorting);
+        $viewMode = ($viewMode === 'grid' ? 'grid' : 'list');
+        $breadcrumbs = array();
 
         $html = '';
         foreach ($files as $file) {
-            $html .= $this->mediaManager->getChunk('files/file', $file->toArray());
+            $file = $file->toArray();
+
+            if ($viewMode === 'grid') {
+                if (in_array($file['file_type'], array('jpg', 'png', 'gif', 'bmp'))) {
+                    $file['preview_path'] = '/connectors/system/phpthumb.php?src=' . $file['path'] . '&w=226&h=180';
+                    $file['preview'] = $this->mediaManager->getChunk('files/file_preview_img', $file);
+                } else {
+                    $file['preview'] = $this->mediaManager->getChunk('files/file_preview_svg', $file);
+                }
+            }
+
+            $html .= $this->mediaManager->getChunk('files/' . $viewMode . '/file', $file);
         }
 
-        if (empty($html)) {
+        if (!empty($html)) {
+            $data = array(
+                'breadcrumbs' => $this->mediaManager->getChunk('files/breadcrumbs', $breadcrumbs),
+                'items' => $html
+            );
+
+            $html = $this->mediaManager->getChunk('files/' . $viewMode . '/list', $data);
+        } else {
             $html = $this->mediaManager->modx->lexicon('mediamanager.files.error.no_files_found');
         }
 
@@ -152,22 +175,22 @@ class MediaManagerFilesHelper
     {
         $this->sortOptions = array(
             array(
-                'name' => 'Date new - old', // @TODO: Add lexicons
+                'name' => 'Date &uarr;', // @TODO: Add lexicons
                 'field' => 'upload_date',
                 'direction' => 'DESC'
             ),
             array(
-                'name' => 'Date old - new',
+                'name' => 'Date &darr;',
                 'field' => 'upload_date',
                 'direction' => 'ASC'
             ),
             array(
-                'name' => 'Name A - Z',
+                'name' => 'Name &darr;',
                 'field' => 'name',
                 'direction' => 'ASC'
             ),
             array(
-                'name' => 'Name Z - A',
+                'name' => 'Name &uarr;',
                 'field' => 'name',
                 'direction' => 'DESC'
             )

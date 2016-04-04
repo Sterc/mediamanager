@@ -1,0 +1,1 @@
+<img data-original="[[+preview_path]]" class="lazy" />
