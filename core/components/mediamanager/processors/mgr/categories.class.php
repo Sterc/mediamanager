@@ -32,6 +32,10 @@ class MediaManagerCategoriesProcessor extends modProcessor
                 $data = $this->delete();
                 
                 break;
+            case 'sort':
+                $data = $this->sort();
+
+                break;
             case 'getCategoriesByName':
                 $data = $this->getCategoriesByName();
 
@@ -43,18 +47,23 @@ class MediaManagerCategoriesProcessor extends modProcessor
 
     private function create()
     {
-        return $this->mediaManager->tags->createTag($this->getProperty('tag'));
+        return $this->mediaManager->categories->createCategory($this->getProperty('name'), $this->getProperty('parent'));
     }
 
     private function edit()
     {
 
-        return $this->mediaManager->tags->editTag($this->getProperty('tag_id'), $this->getProperty('tag'));
+        //return $this->mediaManager->tags->editTag($this->getProperty('tag_id'), $this->getProperty('tag'));
     }
 
     private function delete()
     {
-        return $this->mediaManager->tags->deleteTag($this->getProperty('tag_id'));
+        //return $this->mediaManager->tags->deleteTag($this->getProperty('tag_id'));
+    }
+
+    private function sort()
+    {
+        return $this->mediaManager->categories->sortCategories($this->getProperty('items'));
     }
 
     private function getCategoriesByName()

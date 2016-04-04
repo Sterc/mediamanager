@@ -17,21 +17,128 @@ class MediaManagerCategoriesHelper
         $this->mediaManager = $mediaManager;
     }
 
+    public function createCategory($name, $parent = 0, $rank = 9999)
+    {
+        $name = trim($name);
+
+        if (empty($name)) {
+            return [
+                'error'   => true,
+                'message' => $this->mediaManager->modx->lexicon('mediamanager.categories.error.empty')
+            ];
+        }
+
+        $category = $this->mediaManager->modx->getObject('MediamanagerCategories', [
+            'name'      => $name,
+            'parent_id' => $parent
+        ]);
+
+        if ($category) {
+            return [
+                'error'   => true,
+                'message' => $this->mediaManager->modx->lexicon('mediamanager.categories.error.exists')
+            ];
+        }
+
+        $category = $this->mediaManager->modx->newObject('MediamanagerCategories');
+        $category->set('name',      $name);
+        $category->set('parent_id', $parent);
+        $category->set('rank',      $rank);
+        $category->save();
+
+        return [
+            'error'   => false,
+            'message' => $this->mediaManager->modx->lexicon('mediamanager.categories.success', ['name' => $name]),
+            'html'    => $this->getList(),
+            'select'  => $this->getParentOptions()
+        ];
+    }
+
+    public function sortCategories($items)
+    {
+        parse_str($items);
+
+        $i = 1;
+        foreach ($items as $key => $value) {
+            $category = $this->mediaManager->modx->getObject('MediamanagerCategories', $key);
+
+            if ($category) {
+                $category->set('parent_id', $value);
+                $category->set('rank', $i);
+                $category->save();
+
+                ++$i;
+            }
+        }
+
+        return [
+            'error' => false
+        ];
+    }
+
+    public function getParentOptions()
+    {
+        $options = '<option value="0" selected>' .  $this->mediaManager->modx->lexicon('mediamanager.categories.root') . '</option>';
+        $options .= $this->buildParentOptions($this->getCategories());
+
+        return $options;
+    }
+
+    private function buildParentOptions(array $list, $parent = 0, $level = 0)
+    {
+        $options = '';
+
+        foreach ($list as $item) {
+            if ($item->get('parent_id') === $parent) {
+                $prefix = str_repeat('-', $level);
+
+                $options .= '<option value="' . $item->get('id') . '">' . $prefix . $item->get('name') . '</option>';
+
+                $options .= $this->buildParentOptions($list, $item->get('id'), $level + 1);
+            }
+        }
+
+        return $options;
+    }
+
+    public function getList()
+    {
+        $listHtml = $this->buildList($this->getCategories());
+
+        if(!empty($listHtml)) {
+            $listHtml = '<ol class="sortable">' . $listHtml . '</ol>';
+        }
+
+        return $listHtml;
+    }
+
+    private function buildList(array $list, $parent = 0)
+    {
+        $listHtml = '';
+
+        foreach($list as $item) {
+            if ($item->get('parent_id') === $parent) {
+                $listHtml .= '<li id="items_' . $item->get('id') . '"><div>' . $item->get('name') . '<span class="pull-right">Edit - Delete</span></div><ol>';
+                $listHtml .= $this->buildList($list, $item->get('id'));
+                $listHtml .= '</ol></li>';
+            }
+        }
+
+        return $listHtml;
+    }
+
     /**
      * Get categories.
      *
      * @return array
      */
-    public function getList()
+    public function getCategories()
     {
         $q = $this->mediaManager->modx->newQuery('MediamanagerCategories');
-        $q->where(array(
-            'is_deleted' => 0
-        ));
         $q->sortby('parent_id', 'ASC');
-        $q->sortby('rank', 'DESC');
+        $q->sortby('rank', 'ASC');
 
-        return $this->mediaManager->modx->getIterator('MediamanagerCategories', $q);
+        return $this->mediaManager->modx->getCollection('MediamanagerCategories', $q);
     }
 
     /**
@@ -43,7 +150,6 @@ class MediaManagerCategoriesHelper
     public function getCategoriesByName($search)
     {
         $categories = $this->mediaManager->modx->getIterator('MediamanagerCategories', [
-            'is_deleted' => 0,
             'name:LIKE' => '%' . $search . '%'
         ]);
 

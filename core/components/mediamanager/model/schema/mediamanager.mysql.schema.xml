@@ -13,8 +13,6 @@
         <field key="parent_id" dbtype="int" precision="10" attributes="unsigned" phptype="integer" null="false" default="0" index="index" />
         <field key="name" dbtype="varchar" precision="50" phptype="string" null="false" default="" />
         <field key="rank" dbtype="mediumint" precision="6" attributes="unsigned" phptype="integer" null="false" default="0" />
-        <field key="icon" dbtype="varchar" precision="3" phptype="string" null="false" default="" />
-        <field key="is_deleted" dbtype="tinyint" precision="1" attributes="unsigned" phptype="boolean" null="false" default="0" index="index" />
 
         <composite alias="CategoriesExcludes" class="MediamanagerCategoriesExcludes" local="id" foreign="mediamanager_categories_id" cardinality="many" owner="local" />
         <composite alias="Files" class="MediamanagerFilesCategories" local="id" foreign="mediamanager_categories_id" cardinality="many" owner="local" />
