@@ -43,6 +43,7 @@ class MediaManagerFilesProcessor extends modProcessor
         $search = '';
         $filters = array();
         $sorting = array();
+        $viewMode = '';
 
         if ($this->getProperty('search') !== null) {
             $search = $this->getProperty('search');
@@ -56,7 +57,11 @@ class MediaManagerFilesProcessor extends modProcessor
             $sorting = $this->getProperty('sorting');
         }
 
-        return (array) $this->mediaManager->files->getListHtml($search, $filters, $sorting);
+        if ($this->getProperty('viewMode') !== null) {
+            $viewMode = $this->getProperty('viewMode');
+        }
+
+        return (array) $this->mediaManager->files->getListHtml($search, $filters, $sorting, $viewMode);
     }
 
 }

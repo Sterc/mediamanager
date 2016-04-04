@@ -7,10 +7,6 @@ class MediaManagerHomeManagerController extends MediaManagerManagerController
 
     public function process(array $scriptProperties = array())
     {
-        $contextList = $this->mediaManager->contexts->getListHtml();
-        $sortOptions = $this->mediaManager->files->getSortOptionsHtml();
-        $filterOptions = $this->mediaManager->files->getFilterOptionsHtml();
-
         $placeholders = array(
             'pagetitle'                    => $this->modx->lexicon('mediamanager'),
             'upload_media'                 => $this->modx->lexicon('mediamanager.files.upload_media'),
@@ -21,9 +17,9 @@ class MediaManagerHomeManagerController extends MediaManagerManagerController
             'dropzone_button'              => $this->modx->lexicon('mediamanager.files.dropzone.button'),
             'dropzone_title'               => $this->modx->lexicon('mediamanager.files.dropzone.title'),
             'token'                        => $this->modx->user->getUserToken($this->modx->context->get('key')),
-            'context_list'                 => $contextList,
-            'sort_options'                 => $sortOptions,
-            'filter_options'               => $filterOptions
+            'context_list'                 => $this->mediaManager->contexts->getListHtml(),
+            'sort_options'                 => $this->mediaManager->files->getSortOptionsHtml(),
+            'filter_options'               => $this->mediaManager->files->getFilterOptionsHtml()
         );
 
         $filters = $this->mediaManager->getChunk('files/filters', $placeholders);

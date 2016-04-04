@@ -11,12 +11,12 @@
         $uploadMedia             : 'button[data-upload-media]',
         $uploadSelectedFiles     : '.upload-selected-files',
 
+        $filesContainer          : 'div[data-files]',
         $fileContainer           : '.file',
         $fileCategories          : 'select[data-file-categories]',
         $fileTags                : 'select[data-file-tags]',
 
         $selectContext           : 'select[data-select-context]',
-
         $categoryTree            : 'div[data-category-tree]',
 
         $search                  : 'input[data-search]',
@@ -33,6 +33,9 @@
         $filterCategoriesOptions : null,
         $filterTagsOptions       : null,
 
+        $viewMode                : 'span[data-view-mode]',
+        $currentViewMode         : 'grid',
+
         $currentContext          : 0,
         $currentSearch           : '',
         $currentSorting          : [],
@@ -42,6 +45,9 @@
             type: '',
             user: ''
         },
+
+        $modxHeader              : '#modx-header',
+        $modxContent             : '#modx-content',
 
         init: function() {
             this.$connectorUrl = $(this.$dropzoneForm).attr('action');
@@ -61,6 +67,7 @@
                 maxFilesize: 100,
                 maxThumbnailFilesize: 1,
                 autoProcessQueue: false,
+                clickable: true,
                 dictDefaultMessage: '',
                 previewsContainer: '.dropzone-previews',
                 params: {
@@ -260,11 +267,14 @@
                     context      : self.$currentContext,
                     search       : self.$currentSearch,
                     filters      : self.$currentFilters,
-                    sorting      : self.$currentSorting
+                    sorting      : self.$currentSorting,
+                    viewMode     : self.$currentViewMode
                 }
             }).success(function(data) {
-                $('.media-container .panel-body').html(data.results);
+                $(self.$filesContainer).html(data.results);
                 self.resizeFileContainer();
+                self.lazyload();
+                self.setModxContentHeight();
             });
         },
 
@@ -336,10 +346,40 @@
         },
 
         resizeFileContainer: function() {
-            var self = this,
-                width = $(self.$fileContainer).width();
+            var self = this;
 
+            if (self.$currentViewMode === 'list') {
+                return false;
+            }
+
+            var width = $(self.$fileContainer).width();
             $(self.$fileContainer).height(width);
+        },
+
+        lazyload: function() {
+            $('img.lazy').lazyload({
+                threshold: 200
+            });
+        },
+
+        switchViewMode: function(e) {
+            var self = this,
+                viewMode = e.target.dataset.viewMode;
+
+            $(self.$filesContainer).removeClass('view-mode-' + self.$currentViewMode).addClass('view-mode-' + viewMode);
+            self.$currentViewMode = viewMode;
+
+            self.getList();
+        },
+
+        setModxContentHeight: function() {
+            var self = this,
+                $modxHeader = $(self.$modxHeader),
+                $modxContent = $(self.$modxContent),
+                height = $(document).height() - $modxHeader.height();
+
+            $('.x-panel-bwrap', $modxContent).hide();
+            $modxContent.height(height);
         }
 
     }
@@ -383,6 +423,14 @@
     $(window).on({
         resize : $.proxy(MediaManagerFiles, 'resizeFileContainer')
     }, window);
+
+    $(window).on({
+        resize : $.proxy(MediaManagerFiles, 'setModxContentHeight')
+    }, $(window));
+
+    $(document).on({
+        click : $.proxy(MediaManagerFiles, 'switchViewMode')
+    }, MediaManagerFiles.$viewMode);
 
 }(jQuery);
 

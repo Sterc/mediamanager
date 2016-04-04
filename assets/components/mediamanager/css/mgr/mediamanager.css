@@ -1,3 +1,7 @@
+#modx-content {
+    overflow-y: scroll;
+}
+
 .mediamanager-browser .dropzone-form:after,
 .mediamanager-browser .dropzone-form .dropzone-actions:after {
     content: "";
@@ -43,6 +47,14 @@
     border: 4px dashed #ddd;
 }
 
+.mediamanager-browser .dropzone-form h2 {
+    margin: 20px 0;
+}
+
+.mediamanager-browser .dropzone-form .note {
+    margin: 20px 0;
+}
+
 .mediamanager-browser .dropzone-form .dz-preview {
     margin: 0 10px;
     padding: 10px 0;
@@ -63,8 +75,45 @@
     border-top: 1px solid #ddd;
 }
 
-.mediamanager-browser .media-container .file img {
+.mediamanager-browser .breadcrumbs-container {
+    padding: 0 15px;
+}
+
+.mediamanager-browser .breadcrumbs-container + hr {
+    margin-top: 15px;
+}
+
+.mediamanager-browser .view-mode-grid .file {
+    position: relative;
+    margin-bottom: 30px;
+}
+
+.mediamanager-browser .view-mode-grid .file .file-preview {
+    height: 80%;
+    text-align: center;
+}
+
+.mediamanager-browser .view-mode-grid .file .file-preview img,
+.mediamanager-browser .view-mode-grid .file .file-preview svg {
+    width: 100%;
     max-width: 100%;
+    max-height: 100%;
+}
+
+.mediamanager-browser .view-mode-grid .file .file-name {
+    text-align: center;
+    word-wrap: break-word;
+}
+
+.mediamanager-browser .view-mode-grid .file .file-options {
+    position: absolute;
+    top: 10px;
+    right: 26px;
+    display: none;
+}
+
+.mediamanager-browser .view-mode-grid .file:hover .file-options {
+    display: block;
 }
 
 .mediamanager-tag {
