@@ -2,10 +2,19 @@
 
     <div class="form-inline">
 
+        <div class="bulk-actions pull-left">
+            <button type="button" class="btn btn-default" data-bulk-move>[[%mediamanager.global.move]]</button>
+            <button type="button" class="btn btn-default" data-bulk-archive>[[%mediamanager.global.archive]]</button>
+            <button type="button" class="btn btn-default" data-bulk-share>[[%mediamanager.global.share]]</button>
+            <button type="button" class="btn btn-default" data-bulk-download>[[%mediamanager.global.download]]</button>
+            <button type="button" class="btn btn-danger" data-bulk-delete>[[%mediamanager.global.delete]]</button>
+            <button type="button" class="btn btn-default" data-bulk-cancel>[[%mediamanager.global.cancel]]</button>
+        </div>
+
         <div class="search-form pull-right">
             <select class="form-control" data-sorting>[[+sort_options]]</select>
             <input type="input" class="form-control" placeholder="[[+search]]" data-search>
-            <button type="button" class="btn btn-default advanced-search" data-advanced-search>[[+advanced_search]]</button>
+            <button type="button" class="btn btn-default advanced-search" data-advanced-search>[[%mediamanager.files.advanced_search]]</button>
         </div>
 
         <div class="clearfix"></div>

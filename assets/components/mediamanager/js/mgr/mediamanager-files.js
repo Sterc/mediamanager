@@ -18,9 +18,16 @@
         $fileTags                : 'select[data-file-tags]',
         $fileRemoveButton        : 'button[data-dz-remove]',
         $fileErrorMessage        : 'span[data-dz-errormessage]',
+        $filePopup               : 'div[data-file-popup]',
+
+        $fileEditButton          : 'button[data-file-edit-button]',
+        $fileDeleteButton        : 'button[data-file-delete]',
 
         $selectContext           : 'select[data-select-context]',
         $categoryTree            : 'div[data-category-tree]',
+
+        $bulkActions             : '.bulk-actions',
+        $bulkCancelButton        : 'button[data-bulk-cancel]',
 
         $search                  : 'input[data-search]',
         $advancedSearch          : 'button[data-advanced-search]',
@@ -49,6 +56,8 @@
             user: ''
         },
 
+        $selectedFiles           : [],
+
         $modxHeader              : '#modx-header',
         $modxContent             : '#modx-content',
 
@@ -59,6 +68,7 @@
             this.setContext();
             this.setDropzone();
             this.setSelect2();
+            this.setPopup();
             this.getCategories();
             this.getList();
         },
@@ -242,6 +252,19 @@
             });
         },
 
+        setPopup: function() {
+            var self = this;
+            $(self.$filePopup).modal({
+                show: false,
+                keyboard: false,
+                backdrop: 'static'
+            });
+
+            //$(self.$filePopup).on('show.bs.modal', function(e) {
+            //    var modal = $(this);
+            //});
+        },
+
         advancedSearchOpen: function() {
             var self = this;
             $(self.$advancedSearchFilters).slideToggle();
@@ -377,12 +400,20 @@
             $(self.$fileContainer).height(width);
         },
 
+        /**
+         * Initialize lazyload for images.
+         */
         lazyload: function() {
             $('img.lazy').lazyload({
                 threshold: 200
             });
         },
 
+        /**
+         * Switch between grid and view mode.
+         *
+         * @param e
+         */
         switchViewMode: function(e) {
             var self = this,
                 viewMode = e.target.dataset.viewMode;
@@ -393,6 +424,9 @@
             self.getList();
         },
 
+        /**
+         * Set content height to enable scroll bar.
+         */
         setModxContentHeight: function() {
             var self = this,
                 $modxHeader = $(self.$modxHeader),
@@ -401,12 +435,123 @@
 
             $('.x-panel-bwrap', $modxContent).hide();
             $modxContent.height(height);
-        }
+        },
+
+        /**
+         * Add or remove from selected files.
+         *
+         * @param e
+         */
+        selectFile: function(e) {
+            var self = this,
+                $target = $(e.target),
+                $fileContainer = $target.parents(self.$fileContainer),
+                index = self.$selectedFiles.indexOf($fileContainer.data('id'));
+
+            // Don't add file if edit button is clicked
+            if (typeof $target.data('file-edit-button') !== 'undefined') {
+                return false;
+            }
+
+            $fileContainer.toggleClass('file-selected');
+
+            if (index >= 0) {
+                self.$selectedFiles.splice(index, 1);
+            } else {
+                self.$selectedFiles.push($fileContainer.data('id'));
+            }
+
+            self.showBulkActions();
+        },
+
+        /**
+         * Clear all selected files.
+         */
+        clearSelectedFiles: function() {
+            var self = this;
+
+            self.$selectedFiles = [];
+            $(self.$fileContainer).removeClass('file-selected');
+            self.showBulkActions();
+        },
+
+        /**
+         * Show or hide bulk actions.
+         */
+        showBulkActions: function() {
+            var self = this;
+
+            if (self.$selectedFiles.length === 0) {
+                $(self.$bulkActions).hide();
+            } else {
+                $(self.$bulkActions).show();
+            }
+        },
+
+        //deleteFile: function(e) {
+        //    var self = this;
+        //
+        //    var deleteMessage = '';
+        //    var deleteTitle = '';
+        //    var deleteConfirm = '';
+        //    var deleteCancel = '';
+        //
+        //    $('<div />').text(deleteMessage).dialog({
+        //        draggable: false,
+        //        resizable: false,
+        //        modal: true,
+        //        title: deleteTitle,
+        //        buttons : [{
+        //            text: deleteConfirm,
+        //            class: 'btn btn-danger',
+        //            click: function () {
+        //                $.ajax ({
+        //                    type: 'POST',
+        //                    url: $(self.$createForm).attr('action'),
+        //                    data: {
+        //                        action       : $('input[name="action"]', self.$createForm).val(),
+        //                        HTTP_MODAUTH : $('input[name="HTTP_MODAUTH"]', self.$createForm).val(),
+        //                        method       : 'delete',
+        //                        tag_id       : e.target.dataset.deleteTag
+        //                    },
+        //                    success: function(data) {
+        //                        $(self.$listing).html(data.results.html);
+        //                    }
+        //                });
+        //
+        //                $(this).dialog('close');
+        //            }
+        //        }, {
+        //            text: deleteCancel,
+        //            class: 'btn btn-default',
+        //            click: function () {
+        //                $(this).dialog('close');
+        //            }
+        //        }],
+        //        open: function(event, ui) {
+        //            $('.ui-dialog-titlebar-close', ui.dialog | ui).hide();
+        //        },
+        //        close : function() {
+        //            $(this).dialog('destroy').remove();
+        //        }
+        //    });
+        //},
+        //
+        //filePopup: function() {
+        //    var self = this;
+        //
+        //
+        //}
 
     }
 
     $(document).ready(function() {
         MediaManagerFiles.init();
+
+        $(window).resize(function() {
+            MediaManagerFiles.resizeFileContainer();
+            MediaManagerFiles.setModxContentHeight();
+        });
     });
 
     $(document).on({
@@ -441,17 +586,25 @@
         change : $.proxy(MediaManagerFiles, 'changeFilter')
     }, MediaManagerFiles.$filterType);
 
-    $(window).on({
-        resize : $.proxy(MediaManagerFiles, 'resizeFileContainer')
-    }, window);
-
-    $(window).on({
-        resize : $.proxy(MediaManagerFiles, 'setModxContentHeight')
-    }, $(window));
-
     $(document).on({
         click : $.proxy(MediaManagerFiles, 'switchViewMode')
     }, MediaManagerFiles.$viewMode);
+
+    $(document).on({
+        click : $.proxy(MediaManagerFiles, 'selectFile')
+    }, MediaManagerFiles.$fileContainer);
+
+    //$(document).on({
+    //    click : $.proxy(MediaManagerFiles, 'filePopup')
+    //}, MediaManagerFiles.$fileEditButton);
+    //
+    //$(document).on({
+    //    click : $.proxy(MediaManagerFiles, 'deleteFile')
+    //}, MediaManagerFiles.$fileDeleteButton);
+
+    $(document).on({
+        click : $.proxy(MediaManagerFiles, 'clearSelectedFiles')
+    }, MediaManagerFiles.$bulkCancelButton);
 
 }(jQuery);
 

@@ -14,6 +14,12 @@ $_lang['mediamanager.global.edit'] = 'Edit';
 $_lang['mediamanager.global.delete'] = 'Delete';
 $_lang['mediamanager.global.delete_confirm'] = 'Are you sure you want to delete this';
 $_lang['mediamanager.global.search'] = 'Search';
+$_lang['mediamanager.global.move'] = 'Move';
+$_lang['mediamanager.global.crop'] = 'Crop';
+$_lang['mediamanager.global.share'] = 'Share';
+$_lang['mediamanager.global.archive'] = 'Archive';
+$_lang['mediamanager.global.download'] = 'Download';
+$_lang['mediamanager.global.cancel'] = 'Cancel';
 
 /* Tags */
 $_lang['mediamanager.tags'] = 'Media Tags';
@@ -56,10 +62,9 @@ $_lang['mediamanager.categories.delete_confirm_message'] = 'Are you sure you wan
 
 /* Files */
 $_lang['mediamanager.files.upload_media'] = 'Upload Media';
-$_lang['mediamanager.files.new_category'] = 'New Category';
-$_lang['mediamanager.files.advanced_search'] = 'Advanced Search';
 $_lang['mediamanager.files.upload_selected_files'] = 'Upload Selected Files';
 $_lang['mediamanager.files.search'] = 'Search';
+$_lang['mediamanager.files.advanced_search'] = 'Advanced Search';
 $_lang['mediamanager.files.dropzone.maximum_upload_size'] = 'Maximum upload file size: [[+limit]].';
 $_lang['mediamanager.files.dropzone.button'] = 'Or select files';
 $_lang['mediamanager.files.dropzone.title'] = 'Drop files here to upload';
