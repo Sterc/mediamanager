@@ -172,3 +172,28 @@
     color: #333 !important;
     background-color: #f5f5f5 !important;
 }
+
+ol.sortable ol {
+    padding-left: 25px;
+}
+
+ol.sortable,
+ol.sortable ol {
+    margin-top: 5px;
+    list-style-type: none;
+}
+
+ol.sortable li {
+    margin-bottom: 5px;
+}
+
+ol.sortable li div {
+    cursor: move;
+    border-bottom: 1px solid #ddd;
+    padding: 5px 7px;
+    margin: 0;
+}
+
+.placeholder {
+    outline: 1px dashed #4183C4;
+}

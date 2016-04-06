@@ -13,7 +13,7 @@ class MediaManagerTagsHelper
     {
         $name = trim($name);
 
-        if(empty($name)) {
+        if (empty($name)) {
             return [
                 'error'   => true,
                 'message' => $this->mediaManager->modx->lexicon('mediamanager.tags.error.empty')
@@ -24,7 +24,7 @@ class MediaManagerTagsHelper
             'name' => $name
         ]);
 
-        if($tag) {
+        if ($tag) {
             return [
                 'error'   => true,
                 'message' => $this->mediaManager->modx->lexicon('mediamanager.tags.error.exists')
@@ -46,7 +46,7 @@ class MediaManagerTagsHelper
     {
         $tag = $this->mediaManager->modx->getObject('MediamanagerTags', $id);
 
-        if($tag) {
+        if ($tag) {
             $tag->set('name', $name);
             $tag->save();
         }

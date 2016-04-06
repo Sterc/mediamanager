@@ -36,6 +36,7 @@ $_lang['mediamanager.tags.delete_confirm_message'] = 'Are you sure you want to d
 /* Categories */
 $_lang['mediamanager.categories'] = 'Media Categories';
 $_lang['mediamanager.categories.desc'] = 'Manage media categories';
+$_lang['mediamanager.categories.root'] = 'root';
 $_lang['mediamanager.categories.category'] = 'Category';
 $_lang['mediamanager.categories.title'] = 'Create category';
 $_lang['mediamanager.categories.label'] = 'Category';
