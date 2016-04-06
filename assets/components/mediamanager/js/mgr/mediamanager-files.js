@@ -7,6 +7,7 @@
 
         $dropzone                : null,
         $dropzoneForm            : 'form[data-dropzone-form]',
+        $dropzoneActions         : '.dropzone-actions',
 
         $uploadMedia             : 'button[data-upload-media]',
         $uploadSelectedFiles     : '.upload-selected-files',
@@ -15,6 +16,8 @@
         $fileContainer           : '.file',
         $fileCategories          : 'select[data-file-categories]',
         $fileTags                : 'select[data-file-tags]',
+        $fileRemoveButton        : 'button[data-dz-remove]',
+        $fileErrorMessage        : 'span[data-dz-errormessage]',
 
         $selectContext           : 'select[data-select-context]',
         $categoryTree            : 'div[data-category-tree]',
@@ -64,10 +67,12 @@
             var self = this;
 
             self.$dropzone = new Dropzone(document.getElementById('mediaManagerDropzone'), {
+                parallelUploads: 9999,
+                maxFiles: 9999,
                 maxFilesize: 100,
                 maxThumbnailFilesize: 1,
                 autoProcessQueue: false,
-                clickable: true,
+                clickable: '.clickable',
                 dictDefaultMessage: '',
                 previewsContainer: '.dropzone-previews',
                 params: {
@@ -76,19 +81,38 @@
                 },
                 init: function() {
                     this.on('addedfile', function(file) {
-                        $('.dropzone-actions').show(); // @TODO: Only activate button if categories are linked to media files
-
+                        $(self.$dropzoneActions).show();
                         $(self.$fileCategories).select2(self.$filterCategoriesOptions);
                         $(self.$fileTags).select2(self.$filterTagsOptions);
                     });
 
+                    this.on('removedfile', function(file) {
+                        var queue = this.getQueuedFiles();
+
+                        if (queue.length === 0) {
+                            $(self.$dropzoneActions).hide();
+                        }
+                    });
+
+                    this.on('sending', function(file) {
+                        var $file = $(file.previewElement);
+
+                        $(self.$fileCategories, $file).attr('disabled', 'disabled');
+                        $(self.$fileTags, $file).attr('disabled', 'disabled');
+                        $(self.$fileRemoveButton, $file).attr('disabled', 'disabled');
+                    });
+
                     this.on('complete', function(file) {
-                        this.removeFile(file);
+                        var response = JSON.parse(file.xhr.response);
+                        $(file.previewElement).delay(1000).html(response.message);
+
+                        //$(file.previewElement).delay(1000).html(response.message).delay(3000).fadeOut(400, function() {
+                        //    _file.removeFile(file);
+                        //});
                     });
 
                     this.on('queuecomplete', function() {
-                        $('.dropzone-actions').hide();
-                        self.dropzoneOpen();
+                        $(self.$dropzoneActions).hide();
                         self.getList();
                     });
                 },
@@ -111,23 +135,20 @@
                             '</div>' +
                         '</div>' +
                         '<div class="col-sm-2">' +
-                            '<div class="progress progress-striped" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">' +
+                            '<div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">' +
                                 '<div class="progress-bar progress-bar-success" style="width:0%;" data-dz-uploadprogress></div>' +
                             '</div>' +
                         '</div>' +
                         '<div class="col-sm-1"><button type="button" class="btn btn-danger dz-remove pull-right" data-dz-remove="">Delete</button></div>' +
                     '</div>' +
-                    '<div class="alert alert-danger" role="alert"><strong>Warning!</strong><span data-dz-errormessage></span></div>' +
+                    '<span data-dz-errormessage></span>' +
                 '</div>'
-            });
-
-            self.$dropzone.on('sending', function(file) {
-                file.previewElement.querySelector('.btn-danger').setAttribute('disabled', 'disabled');
             });
         },
 
         dropzoneOpen: function() {
             var self = this;
+            self.$dropzone.removeAllFiles();
             $(self.$dropzoneForm).slideToggle();
         },
 
@@ -273,8 +294,8 @@
             }).success(function(data) {
                 $(self.$filesContainer).html(data.results);
                 self.resizeFileContainer();
-                self.lazyload();
                 self.setModxContentHeight();
+                self.lazyload();
             });
         },
 

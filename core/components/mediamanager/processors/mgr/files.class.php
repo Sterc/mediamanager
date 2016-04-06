@@ -30,12 +30,17 @@ class MediaManagerFilesProcessor extends modProcessor
                 break;
         }
 
-        return $this->outputArray($data);
+        return $data;
     }
 
     private function addFile()
     {
-        return $this->mediaManager->files->addFile();
+        $response = $this->mediaManager->files->addFile();
+        if ($response['status'] === 'error') {
+            header('HTTP/1.1 400 Bad Request');
+        }
+
+        return $this->toJSON($response);
     }
 
     private function getList()
@@ -61,7 +66,7 @@ class MediaManagerFilesProcessor extends modProcessor
             $viewMode = $this->getProperty('viewMode');
         }
 
-        return (array) $this->mediaManager->files->getListHtml($search, $filters, $sorting, $viewMode);
+        return $this->outputArray((array) $this->mediaManager->files->getListHtml($search, $filters, $sorting, $viewMode));
     }
 
 }

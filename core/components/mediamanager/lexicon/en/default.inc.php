@@ -53,14 +53,25 @@ $_lang['mediamanager.categories.delete_success'] = 'Category is deleted.';
 $_lang['mediamanager.categories.delete_confirm_title'] = 'Delete';
 $_lang['mediamanager.categories.delete_confirm_message'] = 'Are you sure you want to delete the category `[[+name]]`.';
 
-
 /* Files */
 $_lang['mediamanager.files.upload_media'] = 'Upload Media';
 $_lang['mediamanager.files.new_category'] = 'New Category';
 $_lang['mediamanager.files.advanced_search'] = 'Advanced Search';
 $_lang['mediamanager.files.upload_selected_files'] = 'Upload Selected Files';
 $_lang['mediamanager.files.search'] = 'Search';
-$_lang['mediamanager.files.dropzone.maximum_upload_size'] = 'Maximum upload file size: %s.';
+$_lang['mediamanager.files.dropzone.maximum_upload_size'] = 'Maximum upload file size: [[+limit]].';
 $_lang['mediamanager.files.dropzone.button'] = 'Or select files';
 $_lang['mediamanager.files.dropzone.title'] = 'Drop files here to upload';
+$_lang['mediamanager.files.sorting.name'] = 'Name';
+$_lang['mediamanager.files.sorting.date'] = 'Date';
+$_lang['mediamanager.files.filter.all_users'] = 'All users';
+$_lang['mediamanager.files.filter.all_types'] = 'All types';
+$_lang['mediamanager.files.filter.type_documents'] = 'Documents';
+$_lang['mediamanager.files.filter.type_images'] = 'Images';
+$_lang['mediamanager.files.filter.type_other'] = 'Other';
 $_lang['mediamanager.files.error.no_files_found'] = 'No files found.';
+$_lang['mediamanager.files.error.create_directory'] = 'Could not create upload directory.';
+$_lang['mediamanager.files.error.file_exists'] = 'File `[[+file]]` already exists.';
+$_lang['mediamanager.files.error.file_upload'] = 'File `[[+file]]` could not be uploaded.';
+$_lang['mediamanager.files.error.file_save'] = 'File `[[+file]]` not added to database.';
+$_lang['mediamanager.files.success.file_upload'] = 'File `[[+file]]` uploaded.';

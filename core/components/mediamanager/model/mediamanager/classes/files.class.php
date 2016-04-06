@@ -20,7 +20,22 @@ class MediaManagerFilesHelper
     private $uploadDirectoryYear = null;
     private $uploadDirectoryMonth = null;
 
+    /**
+     * Image types.
+     * @var array
+     */
+    private $imageTypes = array();
+
+    /**
+     * Sort options.
+     * @var array
+     */
     private $sortOptions = array();
+
+    /**
+     * Filter options.
+     * @var array
+     */
     private $filterOptions = array();
 
     /**
@@ -32,6 +47,7 @@ class MediaManagerFilesHelper
     {
         $this->mediaManager = $mediaManager;
 
+        $this->setImageTypes();
         $this->setSortOptions();
         $this->setFilterOptions();
     }
@@ -70,7 +86,9 @@ class MediaManagerFilesHelper
 
                 switch ($key) {
                     case 'type' :
-                        $where[]['MediamanagerFiles.file_type'] = $value;
+                        if ((int) $value !== 0) {
+                            $where[]['MediamanagerFiles.file_type:IN'] = $this->filterOptions[$key][$value]['types'];
+                        }
                         break;
 
                     case 'user' :
@@ -128,7 +146,7 @@ class MediaManagerFilesHelper
             $file = $file->toArray();
 
             if ($viewMode === 'grid') {
-                if (in_array($file['file_type'], array('jpg', 'png', 'gif', 'bmp'))) {
+                if ($this->isImage($file['file_type'])) {
                     $file['preview_path'] = '/connectors/system/phpthumb.php?src=' . $file['path'] . '&w=226&h=180';
                     $file['preview'] = $this->mediaManager->getChunk('files/file_preview_img', $file);
                 } else {
@@ -175,22 +193,22 @@ class MediaManagerFilesHelper
     {
         $this->sortOptions = array(
             array(
-                'name' => 'Date &uarr;', // @TODO: Add lexicons
+                'name' => $this->mediaManager->modx->lexicon('mediamanager.files.sorting.date') . ' &uarr;',
                 'field' => 'upload_date',
                 'direction' => 'DESC'
             ),
             array(
-                'name' => 'Date &darr;',
+                'name' => $this->mediaManager->modx->lexicon('mediamanager.files.sorting.date') . ' &darr;',
                 'field' => 'upload_date',
                 'direction' => 'ASC'
             ),
             array(
-                'name' => 'Name &darr;',
+                'name' => $this->mediaManager->modx->lexicon('mediamanager.files.sorting.name') . ' &darr;',
                 'field' => 'name',
                 'direction' => 'ASC'
             ),
             array(
-                'name' => 'Name &uarr;',
+                'name' => $this->mediaManager->modx->lexicon('mediamanager.files.sorting.name') . ' &uarr;',
                 'field' => 'name',
                 'direction' => 'DESC'
             )
@@ -233,13 +251,7 @@ class MediaManagerFilesHelper
             'users' => array(
                 array(
                     'value' => '',
-                    'name' => 'All users'
-                )
-            ),
-            'type' => array(
-                array(
-                    'value' => '',
-                    'name' => 'All types'
+                    'name' => $this->mediaManager->modx->lexicon('mediamanager.files.filter.all_users')
                 )
             )
         );
@@ -252,17 +264,62 @@ class MediaManagerFilesHelper
             );
         }
 
-        $filters['type'][] = array(
-            'value' => 'png',
-            'name' => 'PNG'
-        );
-        $filters['type'][] = array(
-            'value' => 'txt',
-            'name' => 'TXT'
+        $filters['type'] = array(
+            array(
+                'value' => 0,
+                'name'  => $this->mediaManager->modx->lexicon('mediamanager.files.filter.all_types'),
+                'types' => array()
+            ),
+            array(
+                'value' => 1,
+                'name'  => $this->mediaManager->modx->lexicon('mediamanager.files.filter.type_documents'),
+                'types' => array(
+                    'pdf', 'doc', 'docx', 'txt', 'xls', 'xlsx', 'odt', 'ods', 'odp', 'odb', 'odg', 'odf', 'csv', 'pptx'
+                )
+            ),
+            array(
+                'value' => 2,
+                'name'  => $this->mediaManager->modx->lexicon('mediamanager.files.filter.type_images'),
+                'types' => array(
+                    'jpg', 'png', 'gif', 'tiff', 'bmp', 'jpeg'
+                )
+            ),
+            array(
+                'value' => 3,
+                'name'  => $this->mediaManager->modx->lexicon('mediamanager.files.filter.type_other'),
+                'types' => array(
+                    'zip', 'tar', 'mp4', 'wmv', 'avi'
+                )
+            )
         );
 
         $this->mediaManager->modx->cacheManager->set('filters', $filters, 3600, $options);
         return $this->filterOptions = $filters;
+    }
+
+    /**
+     * Set image types.
+     */
+    private function setImageTypes()
+    {
+        $this->imageTypes = array(
+            'jpg',
+            'jpeg',
+            'png',
+            'gif',
+            'bmp'
+        );
+    }
+
+    /**
+     * Check if file type is image.
+     *
+     * @param string $type
+     * @return bool
+     */
+    public function isImage($type)
+    {
+        return in_array($type, $this->imageTypes);
     }
 
     /**
@@ -294,8 +351,8 @@ class MediaManagerFilesHelper
         // Create upload directory
         if (!$this->createUploadDirectory()) {
             return [
-                'error'   => true,
-                'message' => 'Could not create upload directory.'
+                'status'  => 'error',
+                'message' => $this->alertMessageHtml($this->mediaManager->modx->lexicon('mediamanager.files.error.create_directory', array('file' => $file['name'])), 'danger')
             ];
         }
 
@@ -304,8 +361,9 @@ class MediaManagerFilesHelper
 
         if ($this->fileHashExists($file['hash'])) {
             return [
-                'error'   => true,
-                'message' => 'File already exists.'
+                'status'  => 'error',
+                'message' => $this->alertMessageHtml(
+                    $this->mediaManager->modx->lexicon('mediamanager.files.error.file_exists', array('file' => $file['name'])), 'danger')
             ];
         }
 
@@ -319,26 +377,35 @@ class MediaManagerFilesHelper
         // Upload file
         if (!$this->uploadFile($file)) {
             return [
-                'error'   => true,
-                'message' => 'File could not be uploaded.'
+                'status'  => 'error',
+                'message' => $this->alertMessageHtml($this->mediaManager->modx->lexicon('mediamanager.files.error.file_upload', array('file' => $file['name'])), 'danger')
             ];
         }
 
         // Add file to database
         if (!$this->insertFile($file, $data)) {
-            // @TODO: Remove file from sever
+            // Remove file from server if saving failed
+            $this->removeFile($file);
+
             return [
-                'error'   => true,
-                'message' => 'File not added to database.'
+                'status'  => 'error',
+                'message' => $this->alertMessageHtml($this->mediaManager->modx->lexicon('mediamanager.files.error.file_save', array('file' => $file['name'])), 'danger')
             ];
         }
 
         return [
-            'error'   => false,
-            'message' => 'File uploaded.'
+            'status'  => 'success',
+            'message' => $this->alertMessageHtml($this->mediaManager->modx->lexicon('mediamanager.files.success.file_upload', array('file' => $file['unique_name'])), 'success')
         ];
     }
 
+    /**
+     * Save file.
+     *
+     * @param array $fileData
+     * @param array $data
+     * @return bool
+     */
     private function insertFile($fileData, $data) {
         $file = $this->mediaManager->modx->newObject('MediamanagerFiles');
 
@@ -351,10 +418,11 @@ class MediaManagerFilesHelper
         $file->set('mediamanager_contexts_id', $this->mediaManager->contexts->getCurrentContext());
 
         // If file type is image set dimensions
-        if (false) {
-            // getimagesize()
-            $dimensions = '';
-            $file->set('file_dimensions', $dimensions);
+        if ($this->isImage($fileData['extension'])) {
+            $image = getimagesize($this->uploadDirectoryMonth . $fileData['unique_name']);
+            if ($image) {
+                $file->set('file_dimensions', $image[0] . 'x' . $image[1]);
+            }
         }
 
         $file->save();
@@ -450,6 +518,19 @@ class MediaManagerFilesHelper
     }
 
     /**
+     * Remove file.
+     *
+     * @param string $file
+     * @return bool
+     */
+    private function removeFile($file)
+    {
+        $target = $this->uploadDirectoryMonth . $file['unique_name'];
+
+        return unlink($target);
+    }
+
+    /**
      * Sanitize file name.
      * Only allow a-z, 0-9, _ and -
      *
@@ -525,5 +606,10 @@ class MediaManagerFilesHelper
     public function addTrailingSlash($string)
     {
         return rtrim($string, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+    }
+
+    public function alertMessageHtml($message, $type)
+    {
+        return '<div class="alert alert-' . $type . '" role="alert">' . $message . '</div>';
     }
 }
