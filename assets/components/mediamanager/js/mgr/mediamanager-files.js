@@ -47,6 +47,7 @@
         $currentViewMode         : 'grid',
 
         $currentContext          : 0,
+        $currentCategory         : 0,
         $currentSearch           : '',
         $currentSorting          : [],
         $currentFilters          : {
@@ -272,29 +273,24 @@
 
         getCategories: function() {
             var self = this;
-            var tree = [
-                {
-                    text: "Home"
-                },
-                {
-                    text: "Documents",
-                    nodes: [
-                        {
-                            text: "Brochures"
-                        }
-                    ]
-                },
-                {
-                    text: "Blog"
-                },
-                {
-                    text: "Archive"
-                }
-            ];
 
-            $(self.$categoryTree).treeview({
-                data: tree,
-                levels: 1
+            $.ajax({
+                url: self.$connectorUrl,
+                method: 'post',
+                data: {
+                    action       : 'mgr/categories',
+                    method       : 'getTree',
+                    HTTP_MODAUTH : self.$httpModAuth
+                }
+            }).success(function(data) {
+                $(self.$categoryTree).treeview({
+                    data: data.results,
+                    levels: 1,
+                    onNodeSelected: function(event, data) {
+                        self.$currentCategory = data.categoryId;
+                        self.getList();
+                    }
+                });
             });
         },
 
@@ -309,6 +305,7 @@
                     method       : 'list',
                     HTTP_MODAUTH : self.$httpModAuth,
                     context      : self.$currentContext,
+                    category     : self.$currentCategory,
                     search       : self.$currentSearch,
                     filters      : self.$currentFilters,
                     sorting      : self.$currentSorting,

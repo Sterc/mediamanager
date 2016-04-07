@@ -71,7 +71,7 @@ class MediaManagerFilesHelper
         $select = $this->mediaManager->modx->getSelectColumns('MediamanagerFiles', 'MediamanagerFiles');
 
         $where = array();
-        $where[]['MediamanagerFiles.mediamanager_contexts_id'] = $this->mediaManager->contexts->getCurrentContext();
+//        $where[]['MediamanagerFiles.mediamanager_contexts_id'] = $this->mediaManager->contexts->getCurrentContext();
         $where[]['MediamanagerFiles.is_archived'] = 0;
 
         if (!empty($search) && strlen($search) > 2) {
@@ -128,6 +128,8 @@ class MediaManagerFilesHelper
     /**
      * Get files html.
      *
+     * @param int $context
+     * @param int $category
      * @param string $search
      * @param array $filters
      * @param array $sorting
@@ -135,13 +137,19 @@ class MediaManagerFilesHelper
      *
      * @return string
      */
-    public function getListHtml($search = '', $filters = array(), $sorting = array(), $viewMode = 'grid')
+    public function getListHtml($context = 0, $category = 0, $search = '', $filters = array(), $sorting = array(), $viewMode = 'grid')
     {
-        $files = $this->getList($search, $filters, $sorting);
         $viewMode = ($viewMode === 'grid' ? 'grid' : 'list');
-        $breadcrumbs = array();
 
+        if ($category && ! isset($filters['categories'])) {
+            $filters['categories'][] = $category;
+        }
+
+        $files = $this->getList($search, $filters, $sorting);
+
+        $breadcrumbs = array();
         $html = '';
+
         foreach ($files as $file) {
             $file = $file->toArray();
 
@@ -415,7 +423,7 @@ class MediaManagerFilesHelper
         $file->set('file_size', $fileData['size']);
         $file->set('file_hash', $fileData['hash']);
         $file->set('uploaded_by', $this->mediaManager->modx->getUser()->get('id'));
-        $file->set('mediamanager_contexts_id', $this->mediaManager->contexts->getCurrentContext());
+//        $file->set('mediamanager_contexts_id', $this->mediaManager->contexts->getCurrentContext());
 
         // If file type is image set dimensions
         if ($this->isImage($fileData['extension'])) {

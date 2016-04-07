@@ -40,6 +40,10 @@ class MediaManagerCategoriesProcessor extends modProcessor
                 $data = $this->getCategoriesByName();
 
                 break;
+            case 'getTree':
+                $data = $this->getTree();
+
+                break;
         }
 
         return $this->outputArray($data);
@@ -69,6 +73,11 @@ class MediaManagerCategoriesProcessor extends modProcessor
     private function getCategoriesByName()
     {
         return $this->mediaManager->categories->getCategoriesByName($this->getProperty('search'));
+    }
+
+    private function getTree()
+    {
+        return $this->mediaManager->categories->getCategoryTree();
     }
 }
 

@@ -127,6 +127,36 @@ class MediaManagerCategoriesHelper
         return $listHtml;
     }
 
+    public function getCategoryTree()
+    {
+        $list = $this->buildCategoryTree($this->getCategories());
+        $list = array_values($list);
+
+        return $list;
+    }
+
+    private function buildCategoryTree(array $list, $parent = 0)
+    {
+        $data = array();
+
+        foreach ($list as $item) {
+            if ($item->get('parent_id') === $parent) {
+                $data[$item->get('id')] = array(
+                    'categoryId' => $item->get('id'),
+                    'text'       => $item->get('name'),
+                    'nodes'      => $this->buildCategoryTree($list, $item->get('id'))
+                );
+
+                // Remove nodes if empty
+                if (empty($data[$item->get('id')]['nodes'])) {
+                    unset($data[$item->get('id')]['nodes']);
+                }
+            }
+        }
+
+        return $data;
+    }
+
     /**
      * Get categories.
      *
