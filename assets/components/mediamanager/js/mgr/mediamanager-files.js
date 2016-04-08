@@ -18,15 +18,25 @@
         $fileTags                : 'select[data-file-tags]',
         $fileRemoveButton        : 'button[data-dz-remove]',
         $fileErrorMessage        : 'span[data-dz-errormessage]',
-        $filePopup               : 'div[data-file-popup]',
 
+        $filePopup               : 'div[data-file-popup]',
+        $filePopupButton         : 'button[data-file-popup-button]',
         $fileEditButton          : 'button[data-file-edit-button]',
-        $fileDeleteButton        : 'button[data-file-delete]',
+        $fileCropButton          : 'button[data-file-crop-button]',
+        $fileMoveButton          : 'button[data-file-move-button]',
+        $fileArchiveButton       : 'button[data-file-archive-button]',
+        $fileShareButton         : 'button[data-file-share-button]',
+        $fileDeleteButton        : 'button[data-file-delete-button]',
 
         $selectContext           : 'select[data-select-context]',
         $categoryTree            : 'div[data-category-tree]',
 
         $bulkActions             : '.bulk-actions',
+        $bulkMoveButton          : 'button[data-bulk-move]',
+        $bulkArchiveButton       : 'button[data-bulk-archive]',
+        $bulkShareButton         : 'button[data-bulk-share]',
+        $bulkDownloadButton      : 'button[data-bulk-download]',
+        $bulkDeleteButton        : 'button[data-bulk-delete]',
         $bulkCancelButton        : 'button[data-bulk-cancel]',
 
         $search                  : 'input[data-search]',
@@ -42,6 +52,7 @@
 
         $filterCategoriesOptions : null,
         $filterTagsOptions       : null,
+        $categoriesSelectOptions : null,
 
         $viewMode                : 'span[data-view-mode]',
         $currentViewMode         : 'grid',
@@ -57,6 +68,7 @@
             user: ''
         },
 
+        $currentFile             : 0,
         $selectedFiles           : [],
 
         $modxHeader              : '#modx-header',
@@ -116,10 +128,6 @@
                     this.on('complete', function(file) {
                         var response = JSON.parse(file.xhr.response);
                         $(file.previewElement).delay(1000).html(response.message);
-
-                        //$(file.previewElement).delay(1000).html(response.message).delay(3000).fadeOut(400, function() {
-                        //    _file.removeFile(file);
-                        //});
                     });
 
                     this.on('queuecomplete', function() {
@@ -255,15 +263,22 @@
 
         setPopup: function() {
             var self = this;
+
             $(self.$filePopup).modal({
                 show: false,
                 keyboard: false,
                 backdrop: 'static'
             });
 
-            //$(self.$filePopup).on('show.bs.modal', function(e) {
-            //    var modal = $(this);
-            //});
+            $(self.$filePopup).on('show.bs.modal', function(e) {
+                //var modal = $(this);
+                console.log('open');
+            });
+
+            $(self.$filePopup).on('hide.bs.modal', function(e) {
+                // Reset current file
+                self.$currentFile = 0;
+            });
         },
 
         advancedSearchOpen: function() {
@@ -283,8 +298,9 @@
                     HTTP_MODAUTH : self.$httpModAuth
                 }
             }).success(function(data) {
+                self.$categoriesSelectOptions = data.results.select;
                 $(self.$categoryTree).treeview({
-                    data: data.results,
+                    data: data.results.list,
                     levels: 1,
                     onNodeSelected: function(event, data) {
                         self.$currentCategory = data.categoryId;
@@ -446,7 +462,7 @@
                 index = self.$selectedFiles.indexOf($fileContainer.data('id'));
 
             // Don't add file if edit button is clicked
-            if (typeof $target.data('file-edit-button') !== 'undefined') {
+            if (typeof $target.data('file-popup-button') !== 'undefined') {
                 return false;
             }
 
@@ -485,60 +501,130 @@
             }
         },
 
-        //deleteFile: function(e) {
-        //    var self = this;
-        //
-        //    var deleteMessage = '';
-        //    var deleteTitle = '';
-        //    var deleteConfirm = '';
-        //    var deleteCancel = '';
-        //
-        //    $('<div />').text(deleteMessage).dialog({
-        //        draggable: false,
-        //        resizable: false,
-        //        modal: true,
-        //        title: deleteTitle,
-        //        buttons : [{
-        //            text: deleteConfirm,
-        //            class: 'btn btn-danger',
-        //            click: function () {
-        //                $.ajax ({
-        //                    type: 'POST',
-        //                    url: $(self.$createForm).attr('action'),
-        //                    data: {
-        //                        action       : $('input[name="action"]', self.$createForm).val(),
-        //                        HTTP_MODAUTH : $('input[name="HTTP_MODAUTH"]', self.$createForm).val(),
-        //                        method       : 'delete',
-        //                        tag_id       : e.target.dataset.deleteTag
-        //                    },
-        //                    success: function(data) {
-        //                        $(self.$listing).html(data.results.html);
-        //                    }
-        //                });
-        //
-        //                $(this).dialog('close');
-        //            }
-        //        }, {
-        //            text: deleteCancel,
-        //            class: 'btn btn-default',
-        //            click: function () {
-        //                $(this).dialog('close');
-        //            }
-        //        }],
-        //        open: function(event, ui) {
-        //            $('.ui-dialog-titlebar-close', ui.dialog | ui).hide();
-        //        },
-        //        close : function() {
-        //            $(this).dialog('destroy').remove();
-        //        }
-        //    });
-        //},
-        //
-        //filePopup: function() {
-        //    var self = this;
-        //
-        //
-        //}
+        /**
+         * Move files.
+         *
+         * @param e
+         */
+        moveFiles: function(e) {
+            var self = this,
+                files = self.$selectedFiles;
+
+            console.log('moveFile click');
+
+            if (self.$currentFile !== 0) {
+                files = self.$currentFile;
+            }
+
+            $('<div />').html($('<select />').addClass('form-control').append(self.$categoriesSelectOptions)).dialog({
+                draggable: false,
+                resizable: false,
+                modal: true,
+                title: e.target.dataset.moveTitle,
+                buttons : [{
+                    text: e.target.dataset.moveConfirm,
+                    class: 'btn btn-primary',
+                    click: function () {
+                        $.ajax ({
+                            type: 'POST',
+                            url: self.$connectorUrl,
+                            data: {
+                                action       : 'mgr/files',
+                                method       : 'move',
+                                HTTP_MODAUTH : self.$httpModAuth,
+                                files        : files
+                            },
+                            success: function(data) {
+                                //$(self.$listing).html(data.results.html);
+                                console.log('moved files');
+                            }
+                        });
+
+                        $(this).dialog('close');
+                    }
+                }, {
+                    text: e.target.dataset.moveCancel,
+                    class: 'btn btn-default',
+                    click: function () {
+                        $(this).dialog('close');
+                    }
+                }],
+                open: function(event, ui) {
+                    $('.ui-dialog-titlebar-close', ui.dialog | ui).hide();
+                },
+                close : function() {
+                    $(this).dialog('destroy').remove();
+                }
+            });
+        },
+
+        /**
+         * Archive files.
+         *
+         * @param e
+         */
+        archiveFiles: function(e) {
+            var self = this,
+                files = self.$selectedFiles;
+
+            console.log('moveFile click');
+
+            if (self.$currentFile !== 0) {
+                files = self.$currentFile;
+            }
+
+            $('<div />').text('Are you sure you want to archive this file?').dialog({
+                draggable: false,
+                resizable: false,
+                modal: true,
+                title: e.target.dataset.archiveTitle,
+                buttons : [{
+                    text: e.target.dataset.archiveConfirm,
+                    class: 'btn btn-warning',
+                    click: function () {
+                        $.ajax ({
+                            type: 'POST',
+                            url: self.$connectorUrl,
+                            data: {
+                                action       : 'mgr/files',
+                                method       : 'archive',
+                                HTTP_MODAUTH : self.$httpModAuth,
+                                files        : files
+                            },
+                            success: function(data) {
+                                //$(self.$listing).html(data.results.html);
+                                console.log('moved files');
+                            }
+                        });
+
+                        $(this).dialog('close');
+                    }
+                }, {
+                    text: e.target.dataset.archiveCancel,
+                    class: 'btn btn-default',
+                    click: function () {
+                        $(this).dialog('close');
+                    }
+                }],
+                open: function(event, ui) {
+                    $('.ui-dialog-titlebar-close', ui.dialog | ui).hide();
+                },
+                close : function() {
+                    $(this).dialog('destroy').remove();
+                }
+            });
+        },
+
+        /**
+         * Set file id that we want to edit.
+         *
+         * @param e
+         */
+        filePopup: function(e) {
+            var self = this;
+
+            self.$currentFile = $(e.target).parents('.file').data('id');
+        }
 
     }
 
@@ -591,13 +677,29 @@
         click : $.proxy(MediaManagerFiles, 'selectFile')
     }, MediaManagerFiles.$fileContainer);
 
-    //$(document).on({
-    //    click : $.proxy(MediaManagerFiles, 'filePopup')
-    //}, MediaManagerFiles.$fileEditButton);
-    //
-    //$(document).on({
-    //    click : $.proxy(MediaManagerFiles, 'deleteFile')
-    //}, MediaManagerFiles.$fileDeleteButton);
+    $(document).on({
+        click : $.proxy(MediaManagerFiles, 'filePopup')
+    }, MediaManagerFiles.$filePopupButton);
+
+    // File actions
+
+    $(document).on({
+        click : $.proxy(MediaManagerFiles, 'moveFiles')
+    }, MediaManagerFiles.$fileMoveButton);
+
+    $(document).on({
+        click : $.proxy(MediaManagerFiles, 'archiveFiles')
+    }, MediaManagerFiles.$fileArchiveButton);
+
+    // Bulk actions
+
+    $(document).on({
+        click : $.proxy(MediaManagerFiles, 'moveFiles')
+    }, MediaManagerFiles.$bulkMoveButton);
+
+    $(document).on({
+        click : $.proxy(MediaManagerFiles, 'archiveFiles')
+    }, MediaManagerFiles.$bulkArchiveButton);
 
     $(document).on({
         click : $.proxy(MediaManagerFiles, 'clearSelectedFiles')

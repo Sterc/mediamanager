@@ -21,7 +21,15 @@ class MediaManagerFilesProcessor extends modProcessor
 
         switch ($method) {
             case 'add':
-                $data = $this->addFile();
+                $data = $this->add();
+
+                break;
+            case 'move':
+                $data = $this->move();
+
+                break;
+            case 'archive':
+                $data = $this->archive();
 
                 break;
             case 'list':
@@ -33,7 +41,7 @@ class MediaManagerFilesProcessor extends modProcessor
         return $data;
     }
 
-    private function addFile()
+    private function add()
     {
         $response = $this->mediaManager->files->addFile();
         if ($response['status'] === 'error') {
@@ -43,16 +51,37 @@ class MediaManagerFilesProcessor extends modProcessor
         return $this->toJSON($response);
     }
 
+    private function move()
+    {
+        return $this->outputArray(
+            $this->mediaManager->files->moveFiles(
+                $this->getProperty('files'),
+                $this->getProperty('category')
+            )
+        );
+    }
+
+    private function archive()
+    {
+        return $this->outputArray(
+            $this->mediaManager->files->archiveFiles(
+                $this->getProperty('files')
+            )
+        );
+    }
+
     private function getList()
     {
-        return $this->outputArray((array) $this->mediaManager->files->getListHtml(
-            (int)    $this->getProperty('context'),
-            (int)    $this->getProperty('category'),
-            (string) $this->getProperty('search'),
-            (array)  $this->getProperty('filters'),
-            (array)  $this->getProperty('sorting'),
-            (string) $this->getProperty('viewMode')
-        ));
+        return $this->outputArray(
+            (array) $this->mediaManager->files->getListHtml(
+                (int)    $this->getProperty('context'),
+                (int)    $this->getProperty('category'),
+                (string) $this->getProperty('search'),
+                (array)  $this->getProperty('filters'),
+                (array)  $this->getProperty('sorting'),
+                (string) $this->getProperty('viewMode')
+            )
+        );
     }
 
 }

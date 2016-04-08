@@ -119,6 +119,7 @@
 .mediamanager-browser .view-mode-grid .file .file-name {
     text-align: center;
     word-wrap: break-word;
+    font-size: 13px;
 }
 
 .mediamanager-browser .view-mode-grid .file .file-options {
@@ -168,7 +169,7 @@
     border-left: 12px solid #0089e0;
 }
 
-.mediamanager-tag:after{
+.mediamanager-tag:after {
     content:"";
     position:absolute;
     top:10px;
@@ -180,7 +181,12 @@
     background:#fff;
 }
 
+.ui-widget-overlay {
+    z-index: 1090 !important;
+}
+
 .ui-dialog {
+    z-index: 1100 !important;
     padding: 0 !important;
     font-family: "Helvetica Neue",Helvetica,Arial,sans-serif !important;
 }

@@ -30,7 +30,7 @@
     </div>
 
     <div class="row">
-        <div class="col-sm-3 col-md-2">
+        <div class="col-sm-3 col-lg-2">
 
             <select class="form-control select-context" data-select-context>
                 {$context_list}
@@ -40,7 +40,7 @@
 
         </div>
 
-        <div class="col-sm-9 col-md-10">
+        <div class="col-sm-9 col-lg-10">
 
             {$filters}
 

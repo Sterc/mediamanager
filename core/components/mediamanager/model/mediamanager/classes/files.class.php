@@ -412,6 +412,7 @@ class MediaManagerFilesHelper
      *
      * @param array $fileData
      * @param array $data
+     *
      * @return bool
      */
     private function insertFile($fileData, $data) {
@@ -452,6 +453,57 @@ class MediaManagerFilesHelper
         }
 
         return true;
+    }
+
+    /**
+     * Move files.
+     *
+     * @param array $files
+     * @param int $category
+     *
+     * @return array
+     */
+    public function moveFiles($files, $category)
+    {
+//        foreach ($files as $fileId) {
+//            $file = $this->mediaManager->modx->getObject('MediamanagerFilesCategories', array(
+//                $fileId
+//            ));
+//            $file->set();
+//        }
+
+        return [
+
+        ];
+    }
+
+    /**
+     * Archive files.
+     *
+     * @param $files
+     * @return array
+     */
+    public function archiveFiles($files)
+    {
+        $q = $this->mediaManager->modx->newQuery('MediamanagerFilesContent');
+        $q->select('MediamanagerFilesContent.mediamanager_files_id AS id');
+        $q->groupby('MediamanagerFilesContent.mediamanager_files_id');
+        $q->prepare();
+
+        $query = $this->mediaManager->modx->query($q->toSQL());
+        $results = $query->fetchAll(PDO::FETCH_OBJ);
+
+var_dump($results);
+die();
+        foreach ($files as $fileId) {
+            $file = $this->mediaManager->modx->getObject('MediamanagerFiles', $fileId);
+            $file->set('is_archived', 1);
+            $file->set('archive_date', time());
+            $file->set('archive_path', '');
+            $file->save();
+        }
+
+        return [];
     }
 
     /**

@@ -7,12 +7,12 @@
             </div>
             <div class="modal-body"></div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-file-edit>[[%mediamanager.global.edit]]</button>
-                <button type="button" class="btn btn-default" data-file-crop>[[%mediamanager.global.crop]]</button>
-                <button type="button" class="btn btn-default" data-file-move>[[%mediamanager.global.move]]</button>
-                <button type="button" class="btn btn-default" data-file-archive>[[%mediamanager.global.archive]]</button>
-                <button type="button" class="btn btn-default" data-file-share>[[%mediamanager.global.share]]</button>
-                <button type="button" class="btn btn-danger pull-right" data-file-delete>[[%mediamanager.global.delete]]</button>
+                <button type="button" class="btn btn-default" data-file-edit-button>[[%mediamanager.global.edit]]</button>
+                <button type="button" class="btn btn-default" data-file-crop-button>[[%mediamanager.global.crop]]</button>
+                <button type="button" class="btn btn-default" data-move-title="[[%mediamanager.files.move_title]]" data-move-confirm="[[%mediamanager.global.move]]" data-move-cancel="[[%mediamanager.global.cancel]]" data-file-move-button>[[%mediamanager.global.move]]</button>
+                <button type="button" class="btn btn-default" data-archive-title="[[%mediamanager.files.archive_title]]" data-archive-confirm="[[%mediamanager.global.archive]]" data-archive-cancel="[[%mediamanager.global.cancel]]" data-file-archive-button>[[%mediamanager.global.archive]]</button>
+                <button type="button" class="btn btn-default" data-file-share-button>[[%mediamanager.global.share]]</button>
+                <button type="button" class="btn btn-danger pull-right" data-file-delete-button>[[%mediamanager.global.delete]]</button>
             </div>
         </div>
     </div>

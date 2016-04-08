@@ -81,3 +81,7 @@ $_lang['mediamanager.files.error.file_exists'] = 'File `[[+file]]` already exist
 $_lang['mediamanager.files.error.file_upload'] = 'File `[[+file]]` could not be uploaded.';
 $_lang['mediamanager.files.error.file_save'] = 'File `[[+file]]` not added to database.';
 $_lang['mediamanager.files.success.file_upload'] = 'File `[[+file]]` uploaded.';
+$_lang['mediamanager.files.move_title'] = 'Move file';
+$_lang['mediamanager.files.archive_title'] = 'Archive file';
+$_lang['mediamanager.files.bulk.move_title'] = 'Move selected files';
+$_lang['mediamanager.files.bulk.archive_title'] = 'Archive selected files';

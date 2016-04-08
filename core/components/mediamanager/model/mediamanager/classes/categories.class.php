@@ -132,7 +132,12 @@ class MediaManagerCategoriesHelper
         $list = $this->buildCategoryTree($this->getCategories());
         $list = array_values($list);
 
-        return $list;
+        $select = $this->getParentOptions();
+
+        return [
+            'list' => $list,
+            'select' => $select
+        ];
     }
 
     private function buildCategoryTree(array $list, $parent = 0)

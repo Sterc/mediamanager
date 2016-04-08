@@ -3,8 +3,8 @@
     <div class="form-inline">
 
         <div class="bulk-actions pull-left">
-            <button type="button" class="btn btn-default" data-bulk-move>[[%mediamanager.global.move]]</button>
-            <button type="button" class="btn btn-default" data-bulk-archive>[[%mediamanager.global.archive]]</button>
+            <button type="button" class="btn btn-default" data-move-title="[[%mediamanager.files.bulk.move_title]]" data-move-confirm="[[%mediamanager.global.move]]" data-move-cancel="[[%mediamanager.global.cancel]]" data-bulk-move>[[%mediamanager.global.move]]</button>
+            <button type="button" class="btn btn-default" data-archive-title="[[%mediamanager.files.bulk.archive_title]]" data-archive-confirm="[[%mediamanager.global.archive]]" data-archive-cancel="[[%mediamanager.global.cancel]]" data-bulk-archive>[[%mediamanager.global.archive]]</button>
             <button type="button" class="btn btn-default" data-bulk-share>[[%mediamanager.global.share]]</button>
             <button type="button" class="btn btn-default" data-bulk-download>[[%mediamanager.global.download]]</button>
             <button type="button" class="btn btn-danger" data-bulk-delete>[[%mediamanager.global.delete]]</button>
