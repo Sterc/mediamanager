@@ -20,6 +20,8 @@
         $fileErrorMessage        : 'span[data-dz-errormessage]',
 
         $filePopup               : 'div[data-file-popup]',
+        $filePopupBody           : 'div[data-file-popup-body]',
+        $filePopupFooter         : 'div[data-file-popup-footer]',
         $filePopupButton         : 'button[data-file-popup-button]',
         $fileEditButton          : 'button[data-file-edit-button]',
         $fileCropButton          : 'button[data-file-crop-button]',
@@ -27,10 +29,6 @@
         $fileArchiveButton       : 'button[data-file-archive-button]',
         $fileShareButton         : 'button[data-file-share-button]',
         $fileDeleteButton        : 'button[data-file-delete-button]',
-
-        $filePreviewContainer    : 'div[data-file-preview-container]',
-        $fileEditContainer       : 'div[data-file-edit-container]',
-        $fileCropContainer       : 'div[data-file-crop-container]',
 
         $selectContext           : 'select[data-select-context]',
         $categoryTree            : 'div[data-category-tree]',
@@ -219,7 +217,8 @@
                     },
                     cache: true
                 },
-                minimumInputLength: 1
+                minimumInputLength: 1,
+                theme: 'default select2-container--categories'
             };
 
             self.$filterTagsOptions = {
@@ -243,7 +242,8 @@
                     },
                     cache: true
                 },
-                minimumInputLength: 1
+                minimumInputLength: 1,
+                theme: 'default select2-container--tags'
             };
 
             $(self.$filterCategories).select2(self.$filterCategoriesOptions);
@@ -776,9 +776,9 @@
                     id           : self.$currentFile
                 },
                 success: function(data) {
-                    console.log(data);
+                    $(self.$filePopupBody).html(data.results.body);
+                    $(self.$filePopupFooter).html(data.results.footer);
 
-                    $(self.$filePreviewContainer).html(data.results);
                     $(self.$fileCategories).select2(self.$filterCategoriesOptions);
                     $(self.$fileTags).select2(self.$filterTagsOptions);
                 }

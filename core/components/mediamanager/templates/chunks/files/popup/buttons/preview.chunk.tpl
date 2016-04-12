@@ -1,0 +1,6 @@
+<button type="button" class="btn btn-default" data-file-edit-button>[[%mediamanager.global.edit]]</button>
+<button type="button" class="btn btn-default" data-file-crop-button>[[%mediamanager.global.crop]]</button>
+<button type="button" class="btn btn-default" data-archive-title="[[%mediamanager.files.archive_title]]" data-archive-message="[[%mediamanager.files.archive_message]]" data-archive-confirm="[[%mediamanager.global.archive]]" data-archive-cancel="[[%mediamanager.global.cancel]]" data-file-archive-button>[[%mediamanager.global.archive]]</button>
+<button type="button" class="btn btn-default" data-share-title="[[%mediamanager.files.share_title]]" data-share-message="[[%mediamanager.files.share_message]]" data-share-confirm="[[%mediamanager.global.share]]" data-share-cancel="[[%mediamanager.global.cancel]]" data-file-share-button>[[%mediamanager.global.share]]</button>
+<a href="[[+download_link]]" target="_blank" type="button" class="btn btn-default" data-file-download-button>[[%mediamanager.global.download]]</a>
+<button type="button" class="btn btn-danger pull-right" data-file-delete-button>[[%mediamanager.global.delete]]</button>

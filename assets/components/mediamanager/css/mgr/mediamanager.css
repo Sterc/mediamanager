@@ -228,6 +228,36 @@ ol.sortable li div {
     outline: 1px dashed #4183C4;
 }
 
+.select2-container--default .select2-selection--multiple {
+    min-height: 34px;
+    border-color: #ccc;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+    color: #fff;
+}
+
+.select2-container--categories .select2-selection--multiple .select2-selection__choice {
+    background-color: #f0ad4e;
+    border: 0;
+    color: #fff;
+}
+
+.select2-container--tags .select2-selection--multiple .select2-selection__choice {
+    background-color: #5bc0de;
+    border: 0;
+    color: #fff;
+}
+
+.modal img {
+    width: 100%;
+}
+
+.modal .select2-container--default {
+    margin-top: 20px;
+    width: 100% !important;
+}
+
 .modal-footer {
     text-align: left;
 }

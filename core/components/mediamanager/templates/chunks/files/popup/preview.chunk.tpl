@@ -1,10 +1,10 @@
 <div class="row">
 
-    <div class="col-md-6">
+    <div class="col-md-5">
 
         [[+preview]]
 
-        <select name="categories[]" class="form-control" multiple="multiple" data-placeholder="[[%mediamanager.global.categories]]" data-file-categories>
+        <select name="categories[]" class="form-control testzor-yolo" multiple="multiple" data-placeholder="[[%mediamanager.global.categories]]" data-file-categories>
             [[+categories]]
         </select>
 
@@ -13,9 +13,46 @@
         </select>
 
     </div>
-    <div class="col-md-6">
+    <div class="col-md-7">
 
-        File information
+        <h3>File information</h3>
+
+        <table class="table table-striped">
+            <colgroup>
+                <col width="1">
+                <col width="1">
+            </colgroup>
+            <tbody>
+                <tr>
+                    <td>[[%mediamanager.files.file_name]]</td>
+                    <td>[[+file.name]]</td>
+                </tr>
+                <tr>
+                    <td>[[%mediamanager.files.file_dimension]]</td>
+                    <td>[[+file.file_dimensions]]</td>
+                </tr>
+                <tr>
+                    <td>[[%mediamanager.files.file_size_available]]</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>[[%mediamanager.files.file_size]]</td>
+                    <td>[[+file.file_size]]</td>
+                </tr>
+                <tr>
+                    <td>[[%mediamanager.files.file_uploaded_by]]</td>
+                    <td><a href="?a=security/user/update&id=[[+file.uploaded_by]]">[[+file.uploaded_by_name]]</a></td>
+                </tr>
+                <tr>
+                    <td>[[%mediamanager.files.file_upload_date]]</td>
+                    <td>[[+file.upload_date]]</td>
+                </tr>
+                <tr>
+                    <td>[[%mediamanager.files.file_linked_to]]</td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
 
     </div>
 

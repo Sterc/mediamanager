@@ -115,12 +115,17 @@ class MediaManagerFilesHelper
 
         $content = null;
 
+        // Get user
+        $user = $this->mediaManager->modx->getObject('modUser', array('id' => $file->get('uploaded_by')));
+        $profile = $user->getOne('Profile');
+
         return [
             'file'       => $file,
             'tags'       => $tags,
             'categories' => $categories,
             'relations'  => $relations,
-            'content'    => $content
+            'content'    => $content,
+            'user'       => $profile
         ];
     }
 
@@ -132,25 +137,36 @@ class MediaManagerFilesHelper
      */
     public function getFileHtml($fileId)
     {
-        $data = array();
-        $file = $this->getFile($fileId);
+        $chunkData = array();
+        $data = $this->getFile($fileId);
 
-//        if ($this->isImage($file['file_type'])) {
-//            $file['preview_path'] = '/connectors/system/phpthumb.php?src=' . $file['path'] . '&w=226&h=180';
-//            $data['preview'] = $this->mediaManager->getChunk('files/file_preview_img', $file);
-//        } else {
-//            $data['preview'] = $this->mediaManager->getChunk('files/file_preview_svg', $file);
-//        }
+        $file = $data['file']->toArray();
+        $file['file_size'] = $this->formatFileSize($file['file_size']);
+        $file['uploaded_by_name'] = $data['user']->get('fullname');
 
-        foreach ($file['categories'] as $category) {
-            $data['categories'][] = '<option value="' . $category->get('id') . '" selected="selected">' . $category->get('name') . '</option>';
+        $chunkData['file'] = $file;
+
+        if ($this->isImage($file['file_type'])) {
+            $chunkData['preview'] = '<img src="/connectors/system/phpthumb.php?src=' . $file['path'] . '&w=230&h=180&zc=1" />';
+        } else {
+            $chunkData['preview'] = $this->mediaManager->getChunk('files/file_preview_svg', $file);
         }
 
-        foreach ($file['tags'] as $tag) {
-            $data['tags'][] = '<option value="' . $tag->get('id') . '" selected="selected">' . $tag->get('name') . '</option>';
+        foreach ($data['categories'] as $category) {
+            $chunkData['categories'] .= '<option value="' . $category->get('id') . '" selected="selected">' . $category->get('name') . '</option>';
         }
 
-        return $this->mediaManager->getChunk('files/popup/preview', $data);
+        foreach ($data['tags'] as $tag) {
+            $chunkData['tags'] .= '<option value="' . $tag->get('id') . '" selected="selected">' . $tag->get('name') . '</option>';
+        }
+
+        return [
+            'body'   => $this->mediaManager->getChunk('files/popup/preview', $chunkData),
+            'footer' => $this->mediaManager->getChunk('files/popup/buttons/preview', array(
+                'download_link' => $this->removeSlashes($this->mediaManager->modx->getOption('site_url')) . $file['path']
+                )
+            )
+        ];
     }
 
     /**
@@ -265,6 +281,7 @@ class MediaManagerFilesHelper
         foreach ($files as $file) {
             $file = $file->toArray();
             $file['selected'] = 0;
+            $file['file_size'] = $this->formatFileSize($file['file_size']);
 
             if (in_array($file['id'], $selectedFilesIds)) {
                 $file['selected'] = 1;
@@ -272,7 +289,7 @@ class MediaManagerFilesHelper
 
             if ($viewMode === 'grid') {
                 if ($this->isImage($file['file_type'])) {
-                    $file['preview_path'] = '/connectors/system/phpthumb.php?src=' . $file['path'] . '&w=226&h=180';
+                    $file['preview_path'] = '/connectors/system/phpthumb.php?src=' . $file['path'] . '&w=230&h=180&zc=1';
                     $file['preview'] = $this->mediaManager->getChunk('files/file_preview_img', $file);
                 } else {
                     $file['preview'] = $this->mediaManager->getChunk('files/file_preview_svg', $file);
@@ -985,5 +1002,20 @@ class MediaManagerFilesHelper
     public function alertMessageHtml($message, $type = 'danger')
     {
         return '<div class="alert alert-' . $type . '" role="alert">' . $message . '</div>';
+    }
+
+    /**
+     * Format file size.
+     *
+     * @param int $bytes
+     * @param int $precision
+     *
+     * @return string
+     */
+    public function formatFileSize($bytes, $precision = 0) {
+        $unit = ["B", "KB", "MB", "GB"];
+        $exp = floor(log($bytes, 1024)) | 0;
+
+        return round($bytes / (pow(1024, $exp)), $precision) . ' ' . $unit[$exp];
     }
 }
