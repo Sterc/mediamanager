@@ -1,4 +1,4 @@
-<div class="file col-xs-12 col-sm-6 col-md-4 col-lg-2" data-id="[[+id]]">
+<div class="file[[+selected:is=`1`:then=` file-selected`]] col-xs-12 col-sm-6 col-md-4 col-lg-2" data-id="[[+id]]">
     <span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span>
     <div class="file-preview">
         [[+preview]]

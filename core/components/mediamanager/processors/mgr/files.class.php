@@ -32,8 +32,16 @@ class MediaManagerFilesProcessor extends modProcessor
                 $data = $this->archive();
 
                 break;
+            case 'share':
+                $data = $this->share();
+
+                break;
             case 'list':
                 $data = $this->getList();
+
+                break;
+            case 'file':
+                $data = $this->getFile();
 
                 break;
         }
@@ -55,8 +63,8 @@ class MediaManagerFilesProcessor extends modProcessor
     {
         return $this->outputArray(
             $this->mediaManager->files->moveFiles(
-                $this->getProperty('files'),
-                $this->getProperty('category')
+                (array) $this->getProperty('files'),
+                (int)   $this->getProperty('category')
             )
         );
     }
@@ -65,6 +73,15 @@ class MediaManagerFilesProcessor extends modProcessor
     {
         return $this->outputArray(
             $this->mediaManager->files->archiveFiles(
+                $this->getProperty('files')
+            )
+        );
+    }
+
+    private function share()
+    {
+        return $this->outputArray(
+            $this->mediaManager->files->shareFiles(
                 $this->getProperty('files')
             )
         );
@@ -79,7 +96,17 @@ class MediaManagerFilesProcessor extends modProcessor
                 (string) $this->getProperty('search'),
                 (array)  $this->getProperty('filters'),
                 (array)  $this->getProperty('sorting'),
-                (string) $this->getProperty('viewMode')
+                (string) $this->getProperty('viewMode'),
+                (array)  $this->getProperty('selectedFiles')
+            )
+        );
+    }
+
+    private function getFile()
+    {
+        return $this->outputArray(
+            (array) $this->mediaManager->files->getFileHtml(
+                (int) $this->getProperty('id')
             )
         );
     }

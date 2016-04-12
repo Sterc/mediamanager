@@ -28,6 +28,10 @@
         $fileShareButton         : 'button[data-file-share-button]',
         $fileDeleteButton        : 'button[data-file-delete-button]',
 
+        $filePreviewContainer    : 'div[data-file-preview-container]',
+        $fileEditContainer       : 'div[data-file-edit-container]',
+        $fileCropContainer       : 'div[data-file-crop-container]',
+
         $selectContext           : 'select[data-select-context]',
         $categoryTree            : 'div[data-category-tree]',
 
@@ -74,6 +78,9 @@
         $modxHeader              : '#modx-header',
         $modxContent             : '#modx-content',
 
+        /**
+         * Init
+         */
         init: function() {
             this.$connectorUrl = $(this.$dropzoneForm).attr('action');
             this.$httpModAuth = $('input[name="HTTP_MODAUTH"]', this.$dropzoneForm).val();
@@ -86,6 +93,9 @@
             this.getList();
         },
 
+        /**
+         * Initialize dropzone form.
+         */
         setDropzone: function() {
             var self = this;
 
@@ -165,17 +175,26 @@
             });
         },
 
+        /**
+         * Open or close dropzone form.
+         */
         dropzoneOpen: function() {
             var self = this;
             self.$dropzone.removeAllFiles();
             $(self.$dropzoneForm).slideToggle();
         },
 
+        /**
+         * Process file queue.
+         */
         dropzoneProcessQueue: function() {
             var self = this;
             self.$dropzone.processQueue();
         },
 
+        /**
+         * Initialize select2.
+         */
         setSelect2: function() {
             var self = this;
 
@@ -261,6 +280,9 @@
             });
         },
 
+        /**
+         * Initialize file popup.
+         */
         setPopup: function() {
             var self = this;
 
@@ -270,10 +292,8 @@
                 backdrop: 'static'
             });
 
-            $(self.$filePopup).on('show.bs.modal', function(e) {
-                //var modal = $(this);
-                console.log('open');
-            });
+            //$(self.$filePopup).on('show.bs.modal', function(e) {
+            //});
 
             $(self.$filePopup).on('hide.bs.modal', function(e) {
                 // Reset current file
@@ -281,11 +301,17 @@
             });
         },
 
+        /**
+         * Open or close advanced search options.
+         */
         advancedSearchOpen: function() {
             var self = this;
             $(self.$advancedSearchFilters).slideToggle();
         },
 
+        /**
+         * Get category tree.
+         */
         getCategories: function() {
             var self = this;
 
@@ -310,6 +336,9 @@
             });
         },
 
+        /**
+         * Get media files.
+         */
         getList: function() {
             var self = this;
 
@@ -317,15 +346,16 @@
                 url: self.$connectorUrl,
                 method: 'post',
                 data: {
-                    action       : 'mgr/files',
-                    method       : 'list',
-                    HTTP_MODAUTH : self.$httpModAuth,
-                    context      : self.$currentContext,
-                    category     : self.$currentCategory,
-                    search       : self.$currentSearch,
-                    filters      : self.$currentFilters,
-                    sorting      : self.$currentSorting,
-                    viewMode     : self.$currentViewMode
+                    action        : 'mgr/files',
+                    method        : 'list',
+                    HTTP_MODAUTH  : self.$httpModAuth,
+                    context       : self.$currentContext,
+                    category      : self.$currentCategory,
+                    search        : self.$currentSearch,
+                    filters       : self.$currentFilters,
+                    sorting       : self.$currentSorting,
+                    viewMode      : self.$currentViewMode,
+                    selectedFiles : self.$selectedFiles
                 }
             }).success(function(data) {
                 $(self.$filesContainer).html(data.results);
@@ -335,6 +365,11 @@
             });
         },
 
+        /**
+         * Set context.
+         *
+         * @returns {*}
+         */
         setContext: function() {
             var self = this,
                 context = /context=([^&]+)/.exec(window.location.href);
@@ -346,11 +381,25 @@
             return self.$currentContext = context[1];
         },
 
+        /**
+         * Update context.
+         *
+         * @param e
+         */
         changeContext: function(e) {
             var self = this;
             window.location.href = self.updateQueryStringParameter(window.location.href, 'context', e.target.value);
         },
 
+        /**
+         * Update parameter value by key.
+         *
+         * @param uri
+         * @param key
+         * @param value
+         *
+         * @returns {*}
+         */
         updateQueryStringParameter: function (uri, key, value) {
             var re = new RegExp('([?&])' + key + '=.*?(&|$)', 'i');
             var separator = uri.indexOf('?') !== -1 ? '&' : '?';
@@ -361,6 +410,11 @@
             }
         },
 
+        /**
+         * Sort media files.
+         *
+         * @param e
+         */
         changeSorting: function(e) {
             var self = this,
                 option = $(e.target).find(':selected');
@@ -373,6 +427,11 @@
             self.getList();
         },
 
+        /**
+         * Search media files.
+         *
+         * @param e
+         */
         changeSearch: function(e) {
             var self = this,
                 search = e.target.value;
@@ -383,6 +442,12 @@
             }
         },
 
+        /**
+         * Set filters and reload media files.
+         *
+         * @param e
+         * @returns {boolean}
+         */
         changeFilter: function(e) {
             var self = this;
 
@@ -402,6 +467,9 @@
             self.getList();
         },
 
+        /**
+         * Set file container height.
+         */
         resizeFileContainer: function() {
             var self = this;
 
@@ -459,7 +527,7 @@
             var self = this,
                 $target = $(e.target),
                 $fileContainer = $target.parents(self.$fileContainer),
-                index = self.$selectedFiles.indexOf($fileContainer.data('id'));
+                fileId = $fileContainer.data('id');
 
             // Don't add file if edit button is clicked
             if (typeof $target.data('file-popup-button') !== 'undefined') {
@@ -468,10 +536,21 @@
 
             $fileContainer.toggleClass('file-selected');
 
+            var index = -1;
+            $.each(self.$selectedFiles, function(i) {
+                if (self.$selectedFiles[i]['id'] == fileId) {
+                    index = i;
+                    return false;
+                }
+            });
+
             if (index >= 0) {
                 self.$selectedFiles.splice(index, 1);
             } else {
-                self.$selectedFiles.push($fileContainer.data('id'));
+                self.$selectedFiles.push({
+                    id: fileId,
+                    category: self.$currentCategory
+                });
             }
 
             self.showBulkActions();
@@ -507,14 +586,7 @@
          * @param e
          */
         moveFiles: function(e) {
-            var self = this,
-                files = self.$selectedFiles;
-
-            console.log('moveFile click');
-
-            if (self.$currentFile !== 0) {
-                files = self.$currentFile;
-            }
+            var self = this;
 
             $('<div />').html($('<select />').addClass('form-control').append(self.$categoriesSelectOptions)).dialog({
                 draggable: false,
@@ -532,11 +604,12 @@
                                 action       : 'mgr/files',
                                 method       : 'move',
                                 HTTP_MODAUTH : self.$httpModAuth,
-                                files        : files
+                                files        : self.$selectedFiles,
+                                category     : $(this).find('select').val()
                             },
                             success: function(data) {
-                                //$(self.$listing).html(data.results.html);
-                                console.log('moved files');
+                                self.clearSelectedFiles();
+                                self.getList();
                             }
                         });
 
@@ -567,20 +640,18 @@
             var self = this,
                 files = self.$selectedFiles;
 
-            console.log('moveFile click');
-
             if (self.$currentFile !== 0) {
                 files = self.$currentFile;
             }
 
-            $('<div />').text('Are you sure you want to archive this file?').dialog({
+            var $dialog = $('<div />').html('<span data-error></span>' + e.target.dataset.archiveMessage).dialog({
                 draggable: false,
                 resizable: false,
                 modal: true,
                 title: e.target.dataset.archiveTitle,
                 buttons : [{
                     text: e.target.dataset.archiveConfirm,
-                    class: 'btn btn-warning',
+                    class: 'btn btn-danger',
                     click: function () {
                         $.ajax ({
                             type: 'POST',
@@ -592,15 +663,85 @@
                                 files        : files
                             },
                             success: function(data) {
-                                //$(self.$listing).html(data.results.html);
-                                console.log('moved files');
+                                // Deselect files
+                                if (data.results.archivedFiles.length) {
+                                    $.each(data.results.archivedFiles, function (i) {
+                                        self.$selectedFiles.splice(i, 1);
+                                    });
+
+                                    self.showBulkActions();
+                                    self.getList();
+                                }
+
+                                if (data.results.status === 'error') {
+                                    $dialog.find('span[data-error]').html(data.results.message);
+                                    return false;
+                                }
+
+                                $dialog.dialog('close');
                             }
                         });
-
-                        $(this).dialog('close');
                     }
                 }, {
                     text: e.target.dataset.archiveCancel,
+                    class: 'btn btn-default',
+                    click: function () {
+                        $(this).dialog('close');
+                    }
+                }],
+                open: function(event, ui) {
+                    $('.ui-dialog-titlebar-close', ui.dialog | ui).hide();
+                },
+                close : function() {
+                    $(this).dialog('destroy').remove();
+                }
+            });
+        },
+
+        /**
+         * Share files.
+         *
+         * @param e
+         */
+        shareFiles: function(e) {
+            var self = this,
+                files = self.$selectedFiles;
+
+            if (self.$currentFile !== 0) {
+                files = self.$currentFile;
+            }
+
+            var $dialog = $('<div />').html('<span data-error></span>' + e.target.dataset.shareMessage).dialog({
+                draggable: false,
+                resizable: false,
+                modal: true,
+                title: e.target.dataset.shareTitle,
+                buttons : [{
+                    text: e.target.dataset.shareConfirm,
+                    class: 'btn btn-primary',
+                    click: function () {
+                        $.ajax ({
+                            type: 'POST',
+                            url: self.$connectorUrl,
+                            data: {
+                                action       : 'mgr/files',
+                                method       : 'share',
+                                HTTP_MODAUTH : self.$httpModAuth,
+                                files        : files
+                            },
+                            success: function(data) {
+                                if (data.results.status === 'success') {
+                                    $dialog.html(data.results.message);
+                                    $dialog.next().find('.btn-primary').hide()
+                                    self.clearSelectedFiles();
+                                } else {
+                                    $dialog.find('span[data-error]').html(data.results.message);
+                                }
+                            }
+                        });
+                    }
+                }, {
+                    text: e.target.dataset.shareCancel,
                     class: 'btn btn-default',
                     click: function () {
                         $(this).dialog('close');
@@ -623,7 +764,25 @@
         filePopup: function(e) {
             var self = this;
 
-            self.$currentFile = $(e.target).parents('.file').data('id');
+            self.$currentFile = $(e.target).parents(self.$fileContainer).data('id');
+
+            $.ajax ({
+                type: 'POST',
+                url: self.$connectorUrl,
+                data: {
+                    action       : 'mgr/files',
+                    method       : 'file',
+                    HTTP_MODAUTH : self.$httpModAuth,
+                    id           : self.$currentFile
+                },
+                success: function(data) {
+                    console.log(data);
+
+                    $(self.$filePreviewContainer).html(data.results);
+                    $(self.$fileCategories).select2(self.$filterCategoriesOptions);
+                    $(self.$fileTags).select2(self.$filterTagsOptions);
+                }
+            });
         }
 
     }
@@ -684,12 +843,12 @@
     // File actions
 
     $(document).on({
-        click : $.proxy(MediaManagerFiles, 'moveFiles')
-    }, MediaManagerFiles.$fileMoveButton);
-
-    $(document).on({
         click : $.proxy(MediaManagerFiles, 'archiveFiles')
     }, MediaManagerFiles.$fileArchiveButton);
+
+    $(document).on({
+        click : $.proxy(MediaManagerFiles, 'shareFiles')
+    }, MediaManagerFiles.$fileShareButton);
 
     // Bulk actions
 
@@ -700,6 +859,10 @@
     $(document).on({
         click : $.proxy(MediaManagerFiles, 'archiveFiles')
     }, MediaManagerFiles.$bulkArchiveButton);
+
+    $(document).on({
+        click : $.proxy(MediaManagerFiles, 'shareFiles')
+    }, MediaManagerFiles.$bulkShareButton);
 
     $(document).on({
         click : $.proxy(MediaManagerFiles, 'clearSelectedFiles')
