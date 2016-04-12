@@ -4,7 +4,7 @@
 
         [[+preview]]
 
-        <select name="categories[]" class="form-control testzor-yolo" multiple="multiple" data-placeholder="[[%mediamanager.global.categories]]" data-file-categories>
+        <select name="categories[]" class="form-control" multiple="multiple" data-placeholder="[[%mediamanager.global.categories]]" data-file-categories>
             [[+categories]]
         </select>
 
