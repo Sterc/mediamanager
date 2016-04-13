@@ -133,11 +133,15 @@ class MediaManagerFilesHelper
      * Get single file html.
      *
      * @param int $fileId
+     * @param string $template
+     *
      * @return string
      */
-    public function getFileHtml($fileId)
+    public function getFileHtml($fileId, $template)
     {
-        $chunkData = array();
+        $bodyData = array();
+        $footerData = array();
+
         $data = $this->getFile($fileId);
 
         $file = $data['file']->toArray();
@@ -145,28 +149,26 @@ class MediaManagerFilesHelper
         $file['uploaded_by_name'] = $data['user']->get('fullname');
         $file['full_link'] = $this->removeSlashes($this->mediaManager->modx->getOption('site_url')) . $file['path'];
 
-        $chunkData['file'] = $file;
+        $bodyData['file'] = $file;
+        $footerData['download_link'] = $file['full_link'];
 
         if ($this->isImage($file['file_type'])) {
-            $chunkData['preview'] = '<img src="/connectors/system/phpthumb.php?src=' . $file['path'] . '&w=230&h=180&zc=1" />';
+            $bodyData['preview'] = '<img src="/connectors/system/phpthumb.php?src=' . $file['path'] . '&w=230&h=180" />';
         } else {
-            $chunkData['preview'] = $this->mediaManager->getChunk('files/file_preview_svg', $file);
+            $bodyData['preview'] = $this->mediaManager->getChunk('files/file_preview_svg', $file);
         }
 
         foreach ($data['categories'] as $category) {
-            $chunkData['categories'] .= '<option value="' . $category->get('id') . '" selected="selected">' . $category->get('name') . '</option>';
+            $bodyData['categories'] .= '<option value="' . $category->get('id') . '" selected="selected">' . $category->get('name') . '</option>';
         }
 
         foreach ($data['tags'] as $tag) {
-            $chunkData['tags'] .= '<option value="' . $tag->get('id') . '" selected="selected">' . $tag->get('name') . '</option>';
+            $bodyData['tags'] .= '<option value="' . $tag->get('id') . '" selected="selected">' . $tag->get('name') . '</option>';
         }
 
         return [
-            'body'   => $this->mediaManager->getChunk('files/popup/preview', $chunkData),
-            'footer' => $this->mediaManager->getChunk('files/popup/buttons/preview', array(
-                'download_link' => $file['full_link']
-                )
-            )
+            'body'   => $this->mediaManager->getChunk('files/popup/' . $template, $bodyData),
+            'footer' => $this->mediaManager->getChunk('files/popup/buttons/' . $template, $footerData)
         ];
     }
 
@@ -290,7 +292,7 @@ class MediaManagerFilesHelper
 
             if ($viewMode === 'grid') {
                 if ($this->isImage($file['file_type'])) {
-                    $file['preview_path'] = '/connectors/system/phpthumb.php?src=' . $file['path'] . '&w=230&h=180&zc=1';
+                    $file['preview_path'] = '/connectors/system/phpthumb.php?src=' . $file['path'] . '&w=230&h=180';
                     $file['preview'] = $this->mediaManager->getChunk('files/file_preview_img', $file);
                 } else {
                     $file['preview'] = $this->mediaManager->getChunk('files/file_preview_svg', $file);

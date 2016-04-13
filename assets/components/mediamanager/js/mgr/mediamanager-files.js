@@ -24,12 +24,12 @@
         $filePopupBody           : 'div[data-file-popup-body]',
         $filePopupFooter         : 'div[data-file-popup-footer]',
         $filePopupButton         : 'button[data-file-popup-button]',
-        $fileEditButton          : 'button[data-file-edit-button]',
-        $fileCropButton          : 'button[data-file-crop-button]',
+        $fileActionButton        : 'button[data-file-action-button]',
         $fileMoveButton          : 'button[data-file-move-button]',
         $fileArchiveButton       : 'button[data-file-archive-button]',
         $fileShareButton         : 'button[data-file-share-button]',
         $fileDeleteButton        : 'button[data-file-delete-button]',
+        $fileCrop                : 'img.crop',
 
         $selectContext           : 'select[data-select-context]',
         $categoryTree            : 'div[data-category-tree]',
@@ -278,11 +278,13 @@
                 backdrop: 'static'
             });
 
-            //$(self.$filePopup).on('show.bs.modal', function(e) {
-            //});
+            // Set current file
+            $(self.$filePopup).on('show.bs.modal', function(e) {
+                self.$currentFile = $(e.relatedTarget).parents(self.$fileContainer).data('id');
+            });
 
+            // Reset current file
             $(self.$filePopup).on('hide.bs.modal', function(e) {
-                // Reset current file
                 self.$currentFile = 0;
             });
         },
@@ -746,14 +748,17 @@
         },
 
         /**
-         * Set file id that we want to edit.
+         * Open file popup.
          *
          * @param e
          */
         filePopup: function(e) {
-            var self = this;
+            var self = this,
+                template = e.target.dataset.template;
 
-            self.$currentFile = $(e.target).parents(self.$fileContainer).data('id');
+            if (typeof template === 'undefined') {
+                template = 'preview';
+            }
 
             $.ajax ({
                 type: 'POST',
@@ -762,14 +767,22 @@
                     action       : 'mgr/files',
                     method       : 'file',
                     HTTP_MODAUTH : self.$httpModAuth,
-                    id           : self.$currentFile
+                    id           : self.$currentFile,
+                    template     : template
                 },
                 success: function(data) {
-                    $(self.$filePopupBody).html(data.results.body);
-                    $(self.$filePopupFooter).html(data.results.footer);
+                    var $body   = $(self.$filePopupBody),
+                        $footer = $(self.$filePopupFooter);
 
-                    $(self.$fileCategories).select2(self.$filterCategoriesOptions);
-                    $(self.$fileTags).select2(self.$filterTagsOptions);
+                    $body.html(data.results.body);
+                    $footer.html(data.results.footer);
+
+                    $(self.$fileCategories, $body).select2(self.$filterCategoriesOptions);
+                    $(self.$fileTags, $body).select2(self.$filterTagsOptions);
+
+                    $(self.$fileCrop, $body).cropper({
+                        dragMode: 'move'
+                    });
                 }
             });
         }
@@ -825,9 +838,15 @@
         click : $.proxy(MediaManagerFiles, 'selectFile')
     }, MediaManagerFiles.$fileContainer);
 
+    // File popup actions
+
     $(document).on({
         click : $.proxy(MediaManagerFiles, 'filePopup')
     }, MediaManagerFiles.$filePopupButton);
+
+    $(document).on({
+        click : $.proxy(MediaManagerFiles, 'filePopup')
+    }, MediaManagerFiles.$fileActionButton);
 
     // File actions
 
