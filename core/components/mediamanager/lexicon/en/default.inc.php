@@ -105,3 +105,4 @@ $_lang['mediamanager.files.file_size'] = 'Size';
 $_lang['mediamanager.files.file_name'] = 'Name';
 $_lang['mediamanager.files.file_uploaded_by'] = 'Uploaded by';
 $_lang['mediamanager.files.file_linked_to'] = 'Linked to';
+$_lang['mediamanager.files.file_link'] = 'Link';

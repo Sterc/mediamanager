@@ -143,6 +143,7 @@ class MediaManagerFilesHelper
         $file = $data['file']->toArray();
         $file['file_size'] = $this->formatFileSize($file['file_size']);
         $file['uploaded_by_name'] = $data['user']->get('fullname');
+        $file['full_link'] = $this->removeSlashes($this->mediaManager->modx->getOption('site_url')) . $file['path'];
 
         $chunkData['file'] = $file;
 
@@ -163,7 +164,7 @@ class MediaManagerFilesHelper
         return [
             'body'   => $this->mediaManager->getChunk('files/popup/preview', $chunkData),
             'footer' => $this->mediaManager->getChunk('files/popup/buttons/preview', array(
-                'download_link' => $this->removeSlashes($this->mediaManager->modx->getOption('site_url')) . $file['path']
+                'download_link' => $file['full_link']
                 )
             )
         ];
@@ -869,7 +870,7 @@ class MediaManagerFilesHelper
      */
     private function uploadFile($file)
     {
-        $target = $this->uploadDirectoryMonth . $file['unique_name'];
+        $target     = $this->uploadDirectoryMonth . $file['unique_name'];
         $uploadFile = move_uploaded_file($file['tmp_name'], $target);
         if ($uploadFile) {
             return true;

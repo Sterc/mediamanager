@@ -102,7 +102,7 @@
                 parallelUploads: 9999,
                 maxFiles: 9999,
                 maxFilesize: 100,
-                maxThumbnailFilesize: 1,
+                maxThumbnailFilesize: 10,
                 autoProcessQueue: false,
                 clickable: '.clickable',
                 dictDefaultMessage: '',
@@ -471,8 +471,11 @@
          * Initialize lazyload for images.
          */
         lazyload: function() {
+            var self = this;
+
             $('img.lazy').lazyload({
-                threshold: 200
+                threshold: 200,
+                container: $(self.$modxContent)
             });
         },
 
