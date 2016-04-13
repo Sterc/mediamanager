@@ -27,6 +27,7 @@
                     <td>[[%mediamanager.files.file_name]]</td>
                     <td>[[+file.name]]</td>
                 </tr>
+                [[+is_image:is=`1`:then=`
                 <tr>
                     <td>[[%mediamanager.files.file_dimension]]</td>
                     <td>[[+file.file_dimensions]]</td>
@@ -35,6 +36,7 @@
                     <td>[[%mediamanager.files.file_size_available]]</td>
                     <td></td>
                 </tr>
+                `]]
                 <tr>
                     <td>[[%mediamanager.files.file_size]]</td>
                     <td>[[+file.file_size]]</td>
@@ -47,6 +49,7 @@
                     <td>[[%mediamanager.files.file_upload_date]]</td>
                     <td>[[+file.upload_date]]</td>
                 </tr>
+                [[+file.is_archived:is=`0`:then=`
                 <tr>
                     <td>[[%mediamanager.files.file_linked_to]]</td>
                     <td></td>
@@ -55,6 +58,7 @@
                     <td>[[%mediamanager.files.file_link]]</td>
                     <td><input class="form-control" value="[[+file.full_link]]" readonly></td>
                 </tr>
+                `]]
             </tbody>
         </table>
 

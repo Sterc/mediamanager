@@ -777,8 +777,68 @@
                     $body.html(data.results.body);
                     $footer.html(data.results.footer);
 
-                    $(self.$fileCategories, $body).select2(self.$filterCategoriesOptions);
-                    $(self.$fileTags, $body).select2(self.$filterTagsOptions);
+                    var $categories = $(self.$fileCategories, $body).select2(self.$filterCategoriesOptions);
+                    var $tags       = $(self.$fileTags, $body).select2(self.$filterTagsOptions);
+
+                    // Add category to file
+                    $categories.on('select2:select', function(e) {
+                        $.ajax ({
+                            type: 'POST',
+                            url: self.$connectorUrl,
+                            data: {
+                                action       : 'mgr/files',
+                                method       : 'addCategory',
+                                HTTP_MODAUTH : self.$httpModAuth,
+                                fileId       : self.$currentFile,
+                                categoryId   : e.params.data.id
+                            }
+                        });
+                    });
+
+                    // Remove category from file
+                    $categories.on('select2:unselect', function(e) {
+                        $.ajax ({
+                            type: 'POST',
+                            url: self.$connectorUrl,
+                            data: {
+                                action       : 'mgr/files',
+                                method       : 'removeCategory',
+                                HTTP_MODAUTH : self.$httpModAuth,
+                                fileId       : self.$currentFile,
+                                categoryId   : e.params.data.id
+                            }
+                        });
+                    });
+
+                    // Add tag to file
+                    $tags.on('select2:select', function(e) {
+                        $.ajax ({
+                            type: 'POST',
+                            url: self.$connectorUrl,
+                            data: {
+                                action       : 'mgr/files',
+                                method       : 'addTag',
+                                HTTP_MODAUTH : self.$httpModAuth,
+                                fileId       : self.$currentFile,
+                                tagId        : e.params.data.id
+                            }
+                        });
+                    });
+
+                    // Remove tag from file
+                    $tags.on('select2:unselect', function(e) {
+                        $.ajax ({
+                            type: 'POST',
+                            url: self.$connectorUrl,
+                            data: {
+                                action       : 'mgr/files',
+                                method       : 'removeTag',
+                                HTTP_MODAUTH : self.$httpModAuth,
+                                fileId       : self.$currentFile,
+                                tagId        : e.params.data.id
+                            }
+                        });
+                    });
 
                     $(self.$fileCrop, $body).cropper({
                         dragMode: 'move'

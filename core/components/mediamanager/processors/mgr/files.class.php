@@ -44,6 +44,22 @@ class MediaManagerFilesProcessor extends modProcessor
                 $data = $this->getFile();
 
                 break;
+            case 'addCategory':
+                $data = $this->addCategory();
+
+                break;
+            case 'removeCategory':
+                $data = $this->removeCategory();
+
+                break;
+            case 'addTag':
+                $data = $this->addTag();
+
+                break;
+            case 'removeTag':
+                $data = $this->removeTag();
+
+                break;
         }
 
         return $data;
@@ -108,6 +124,46 @@ class MediaManagerFilesProcessor extends modProcessor
             (array) $this->mediaManager->files->getFileHtml(
                 (int)    $this->getProperty('id'),
                 (string) $this->getProperty('template')
+            )
+        );
+    }
+
+    private function addCategory()
+    {
+        return $this->outputArray(
+            $this->mediaManager->files->addCategory(
+                (int) $this->getProperty('fileId'),
+                (int) $this->getProperty('categoryId')
+            )
+        );
+    }
+
+    private function removeCategory()
+    {
+        return $this->outputArray(
+            $this->mediaManager->files->removeCategory(
+                (int) $this->getProperty('fileId'),
+                (int) $this->getProperty('categoryId')
+            )
+        );
+    }
+
+    private function addTag()
+    {
+        return $this->outputArray(
+            $this->mediaManager->files->addTag(
+                (int) $this->getProperty('fileId'),
+                (int) $this->getProperty('tagId')
+            )
+        );
+    }
+
+    private function removeTag()
+    {
+        return $this->outputArray(
+            $this->mediaManager->files->removeTag(
+                (int) $this->getProperty('fileId'),
+                (int) $this->getProperty('tagId')
             )
         );
     }

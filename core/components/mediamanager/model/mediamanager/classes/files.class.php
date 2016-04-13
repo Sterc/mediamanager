@@ -139,23 +139,28 @@ class MediaManagerFilesHelper
      */
     public function getFileHtml($fileId, $template)
     {
-        $bodyData = array();
+        $bodyData   = array();
         $footerData = array();
 
         $data = $this->getFile($fileId);
-
         $file = $data['file']->toArray();
-        $file['file_size'] = $this->formatFileSize($file['file_size']);
+
+        $file['file_size']        = $this->formatFileSize($file['file_size']);
         $file['uploaded_by_name'] = $data['user']->get('fullname');
-        $file['full_link'] = $this->removeSlashes($this->mediaManager->modx->getOption('site_url')) . $file['path'];
+        $file['full_link']        = $this->removeSlashes($this->mediaManager->modx->getOption('site_url')) . $file['path'];
+        $file['is_archived']      = (int) $file['is_archived'];
 
         $bodyData['file'] = $file;
-        $footerData['download_link'] = $file['full_link'];
+        $footerData['file'] = $file;
 
         if ($this->isImage($file['file_type'])) {
             $bodyData['preview'] = '<img src="/connectors/system/phpthumb.php?src=' . $file['path'] . '&w=230&h=180" />';
+            $bodyData['is_image'] = 1;
+            $footerData['is_image'] = 1;
         } else {
             $bodyData['preview'] = $this->mediaManager->getChunk('files/file_preview_svg', $file);
+            $bodyData['is_image'] = 0;
+            $footerData['is_image'] = 0;
         }
 
         foreach ($data['categories'] as $category) {
@@ -499,7 +504,7 @@ class MediaManagerFilesHelper
         $fileInformation = pathinfo($file['name']);
         $fileName = $this->createUniqueFile($this->uploadDirectoryMonth, $this->sanitizeFileName($fileInformation['filename']), $fileInformation['extension']);
 
-        $file['extension']   = $fileInformation['extension'];
+        $file['extension']   = strtolower($fileInformation['extension']);
         $file['unique_name'] = $fileName;
 
         // Upload file
@@ -625,7 +630,7 @@ class MediaManagerFilesHelper
 
         $fileIds = [];
 
-        if (is_int($selectedFiles)) {
+        if (!is_array($selectedFiles)) {
             $fileIds[] = $selectedFiles;
         } else {
             foreach ($selectedFiles as $file) {
@@ -712,7 +717,7 @@ class MediaManagerFilesHelper
 
         $fileIds = [];
 
-        if (is_int($selectedFiles)) {
+        if (!is_array($selectedFiles)) {
             $fileIds[] = $selectedFiles;
         } else {
             foreach ($selectedFiles as $file) {
@@ -774,6 +779,78 @@ class MediaManagerFilesHelper
         ));
 
         return $response;
+    }
+
+    /**
+     * Add category to file.
+     *
+     * @param int $fileId
+     * @param int $categoryId
+     *
+     * @return array
+     */
+    public function addCategory($fileId, $categoryId)
+    {
+        $category = $this->mediaManager->modx->newObject('MediamanagerFilesCategories');
+        $category->set('mediamanager_files_id', $fileId);
+        $category->set('mediamanager_categories_id', $categoryId);
+        $category->save();
+
+        return [];
+    }
+
+    /**
+     * Remove category from file.
+     *
+     * @param int $fileId
+     * @param int $categoryId
+     *
+     * @return array
+     */
+    public function removeCategory($fileId, $categoryId)
+    {
+        $this->mediaManager->modx->removeObject('MediamanagerFilesCategories', array(
+            'mediamanager_files_id' => $fileId,
+            'mediamanager_categories_id' => $categoryId
+        ));
+
+        return [];
+    }
+
+    /**
+     * Add tag to file.
+     *
+     * @param int $fileId
+     * @param int $tagId
+     *
+     * @return array
+     */
+    public function addTag($fileId, $tagId)
+    {
+        $category = $this->mediaManager->modx->newObject('MediamanagerFilesTags');
+        $category->set('mediamanager_files_id', $fileId);
+        $category->set('mediamanager_tags_id', $tagId);
+        $category->save();
+
+        return [];
+    }
+
+    /**
+     * Remove tag from file.
+     *
+     * @param int $fileId
+     * @param int $tagId
+     *
+     * @return array
+     */
+    public function removeTag($fileId, $tagId)
+    {
+        $this->mediaManager->modx->removeObject('MediamanagerFilesTags', array(
+            'mediamanager_files_id' => $fileId,
+            'mediamanager_tags_id' => $tagId
+        ));
+
+        return [];
     }
 
     /**
