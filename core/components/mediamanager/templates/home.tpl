@@ -48,9 +48,10 @@
                 <div class="view-mode-grid panel-body" data-files></div>
             </div>
 
-            {$popup}
-
         </div>
     </div>
+
+    {$popup}
+    {$dropzoneFile}
 
 </div>

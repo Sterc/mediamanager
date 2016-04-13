@@ -19,7 +19,8 @@ class MediaManagerHomeManagerController extends MediaManagerManagerController
             'context_list'                 => $this->mediaManager->contexts->getListHtml(),
             'sort_options'                 => $this->mediaManager->files->getSortOptionsHtml(),
             'filter_options'               => $this->mediaManager->files->getFilterOptionsHtml(),
-            'popup'                        => $this->mediaManager->getChunk('files/popup')
+            'popup'                        => $this->mediaManager->getChunk('files/popup'),
+            'dropzoneFile'                 => $this->mediaManager->getChunk('files/dropzone_file')
         );
 
         $filters = $this->mediaManager->getChunk('files/filters', $placeholders);

@@ -556,14 +556,16 @@ class MediaManagerFilesHelper
 
         $fileId = $file->get('id');
 
-        foreach ($data['categories'] as $categoryId) {
+        $categories = explode(',', $data['categories']);
+        foreach ($categories as $categoryId) {
             $category = $this->mediaManager->modx->newObject('MediamanagerFilesCategories');
             $category->set('mediamanager_files_id', $fileId);
             $category->set('mediamanager_categories_id', $categoryId);
             $category->save();
         }
 
-        foreach ($data['tags'] as $tagId) {
+        $tags = explode(',', $data['tags']);
+        foreach ($tags as $tagId) {
             $tag = $this->mediaManager->modx->newObject('MediamanagerFilesTags');
             $tag->set('mediamanager_files_id', $fileId);
             $tag->set('mediamanager_tags_id', $tagId);

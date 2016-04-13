@@ -7,6 +7,7 @@
 
         $dropzone                : null,
         $dropzoneForm            : 'form[data-dropzone-form]',
+        $dropzoneFileTemplate    : 'div[data-dropzone-file-template]',
         $dropzoneActions         : '.dropzone-actions',
 
         $uploadMedia             : 'button[data-upload-media]',
@@ -125,12 +126,18 @@
                         }
                     });
 
-                    this.on('sending', function(file) {
-                        var $file = $(file.previewElement);
+                    this.on('sending', function(file, xhr, formData) {
+                        var $file       = $(file.previewElement),
+                            $categories = $(self.$fileCategories, $file),
+                            $tags       = $(self.$fileTags, $file),
+                            $button     = $(self.$fileRemoveButton, $file);
 
-                        $(self.$fileCategories, $file).attr('disabled', 'disabled');
-                        $(self.$fileTags, $file).attr('disabled', 'disabled');
-                        $(self.$fileRemoveButton, $file).attr('disabled', 'disabled');
+                        formData.append('categories', $categories.val());
+                        formData.append('tags', $tags.val());
+
+                        $categories.attr('disabled', 'disabled');
+                        $tags.attr('disabled', 'disabled');
+                        $button.attr('disabled', 'disabled');
                     });
 
                     this.on('complete', function(file) {
@@ -143,33 +150,7 @@
                         self.getList();
                     });
                 },
-                previewTemplate:
-                '<div class="dz-preview dz-file-preview">' +
-                    '<div class="row">' +
-                        '<div class="col-md-2 col-lg-1">' +
-                            '<img data-dz-thumbnail />' +
-                        '</div>' +
-                        '<div class="col-md-3 col-lg-4">' +
-                            '<div class=""><span data-dz-name></span></div>' +
-                            '<div class="" data-dz-size></div>' +
-                        '</div>' +
-                        '<div class="col-sm-4">' +
-                            '<div class="categories">' +
-                                '<select name="categories[]" class="form-control" multiple="multiple" data-placeholder="Categories" data-file-categories></select>' +
-                            '</div>' +
-                            '<div class="tags">' +
-                                '<select name="tags[]" class="form-control" multiple="multiple" data-placeholder="Tags" data-file-tags></select>' +
-                            '</div>' +
-                        '</div>' +
-                        '<div class="col-sm-2">' +
-                            '<div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">' +
-                                '<div class="progress-bar progress-bar-success" style="width:0%;" data-dz-uploadprogress></div>' +
-                            '</div>' +
-                        '</div>' +
-                        '<div class="col-sm-1"><button type="button" class="btn btn-danger dz-remove pull-right" data-dz-remove="">Delete</button></div>' +
-                    '</div>' +
-                    '<span data-dz-errormessage></span>' +
-                '</div>'
+                previewTemplate: $(self.$dropzoneFileTemplate).html()
             });
         },
 
@@ -178,8 +159,9 @@
          */
         dropzoneOpen: function() {
             var self = this;
-            self.$dropzone.removeAllFiles();
-            $(self.$dropzoneForm).slideToggle();
+            $(self.$dropzoneForm).slideToggle(400, function() {
+                self.$dropzone.removeAllFiles();
+            });
         },
 
         /**
@@ -249,16 +231,19 @@
             $(self.$filterCategories).select2(self.$filterCategoriesOptions);
             $(self.$filterTags).select2(self.$filterTagsOptions);
 
+            // Add tag to filter
             $(self.$filterTags).on('select2:select', function(e) {
                 self.$currentFilters.tags.push(e.params.data.id);
                 self.getList();
             });
 
+            // Add category to filter
             $(self.$filterCategories).on('select2:select', function(e) {
                 self.$currentFilters.categories.push(e.params.data.id);
                 self.getList();
             });
 
+            // Remove tag from filter
             $(self.$filterTags).on('select2:unselect', function(e) {
                 for (var key in self.$currentFilters.tags) {
                     if (self.$currentFilters.tags[key] == e.params.data.id) {
@@ -269,6 +254,7 @@
                 self.getList();
             });
 
+            // Remove category from filter
             $(self.$filterCategories).on('select2:unselect', function(e) {
                 for (var key in self.$currentFilters.categories) {
                     if (self.$currentFilters.categories[key] == e.params.data.id) {
