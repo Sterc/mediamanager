@@ -36,6 +36,10 @@
     width: 19.5% !important;
 }
 
+.mediamanager-browser .filters .advanced-search-filters .hasDatepicker {
+    width: 10% !important;
+}
+
 .mediamanager-browser .filters .bulk-actions {
     display: none;
 }

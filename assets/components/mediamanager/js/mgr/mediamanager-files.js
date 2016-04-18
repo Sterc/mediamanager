@@ -52,6 +52,8 @@
         $filterCategories        : 'select[data-filter-categories]',
         $filterTags              : 'select[data-filter-tags]',
         $filterUser              : 'select[data-filter-user]',
+        $filterDateFrom          : 'input[data-filter-date-from]',
+        $filterDateTo            : 'input[data-filter-date-to]',
 
         $filterCategoriesOptions : null,
         $filterTagsOptions       : null,
@@ -68,7 +70,11 @@
             categories: [],
             tags: [],
             type: '',
-            user: ''
+            user: '',
+            date: {
+                from: '',
+                to: ''
+            }
         },
 
         $currentFile             : 0,
@@ -89,7 +95,7 @@
 
             this.setContext();
             this.setDropzone();
-            this.setSelect2();
+            this.setFilters();
             this.setPopup();
             this.getCategories();
             this.getList();
@@ -232,10 +238,11 @@
         },
 
         /**
-         * Initialize select2.
+         * Initialize advanced search filters.
          */
-        setSelect2: function() {
-            var self = this;
+        setFilters: function() {
+            var self = this,
+                flag = false;
 
             self.$filterCategoriesOptions = {
                 ajax: {
@@ -321,6 +328,35 @@
                         break;
                     }
                 }
+                self.getList();
+            });
+
+            $(self.$filterDateFrom).datepicker({
+                onSelect: function(selectedDate) {
+                    self.$currentFilters['date']['from'] = selectedDate;
+                    self.getList();
+                },
+                onClose: function(selectedDate) {
+                    $(self.$filterDateTo).datepicker('option', 'minDate', selectedDate);
+                },
+                dateFormat: 'd M yy',
+                changeYear: true,
+                maxDate: 0
+            }).on('change', function() {
+                self.$currentFilters['date']['from'] = '';
+                self.getList();
+            });
+
+            $(self.$filterDateTo).datepicker({
+                onSelect: function (selectedDate) {
+                    self.$currentFilters['date']['to'] = selectedDate;
+                    self.getList();
+                },
+                dateFormat: 'd M yy',
+                changeYear: true,
+                maxDate: 0
+            }).on('change', function() {
+                self.$currentFilters['date']['to'] = '';
                 self.getList();
             });
         },

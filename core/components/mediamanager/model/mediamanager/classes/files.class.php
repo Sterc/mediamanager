@@ -244,6 +244,16 @@ class MediaManagerFilesHelper
                             $where[]['Tags.mediamanager_tags_id'] = (int) $tagId;
                         }
                         break;
+                    case 'date' :
+                        if (!empty($filters['date']['from'])) {
+                            $where[]['MediamanagerFiles.upload_date:>='] = date('Y-m-d 00:00:00', strtotime($filters['date']['from']));
+                        }
+
+                        if (!empty($filters['date']['to'])) {
+                            $where[]['MediamanagerFiles.upload_date:<='] = date('Y-m-d 23:59:59', strtotime($filters['date']['to']));
+                        }
+
+                        break;
                 }
             }
         }

@@ -26,6 +26,8 @@
                 <select class="form-control" multiple="multiple" data-placeholder="[[%mediamanager.global.categories]]" data-filter-categories></select>
                 <select class="form-control" multiple="multiple" data-placeholder="[[%mediamanager.global.tags]]" data-filter-tags></select>
                 <select class="form-control" data-filter-user>[[+filter_options.users]]</select>
+                <input class="form-control" type="text" placeholder="[[%mediamanager.files.filter.date_from]]" data-filter-date-from>
+                <input class="form-control" type="text" placeholder="[[%mediamanager.files.filter.date_to]]" data-filter-date-to>
 
             </div>
         </div>
