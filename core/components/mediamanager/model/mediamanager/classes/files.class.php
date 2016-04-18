@@ -108,12 +108,16 @@ class MediaManagerFilesHelper
 
         // Get file content
 //        $q = $this->mediaManager->modx->newQuery('MediamanagerFilesContent');
-//        $q->innerJoin('MediamanagerContent', 'Content');
-//        $q->where('MediamanagerFilesTags.mediamanager_files_id', $fileId);
+//        $q->select('
+//            modResource.id,
+//            modResource.pagetitle
+//        ');
+//        $q->where('MediamanagerFilesContent.mediamanager_files_id', $fileId);
+//        $q->innerJoin('modResource', 'modResource');
+//
+//        $content = $this->mediaManager->modx->getIterator('modResource', $q);
 
-//        $content = $this->mediaManager->modx->getIterator('MediamanagerFilesTags', $q);
-
-        $content = null;
+        $content = array();
 
         // Get user
         $user = $this->mediaManager->modx->getObject('modUser', array('id' => $file->get('uploaded_by')));
@@ -170,6 +174,12 @@ class MediaManagerFilesHelper
         foreach ($data['tags'] as $tag) {
             $bodyData['tags'] .= '<option value="' . $tag->get('id') . '" selected="selected">' . $tag->get('name') . '</option>';
         }
+
+        $bodyData['content'] = [];
+        foreach ($data['content'] as $content) {
+            $bodyData['content'][] = '<a href="?a=resource/update&id=' . $content->get('id') . '">' . $content->get('pagetitle') . '</a>';
+        }
+        $bodyData['content'] = implode(', ', $bodyData['content']);
 
         return [
             'body'   => $this->mediaManager->getChunk('files/popup/' . $template, $bodyData),

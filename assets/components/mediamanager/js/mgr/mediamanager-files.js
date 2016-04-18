@@ -77,6 +77,9 @@
         $modxHeader              : '#modx-header',
         $modxContent             : '#modx-content',
 
+        $filesCategories         : [],
+        $filesTags               : [],
+
         /**
          * Init
          */
@@ -112,16 +115,40 @@
                     method: 'add'
                 },
                 init: function() {
+                    var totalFiles = 0,
+                        $copyButton = null;
+
                     this.on('addedfile', function(file) {
+                        if (totalFiles === 0) {
+                            $(file.previewElement).find('.tags').append(
+                                $copyButton = $('<button />')
+                                    .text('Use categories and tags above for all files')
+                                    .addClass('btn btn-primary')
+                                    .on('click', function(e) {
+                                        e.preventDefault();
+                                        self.copyCategoriesAndTags();
+                                        return false;
+                                    })
+                                    .hide()
+                            );
+                        }
+
                         $(self.$dropzoneActions).show();
-                        $(self.$fileCategories).select2(self.$filterCategoriesOptions);
-                        $(self.$fileTags).select2(self.$filterTagsOptions);
+                        self.$filesCategories[totalFiles] = $(self.$fileCategories).select2(self.$filterCategoriesOptions);
+                        self.$filesTags[totalFiles] = $(self.$fileTags).select2(self.$filterTagsOptions);
+
+                        if (totalFiles > 0) {
+                            $copyButton.show();
+                        }
+
+                        ++totalFiles;
                     });
 
                     this.on('removedfile', function(file) {
                         var queue = this.getQueuedFiles();
 
                         if (queue.length === 0) {
+                            totalFiles = 0;
                             $(self.$dropzoneActions).hide();
                         }
                     });
@@ -146,6 +173,9 @@
                     });
 
                     this.on('queuecomplete', function() {
+                        self.$filesCategories = [];
+                        self.$filesTags = [];
+
                         $(self.$dropzoneActions).hide();
                         self.getList();
                     });
@@ -170,6 +200,35 @@
         dropzoneProcessQueue: function() {
             var self = this;
             self.$dropzone.processQueue();
+        },
+
+        /**
+         * Copy categories and tags.
+         */
+        copyCategoriesAndTags: function() {
+            var self    = this,
+                options = null,
+                values  = null;
+
+            $.each(self.$filesCategories, function(i, file) {
+                if (i === 0) {
+                    options = file.html();
+                    values  = file.val();
+                    return true;
+                }
+
+                file.html(options).val(values).trigger('change');
+            });
+
+            $.each(self.$filesTags, function(i, file) {
+                if (i === 0) {
+                    options = file.html();
+                    values  = file.val();
+                    return true;
+                }
+
+                file.html(options).val(values).trigger('change');
+            });
         },
 
         /**
@@ -518,6 +577,7 @@
             var self = this,
                 $target = $(e.target),
                 $fileContainer = $target.parents(self.$fileContainer),
+                $fileCheckbox = $fileContainer.find('input[type="checkbox"]'),
                 fileId = $fileContainer.data('id');
 
             // Don't add file if edit button is clicked
@@ -526,6 +586,7 @@
             }
 
             $fileContainer.toggleClass('file-selected');
+            $fileCheckbox.prop('checked', !$fileCheckbox.prop('checked'));
 
             var index = -1;
             $.each(self.$selectedFiles, function(i) {

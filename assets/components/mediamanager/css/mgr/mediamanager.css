@@ -70,6 +70,22 @@
     margin-top: 10px;
 }
 
+.mediamanager-browser .dropzone-form .dz-preview img {
+    max-width: 80px;
+}
+
+.mediamanager-browser .dropzone-form .dz-preview .select2-container--default {
+    width: 100% !important;
+}
+
+.mediamanager-browser .dropzone-form .dz-preview .categories {
+    margin-bottom: 10px;
+}
+
+.mediamanager-browser .dropzone-form .dz-preview .tags .btn {
+    margin-top: 10px;
+}
+
 .mediamanager-browser .dropzone-form .dropzone-actions {
     display:none;
     margin: 0 10px;
@@ -88,6 +104,7 @@
 .mediamanager-browser .breadcrumbs-container .glyphicon {
     margin-left: 5px;
     font-size: 20px;
+    cursor: pointer;
 }
 
 .mediamanager-browser .view-mode-grid .file {
@@ -249,7 +266,7 @@ ol.sortable li div {
     color: #fff;
 }
 
-.modal img {
+.modal .file-preview img {
     width: 100%;
 }
 

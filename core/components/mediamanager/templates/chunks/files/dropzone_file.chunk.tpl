@@ -1,10 +1,10 @@
 <div class="hidden" data-dropzone-file-template>
     <div class="dz-preview dz-file-preview">
         <div class="row">
-            <div class="col-md-2 col-lg-1">
+            <div class="col-sm-2 col-lg-1">
                 <img data-dz-thumbnail />
             </div>
-            <div class="col-md-3 col-lg-4">
+            <div class="col-sm-3 col-lg-4">
                 <div class=""><span data-dz-name></span></div>
                 <div class="" data-dz-size></div>
             </div>

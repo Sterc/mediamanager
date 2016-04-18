@@ -2,7 +2,9 @@
 
     <div class="col-md-5">
 
-        [[+preview]]
+        <div class="file-preview">
+            [[+preview]]
+        </div>
 
         <select name="categories[]" class="form-control" multiple="multiple" data-placeholder="[[%mediamanager.global.categories]]" data-file-categories>
             [[+categories]]
@@ -52,7 +54,7 @@
                 [[+file.is_archived:is=`0`:then=`
                 <tr>
                     <td>[[%mediamanager.files.file_linked_to]]</td>
-                    <td></td>
+                    <td>[[+content]]</td>
                 </tr>
                 <tr>
                     <td>[[%mediamanager.files.file_link]]</td>

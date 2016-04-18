@@ -9,6 +9,7 @@
             <th>Size</th>
             <th>Uploaded by</th>
             <th>Upload date</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
