@@ -105,7 +105,7 @@
     margin-top: 15px;
 }
 
-.mediamanager-browser .breadcrumbs-container .glyphicon {
+.mediamanager-browser .breadcrumbs-container .fa {
     margin-left: 5px;
     font-size: 20px;
     cursor: pointer;
@@ -276,7 +276,31 @@ ol.sortable li div {
 
 .modal img.crop {
     max-width: 100%;
-    max-height: 400px;
+    height: 400px;
+}
+
+.modal .crop-data .input-group {
+    margin-top: 10px;
+}
+
+.modal .crop-buttons {
+    margin-top: 20px;
+}
+
+.modal .crop-buttons > .btn,
+.modal .crop-buttons > .btn-group {
+    margin-right: 5px;
+    margin-bottom: 10px;
+}
+
+.modal .crop-preview {
+    height: 120px;
+}
+
+.modal .crop-preview .img-preview {
+    width: 100%;
+    height: 120px;
+    overflow: hidden;
 }
 
 .modal .select2-container--default {

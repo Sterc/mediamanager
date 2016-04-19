@@ -18,6 +18,7 @@ abstract class MediaManagerManagerController extends modExtraManagerController
         $this->addCss($this->mediaManager->config['assets_path'] . 'libs/bootstrap/3.3.6/css/bootstrap.min.css');
         $this->addCss($this->mediaManager->config['assets_path'] . 'libs/bootstrap-treeview/1.2.0/css/bootstrap-treeview.min.css');
         $this->addCss($this->mediaManager->config['assets_path'] . 'libs/select2/4.0.2/css/select2.min.css');
+        $this->addCss($this->mediaManager->config['assets_path'] . 'libs/font-awesome/4.6.1/css/font-awesome.min.css');
         $this->addCss($this->mediaManager->config['css_url'] . 'mgr/mediamanager.css');
 
         /**

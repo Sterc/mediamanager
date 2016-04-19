@@ -802,6 +802,56 @@ class MediaManagerFilesHelper
     }
 
     /**
+     * Crop file.
+     *
+     * @param int $fileId
+     * @param string $cropData
+     * @param bool $isNewImage
+     *
+     * @return array
+     */
+    public function cropFile($fileId, $cropData, $isNewImage = false)
+    {
+        $response = [
+            'status'  => self::STATUS_SUCCESS,
+            'message' => ''
+        ];
+
+        $imageData = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $cropData));
+
+        $file = $this->mediaManager->modx->getObject('MediamanagerFiles', array('id' => $fileId));
+
+        if (!$file) {
+            $response['status'] = self::STATUS_ERROR;
+            $response['message'] = 'File not found';
+            return $response;
+        }
+
+        if ($isNewImage) {
+            // Save as new file
+            // $this->copyFile($file);
+
+        } else {
+            // Replace current file
+            $fileCreated = file_put_contents($this->addTrailingSlash(MODX_BASE_PATH) . $this->removeSlashes($file->get('path')), $imageData);
+            if ($fileCreated === false) {
+                $response['status'] = self::STATUS_ERROR;
+                $response['message'] = 'Image not saved';
+                return $response;
+            }
+
+            $response['message'] = 'Image saved';
+        }
+
+        return $response;
+    }
+
+    public function copyFile($file, $newFile)
+    {
+
+    }
+
+    /**
      * Add category to file.
      *
      * @param int $fileId

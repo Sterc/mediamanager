@@ -41,6 +41,7 @@ class MediaManagerHomeManagerController extends MediaManagerManagerController
 
     public function loadCustomCssJs()
     {
+        $this->addJavascript($this->mediaManager->config['js_url'] . 'mgr/mediamanager-files-cropper.js');
         $this->addJavascript($this->mediaManager->config['js_url'] . 'mgr/mediamanager-files.js');
     }
 

@@ -36,6 +36,10 @@ class MediaManagerFilesProcessor extends modProcessor
                 $data = $this->share();
 
                 break;
+            case 'crop':
+                $data = $this->crop();
+
+                break;
             case 'list':
                 $data = $this->getList();
 
@@ -99,6 +103,16 @@ class MediaManagerFilesProcessor extends modProcessor
         return $this->outputArray(
             $this->mediaManager->files->shareFiles(
                 $this->getProperty('files')
+            )
+        );
+    }
+
+    private function crop()
+    {
+        return $this->outputArray(
+            $this->mediaManager->files->cropFile(
+                (int)    $this->getProperty('fileId'),
+                (string) $this->getProperty('cropData')
             )
         );
     }

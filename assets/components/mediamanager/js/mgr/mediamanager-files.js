@@ -59,7 +59,7 @@
         $filterTagsOptions       : null,
         $categoriesSelectOptions : null,
 
-        $viewMode                : 'span[data-view-mode]',
+        $viewMode                : 'i[data-view-mode]',
         $currentViewMode         : 'grid',
 
         $currentContext          : 0,
@@ -86,19 +86,25 @@
         $filesCategories         : [],
         $filesTags               : [],
 
+        $filesCropper            : null,
+
         /**
          * Init
          */
         init: function() {
-            this.$connectorUrl = $(this.$dropzoneForm).attr('action');
-            this.$httpModAuth = $('input[name="HTTP_MODAUTH"]', this.$dropzoneForm).val();
+            var self = this;
 
-            this.setContext();
-            this.setDropzone();
-            this.setFilters();
-            this.setPopup();
-            this.getCategories();
-            this.getList();
+            self.$connectorUrl = $(self.$dropzoneForm).attr('action');
+            self.$httpModAuth = $('input[name="HTTP_MODAUTH"]', self.$dropzoneForm).val();
+
+            self.$filesCropper = MediaManagerFilesCropper;
+
+            self.setContext();
+            self.setDropzone();
+            self.setFilters();
+            self.setPopup();
+            self.getCategories();
+            self.getList();
         },
 
         /**
@@ -857,6 +863,8 @@
                 template = 'preview';
             }
 
+            $(self.$filePopupBody).html($('<div />').css('width', '100%').css('height', $($(self.$filePopupBody).height()))); // @TODO: fix loading blanco screen
+
             $.ajax ({
                 type: 'POST',
                 url: self.$connectorUrl,
@@ -937,9 +945,9 @@
                         });
                     });
 
-                    $(self.$fileCrop, $body).cropper({
-                        dragMode: 'move'
-                    });
+                    if (template === 'crop') {
+                        self.$filesCropper.init($(self.$fileCrop, $body), self);
+                    }
                 }
             });
         }
@@ -1034,4 +1042,3 @@
     }, MediaManagerFiles.$bulkCancelButton);
 
 }(jQuery);
-
