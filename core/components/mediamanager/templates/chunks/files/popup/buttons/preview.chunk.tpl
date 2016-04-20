@@ -4,5 +4,5 @@
     <a href="[[+file.full_link]]" target="_blank" type="button" class="btn btn-default" data-file-download-button>[[%mediamanager.global.download]]</a>
     <button type="button" class="btn btn-danger pull-right" data-archive-title="[[%mediamanager.files.archive_title]]" data-archive-message="[[%mediamanager.files.archive_message]]" data-archive-confirm="[[%mediamanager.global.archive]]" data-archive-cancel="[[%mediamanager.global.cancel]]" data-file-archive-button>[[%mediamanager.global.archive]]</button>
 `:else=`
-    <button type="button" class="btn btn-danger pull-right" data-file-delete-button>[[%mediamanager.global.delete]]</button>
+    <button type="button" class="btn btn-danger pull-right" data-delete-title="[[%mediamanager.files.delete_title]]" data-delete-message="[[%mediamanager.files.delete_message]]" data-delete-confirm="[[%mediamanager.global.delete]]" data-delete-cancel="[[%mediamanager.global.cancel]]" data-file-delete-button>[[%mediamanager.global.delete]]</button>
 `]]

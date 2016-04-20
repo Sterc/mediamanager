@@ -613,6 +613,45 @@ class MediaManagerFilesHelper
     }
 
     /**
+     * Delete file.
+     *
+     * @param int $fileId
+     * @return bool
+     */
+    public function deleteFile($fileId)
+    {
+        // @TODO: Check permissions
+
+        $file = $this->mediaManager->modx->getObject('MediamanagerFiles', array('id' => $fileId));
+        if (!$file) {
+            return false;
+        }
+
+        $path = $file->get('path');
+        if ($file->get('is_archived')) {
+            $path = $file->get('archive_path');
+        }
+
+        // Delete file from server
+        unlink($this->addTrailingSlash(MODX_BASE_PATH) . $this->removeSlashes($path));
+
+        // Delete file
+        $this->mediaManager->modx->removeObject('MediamanagerFiles', array('id' => $fileId));
+
+        // Delete file categories
+        $this->mediaManager->modx->removeCollection('MediamanagerFilesCategories', array('mediamanager_files_id' => $fileId));
+
+        // Delete file tags
+        $this->mediaManager->modx->removeCollection('MediamanagerFilesTags', array('mediamanager_files_id' => $fileId));
+
+        // Delete file relations
+        $this->mediaManager->modx->removeCollection('MediamanagerFilesRelations', array('mediamanager_files_id' => $fileId));
+        $this->mediaManager->modx->removeCollection('MediamanagerFilesRelations', array('mediamanager_files_id_relation' => $fileId));
+
+        return true;
+    }
+
+    /**
      * Move files.
      *
      * @param array $selectedFiles
