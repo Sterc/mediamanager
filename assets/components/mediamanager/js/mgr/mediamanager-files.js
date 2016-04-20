@@ -420,6 +420,11 @@
                     onNodeSelected: function(event, data) {
                         self.$currentCategory = data.categoryId;
                         self.getList();
+                        var currentUrl = window.location.href;
+                        var newUrl = self.updateQueryStringParameter(currentUrl,'category',data.categoryId);
+                        if(currentUrl != newUrl) {
+                            history.pushState({}, '', newUrl);
+                        }
                     }
                 });
             });
