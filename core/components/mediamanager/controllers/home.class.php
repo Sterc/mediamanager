@@ -12,7 +12,9 @@ class MediaManagerHomeManagerController extends MediaManagerManagerController
             'upload_media'                 => $this->modx->lexicon('mediamanager.files.upload_media'),
             'upload_selected_files'        => $this->modx->lexicon('mediamanager.files.upload_selected_files'),
             'search'                       => $this->modx->lexicon('mediamanager.files.search'),
-            'dropzone_maximum_upload_size' => $this->modx->lexicon('mediamanager.files.dropzone.maximum_upload_size'),
+            'dropzone_maximum_upload_size' => $this->modx->lexicon('mediamanager.files.dropzone.maximum_upload_size', array(
+                'limit' => MediaManagerFilesHelper::MAX_FILE_SIZE . ' MB'
+            )),
             'dropzone_button'              => $this->modx->lexicon('mediamanager.files.dropzone.button'),
             'dropzone_title'               => $this->modx->lexicon('mediamanager.files.dropzone.title'),
             'token'                        => $this->modx->user->getUserToken($this->modx->context->get('key')),
