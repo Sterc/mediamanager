@@ -8,6 +8,7 @@ class MediaManagerFilesHelper
     const ARCHIVE_DIRECTORY = 'archive';
     const DOWNLOAD_DIRECTORY = 'download';
     const DOWNLOAD_EXPIRATION = 14;
+    const MAX_FILE_SIZE = 50;
 
     /**
      * The mediaManager object.

@@ -34,6 +34,10 @@ abstract class MediaManagerManagerController extends modExtraManagerController
         $this->addJavascript($this->mediaManager->config['assets_path'] . 'libs/dropzone/4.3.0/js/dropzone.min.js');
 
         $this->addHtml('<script type="text/javascript">
+            var mediaManagerOptions = {
+                maxFileSize : ' . MediaManagerFilesHelper::MAX_FILE_SIZE . '
+            }
+
             Ext.onReady(function() {
                 Ext.getCmp("modx-layout").hideLeftbar(true, false);
             });

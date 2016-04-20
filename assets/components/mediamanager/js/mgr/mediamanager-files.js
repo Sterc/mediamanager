@@ -117,7 +117,7 @@
             self.$dropzone = new Dropzone(document.getElementById('mediaManagerDropzone'), {
                 parallelUploads: 9999,
                 maxFiles: 9999,
-                maxFilesize: 100,
+                maxFilesize: mediaManagerOptions.maxFileSize,
                 maxThumbnailFilesize: 10,
                 autoProcessQueue: false,
                 clickable: '.clickable',
