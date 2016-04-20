@@ -6,10 +6,12 @@
             [[+preview]]
         </div>
 
+        <label class="spacing">[[%mediamanager.global.categories]]</label>
         <select name="categories[]" class="form-control" multiple="multiple" data-placeholder="[[%mediamanager.global.categories]]" data-file-categories>
             [[+categories]]
         </select>
 
+        <label class="spacing">[[%mediamanager.global.tags]]</label>
         <select name="tags[]" class="form-control" multiple="multiple" data-placeholder="[[%mediamanager.global.tags]]" data-file-tags>
             [[+tags]]
         </select>

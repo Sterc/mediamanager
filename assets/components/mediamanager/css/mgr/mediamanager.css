@@ -303,8 +303,11 @@ ol.sortable li div {
     overflow: hidden;
 }
 
+.modal label.spacing {
+    margin-top: 10px;
+}
+
 .modal .select2-container--default {
-    margin-top: 20px;
     width: 100% !important;
 }
 
