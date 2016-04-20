@@ -763,6 +763,7 @@
                                         self.$selectedFiles.splice(i, 1);
                                     });
 
+                                    $(self.$filePopup).modal('hide');
                                     self.showBulkActions();
                                     self.getList();
                                 }
@@ -836,6 +837,58 @@
                     }
                 }, {
                     text: e.target.dataset.shareCancel,
+                    class: 'btn btn-default',
+                    click: function () {
+                        $(this).dialog('close');
+                    }
+                }],
+                open: function(event, ui) {
+                    $('.ui-dialog-titlebar-close', ui.dialog | ui).hide();
+                },
+                close : function() {
+                    $(this).dialog('destroy').remove();
+                }
+            });
+        },
+
+        /**
+         * Delete file.
+         *
+         * @param e
+         */
+        deleteFile: function(e) {
+            var self = this;
+
+            var $dialog = $('<div />').html(e.target.dataset.deleteMessage).dialog({
+                draggable: false,
+                resizable: false,
+                modal: true,
+                title: e.target.dataset.deleteTitle,
+                buttons : [{
+                    text: e.target.dataset.deleteConfirm,
+                    class: 'btn btn-danger',
+                    click: function () {
+                        $.ajax({
+                            type: 'POST',
+                            url: self.$connectorUrl,
+                            data: {
+                                action       : 'mgr/files',
+                                method       : 'delete',
+                                HTTP_MODAUTH : self.$httpModAuth,
+                                fileId       : self.$currentFile
+                            },
+                            success: function(data) {
+                                $(self.$filePopup).modal('hide');
+                                self.clearSelectedFiles();
+                                self.showBulkActions();
+                                self.getList();
+
+                                $dialog.dialog('close');
+                            }
+                        });
+                    }
+                }, {
+                    text: e.target.dataset.deleteCancel,
                     class: 'btn btn-default',
                     click: function () {
                         $(this).dialog('close');
@@ -1028,6 +1081,10 @@
     $(document).on({
         click : $.proxy(MediaManagerFiles, 'shareFiles')
     }, MediaManagerFiles.$fileShareButton);
+
+    $(document).on({
+        click : $.proxy(MediaManagerFiles, 'deleteFile')
+    }, MediaManagerFiles.$fileDeleteButton);
 
     // Bulk actions
 
