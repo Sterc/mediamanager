@@ -493,7 +493,7 @@ class MediaManagerFilesHelper
     /**
      * Add file.
      *
-     * @return bool
+     * @return array
      */
     public function addFile()
     {
@@ -581,10 +581,14 @@ class MediaManagerFilesHelper
         }
 
         $file->save();
-
         $fileId = $file->get('id');
 
-        $categories = explode(',', $data['categories']);
+        // Save categories
+        $categories = $data['categories'];
+        if (!is_array($categories)) {
+            $categories = explode(',', $categories);
+        }
+
         foreach ($categories as $categoryId) {
             $category = $this->mediaManager->modx->newObject('MediamanagerFilesCategories');
             $category->set('mediamanager_files_id', $fileId);
@@ -592,7 +596,12 @@ class MediaManagerFilesHelper
             $category->save();
         }
 
-        $tags = explode(',', $data['tags']);
+        // Save tags
+        $tags = $data['tags'];
+        if (!is_array($tags)) {
+            $tags = explode(',', $tags);
+        }
+
         foreach ($tags as $tagId) {
             $tag = $this->mediaManager->modx->newObject('MediamanagerFilesTags');
             $tag->set('mediamanager_files_id', $fileId);
@@ -823,32 +832,109 @@ class MediaManagerFilesHelper
 
         if (!$file) {
             $response['status'] = self::STATUS_ERROR;
-            $response['message'] = 'File not found';
+            $response['message'] = $this->alertMessageHtml($this->mediaManager->modx->lexicon('mediamanager.files.error.file_not_found'), 'danger');
             return $response;
         }
 
         if ($isNewImage) {
             // Save as new file
-            // $this->copyFile($file);
-
+            $response = $this->duplicateFile($file, $imageData);
         } else {
             // Replace current file
             $fileCreated = file_put_contents($this->addTrailingSlash(MODX_BASE_PATH) . $this->removeSlashes($file->get('path')), $imageData);
             if ($fileCreated === false) {
                 $response['status'] = self::STATUS_ERROR;
-                $response['message'] = 'Image not saved';
+                $response['message'] = $this->alertMessageHtml($this->mediaManager->modx->lexicon('mediamanager.files.error.image_not_saved'), 'danger');
                 return $response;
             }
 
-            $response['message'] = 'Image saved';
+            $response['message'] = $this->alertMessageHtml($this->mediaManager->modx->lexicon('mediamanager.files.success.image_saved'), 'success');
         }
 
         return $response;
     }
 
-    public function copyFile($file, $newFile)
+    /**
+     * Duplicate file.
+     *
+     * @param object $file
+     * @param string $imageData
+     *
+     * @return array
+     */
+    public function duplicateFile($file, $imageData)
     {
+        $file = $file->toArray();
+        $data = array();
 
+        // Create upload directory
+        if (!$this->createUploadDirectory()) {
+            return [
+                'status'  => self::STATUS_ERROR,
+                'message' => $this->alertMessageHtml($this->mediaManager->modx->lexicon('mediamanager.files.error.create_directory'), 'danger')
+            ];
+        }
+
+        // Add unique id to file name if needed
+        $fileName = explode('.', $file['name']);
+        $fileName = $this->createUniqueFile($this->uploadDirectoryMonth, $fileName[0], $file['file_type']);
+
+        // Create new file
+        $fileCreated = file_put_contents($this->uploadDirectoryMonth . $fileName, $imageData);
+        if ($fileCreated === false) {
+            return [
+                'status'  => self::STATUS_ERROR,
+                'message' => $this->alertMessageHtml($this->mediaManager->modx->lexicon('mediamanager.files.error.file_upload', array('file' => $file['name'])), 'danger')
+            ];
+        }
+
+        $file['size']        = filesize($this->uploadDirectoryMonth . $fileName);
+        $file['hash']        = $this->getFileHashByPath($this->uploadDirectoryMonth . $fileName);
+        $file['extension']   = $file['file_type'];
+        $file['unique_name'] = $fileName;
+
+        // Get file categories
+        $categories = $this->mediaManager->modx->getIterator('MediamanagerFilesCategories', array('mediamanager_files_id' => $file['id']));
+
+        foreach ($categories as $category) {
+            $data['categories'] = $category->get('mediamanager_categories_id');
+        }
+
+        // Get file tags
+        $tags = $this->mediaManager->modx->getIterator('MediamanagerFilesTags', array('mediamanager_files_id' => $file['id']));
+
+        foreach ($tags as $tag) {
+            $data['tags'] = $tag->get('mediamanager_tags_id');
+        }
+
+        // Add file to database
+        if (!$this->insertFile($file, $data)) {
+            // Remove file from server if saving failed
+            $this->removeFile($file);
+
+            return [
+                'status'  => self::STATUS_ERROR,
+                'message' => $this->alertMessageHtml($this->mediaManager->modx->lexicon('mediamanager.files.error.file_save', array('file' => $fileName)), 'danger')
+            ];
+        }
+
+        return [
+            'status'  => self::STATUS_SUCCESS,
+            'message' => $this->alertMessageHtml($this->mediaManager->modx->lexicon('mediamanager.files.success.file_upload', array('file' => $fileName)), 'success')
+        ];
+    }
+
+    /**
+     * Copy file.
+     *
+     * @param string $source
+     * @param string $destination
+     *
+     * @return bool
+     */
+    private function copyFile($source, $destination)
+    {
+        return copy($source, $destination);
     }
 
     /**

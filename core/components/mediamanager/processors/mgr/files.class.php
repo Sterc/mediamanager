@@ -112,7 +112,8 @@ class MediaManagerFilesProcessor extends modProcessor
         return $this->outputArray(
             $this->mediaManager->files->cropFile(
                 (int)    $this->getProperty('fileId'),
-                (string) $this->getProperty('cropData')
+                (string) $this->getProperty('cropData'),
+                (bool)   $this->getProperty('isNewImage')
             )
         );
     }

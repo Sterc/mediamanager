@@ -13,10 +13,10 @@ var MediaManagerFilesCropper = {
     $dataScaleY        : 'input[data-crop-scale-y]',
 
     $buttons           : '.crop-buttons',
-    $tooltip           : '[data-toggle="tooltip"]',
+    $tooltip           : 'span[data-toggle="tooltip"]',
+    $messageContainer  : 'div[data-crop-message]',
 
     $options           : {
-        //aspectRatio: 16 / 9,
         viewMode : 1,
         dragMode : 'move',
         preview  : '.img-preview'
@@ -48,7 +48,7 @@ var MediaManagerFilesCropper = {
         $(self.$tooltip).tooltip();
 
         self.cropper();
-        self.events();
+        self.setEventListeners();
     },
 
     cropper: function() {
@@ -94,6 +94,9 @@ var MediaManagerFilesCropper = {
                 case 'getCroppedCanvas':
                     if (result) {
 
+                        $(self.$messageContainer).html('');
+                        $(self.$mediaManagerFiles.$filePopupFooter).find('.btn').prop('disabled', true);
+
                         $.ajax({
                             url: self.$mediaManagerFiles.$connectorUrl,
                             method: 'post',
@@ -102,14 +105,21 @@ var MediaManagerFilesCropper = {
                                 method       : 'crop',
                                 HTTP_MODAUTH : self.$mediaManagerFiles.$httpModAuth,
                                 fileId       : self.$mediaManagerFiles.$currentFile,
-                                cropData     : result.toDataURL()
+                                cropData     : result.toDataURL(),
+                                isNewImage   : data.newImage
                             }
                         }).success(function(data) {
-                            console.log(data);
+                            if (data.results.status === 'success') {
+                                self.removeEventListeners();
+                                self.$mediaManagerFiles.filePopup();
+                                return false;
+                            }
+
+                            $(self.$messageContainer).html(data.results.message);
+                            $(self.$mediaManagerFiles.$filePopupFooter).find('.btn').prop('disabled', false);
                         });
 
                     }
-
                     break;
             }
 
@@ -124,12 +134,24 @@ var MediaManagerFilesCropper = {
         }
     },
 
-    events: function() {
+    setEventListeners: function() {
         var self = this;
 
         $(self.$buttons).on('click', '[data-method]', function(event) {
             self.buttons(event);
         });
+
+        $(self.$mediaManagerFiles.$filePopupFooter).on('click', '[data-method]', function(event) {
+            self.buttons(event);
+        });
+    },
+
+    removeEventListeners: function() {
+        var self = this;
+
+        $(self.$buttons).off('click');
+        $(self.$mediaManagerFiles.$filePopupFooter).off('click');
+        self.$image.cropper('destroy');
     }
 
 }

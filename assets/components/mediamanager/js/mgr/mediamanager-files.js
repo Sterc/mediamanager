@@ -857,14 +857,20 @@
          */
         filePopup: function(e) {
             var self = this,
+                template;
+
+            if (typeof e !== 'undefined') {
                 template = e.target.dataset.template;
+            }
 
             if (typeof template === 'undefined') {
                 template = 'preview';
             }
 
-            $(self.$filePopupBody).html($('<div />').css('width', '100%').css('height', $($(self.$filePopupBody).height()))); // @TODO: fix loading blanco screen
+            // White loading screen
+            $(self.$filePopupBody).html($('<div />').css('width', '100%').css('height', $(self.$filePopupBody).height()));
 
+            // Get new template
             $.ajax ({
                 type: 'POST',
                 url: self.$connectorUrl,
