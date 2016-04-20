@@ -22,6 +22,7 @@ $_lang['mediamanager.global.download'] = 'Download';
 $_lang['mediamanager.global.cancel'] = 'Cancel';
 $_lang['mediamanager.global.tags'] = 'Tags';
 $_lang['mediamanager.global.categories'] = 'Categories';
+$_lang['mediamanager.global.root'] = 'Root';
 
 /* Tags */
 $_lang['mediamanager.tags'] = 'Media Tags';

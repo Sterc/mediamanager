@@ -131,16 +131,30 @@ class MediaManagerCategoriesHelper
     {
         $list = $this->buildCategoryTree($this->getCategories());
         $list = array_values($list);
-        $list[] = array(
-            'text'       => $this->mediaManager->modx->lexicon('mediamanager.global.archive'),
-            'categoryId' => -1
+
+        $root = array(
+            array(
+                'text'       => $this->mediaManager->modx->lexicon('mediamanager.global.root'),
+                'categoryId' => 0,
+                'state'      => array(
+                    'selected' => true
+                )
+            )
         );
 
+        $archive = array(
+            array(
+                'text'       => $this->mediaManager->modx->lexicon('mediamanager.global.archive'),
+                'categoryId' => -1
+            )
+        );
+
+        $list = array_merge($root, $list, $archive);
+
         $select = $this->getParentOptions();
-        $select .= '<option value="-1">' . $this->mediaManager->modx->lexicon('mediamanager.global.archive') . '</option>';
 
         return [
-            'list' => $list,
+            'list'   => $list,
             'select' => $select
         ];
     }
