@@ -77,7 +77,7 @@ class MediaManagerCategoriesProcessor extends modProcessor
 
     private function getTree()
     {
-        return $this->mediaManager->categories->getCategoryTree();
+        return $this->mediaManager->categories->getCategoryTree($this->getProperty('selected'));
     }
 }
 

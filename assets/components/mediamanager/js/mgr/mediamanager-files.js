@@ -101,6 +101,7 @@
             self.$filesCropper = MediaManagerFilesCropper;
 
             self.setContext();
+            self.setCategory();
             self.setDropzone();
             self.setFilters();
             self.setPopup();
@@ -471,10 +472,12 @@
                 data: {
                     action       : 'mgr/categories',
                     method       : 'getTree',
-                    HTTP_MODAUTH : self.$httpModAuth
-                }
+                    HTTP_MODAUTH : self.$httpModAuth,
+                    selected     : self.$currentCategory
+                } 
             }).success(function(data) {
                 self.$categoriesSelectOptions = data.results.select;
+                console.log(data.results.list);
                 $(self.$categoryTree).treeview({
                     data: data.results.list,
                     levels: 1,
@@ -488,6 +491,22 @@
                         }
                     }
                 });
+            }).complete(function(data){
+                if(self.$currentCategory > 0) {
+
+
+                    // todo: set current active category
+                    // possible solutions:
+                    // https://github.com/jonmiles/bootstrap-treeview/issues?q=is%3Aissue+extend+is%3Aclosed
+                    // https://github.com/jonmiles/bootstrap-treeview/issues/1
+                    // https://github.com/jonmiles/bootstrap-treeview/commit/afb2c4ab172375bcea67697ad7669b72b3e04aa7
+                    // or in getCategoryTree() function in classes/categories.class.php
+
+
+                    // console.log(self.$currentCategory);
+                    // $(self.$categoryTree).treeview('revealNode', [ 4, { silent: true } ]);
+                    // $(self.$categoryTree).treeview('selectNode', [ 4, { silent: true } ]);
+                }
             });
         },
 
@@ -544,6 +563,22 @@
         changeContext: function(e) {
             var self = this;
             window.location.href = self.updateQueryStringParameter(window.location.href, 'context', e.target.value);
+        },
+
+        /**
+         * Set category based on category url parameter.
+         *
+         * @returns {*}
+         */
+        setCategory: function() {
+            var self = this,
+                category = /category=([^&]+)/.exec(window.location.href);
+
+            if (category === null) {
+                return;
+            }
+
+            return self.$currentCategory = category[1];
         },
 
         /**

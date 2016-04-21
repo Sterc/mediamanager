@@ -127,9 +127,9 @@ class MediaManagerCategoriesHelper
         return $listHtml;
     }
 
-    public function getCategoryTree()
+    public function getCategoryTree($selected = 0)
     {
-        $list = $this->buildCategoryTree($this->getCategories());
+        $list = $this->buildCategoryTree($this->getCategories(),0,$selected);
         $list = array_values($list);
 
         $root = array(
@@ -137,7 +137,7 @@ class MediaManagerCategoriesHelper
                 'text'       => $this->mediaManager->modx->lexicon('mediamanager.global.root'),
                 'categoryId' => 0,
                 'state'      => array(
-                    'selected' => true
+                    'selected' => ($selected == 0 ? true : false)
                 )
             )
         );
@@ -145,7 +145,10 @@ class MediaManagerCategoriesHelper
         $archive = array(
             array(
                 'text'       => $this->mediaManager->modx->lexicon('mediamanager.global.archive'),
-                'categoryId' => -1
+                'categoryId' => -1,
+                'state'      => array(
+                    'selected' => ($selected == -1 ? true : false)
+                )
             )
         );
 
@@ -159,16 +162,20 @@ class MediaManagerCategoriesHelper
         ];
     }
 
-    private function buildCategoryTree(array $list, $parent = 0)
+    private function buildCategoryTree(array $list, $parent = 0,$selected)
     {
         $data = array();
 
         foreach ($list as $item) {
             if ($item->get('parent_id') === $parent) {
                 $data[$item->get('id')] = array(
-                    'categoryId' => $item->get('id'),
                     'text'       => $item->get('name'),
-                    'nodes'      => $this->buildCategoryTree($list, $item->get('id'))
+                    'categoryId' => $item->get('id'),
+                    'nodes'      => $this->buildCategoryTree($list, $item->get('id'),$selected),
+                    'state'      => array(
+                        'selected' => ($item->get('id') == $selected ? true : false),
+                        'expanded' => ($item->get('id') == $selected ? true : false)
+                    )
                 );
 
                 // Remove nodes if empty
