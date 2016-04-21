@@ -168,13 +168,13 @@ class MediaManagerCategoriesHelper
 
         foreach ($list as $item) {
             if ($item->get('parent_id') === $parent) {
+                
                 $data[$item->get('id')] = array(
                     'text'       => $item->get('name'),
                     'categoryId' => $item->get('id'),
                     'nodes'      => $this->buildCategoryTree($list, $item->get('id'), $selected),
                     'state'      => array(
                         'selected' => ($item->get('id') == $selected ? true : false),
-                        'expanded' => ($item->get('id') == $selected ? true : false)
                     )
                 );
 
