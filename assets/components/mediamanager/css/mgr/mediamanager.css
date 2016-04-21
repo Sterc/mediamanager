@@ -318,3 +318,9 @@ ol.sortable li div {
 #modx-content {
     overflow-y: auto;
 }
+
+.breadcrumb {
+    margin: 0;
+    padding: 0;
+    background: none;
+}
