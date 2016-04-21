@@ -125,8 +125,9 @@
                 dictDefaultMessage: '',
                 previewsContainer: self.$dropzonePreviews,
                 params: {
-                    action: 'mgr/files',
-                    method: 'add'
+                    action  : 'mgr/files',
+                    method  : 'add',
+                    context : self.$currentContext
                 },
                 init: function() {
                     var totalFiles = 0,

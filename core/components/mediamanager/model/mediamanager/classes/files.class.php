@@ -190,21 +190,25 @@ class MediaManagerFilesHelper
      * @param string $search
      * @param array $filters
      * @param array $sorting
+     * @param int $isArchive
      *
      * @return array
      */
     public function getList($search = '', $filters = array(), $sorting = array(), $isArchive = 0)
     {
-        $q = $this->mediaManager->modx->newQuery('MediamanagerFiles');
-
-        $sortColumn = 'MediamanagerFiles.upload_date';
+        $contextId     = $this->mediaManager->contexts->getCurrentContext();
+        $sortColumn    = 'MediamanagerFiles.upload_date';
         $sortDirection = 'DESC';
+        $where         = array();
 
+        $q      = $this->mediaManager->modx->newQuery('MediamanagerFiles');
         $select = $this->mediaManager->modx->getSelectColumns('MediamanagerFiles', 'MediamanagerFiles');
 
-        $where = array();
-//        $where[]['MediamanagerFiles.mediamanager_contexts_id'] = $this->mediaManager->contexts->getCurrentContext();
         $where[]['MediamanagerFiles.is_archived'] = $isArchive;
+
+        if ($contextId !== $this->mediaManager->contexts->getDefaultContext()) {
+            $where[]['MediamanagerFiles.mediamanager_contexts_id'] = $contextId;
+        }
 
         if (!empty($search) && strlen($search) > 2) {
             $where[]['name:LIKE'] = '%' . $search . '%';
@@ -270,7 +274,6 @@ class MediaManagerFilesHelper
     /**
      * Get files html.
      *
-     * @param int $context
      * @param int $category
      * @param string $search
      * @param array $filters
@@ -280,7 +283,7 @@ class MediaManagerFilesHelper
      *
      * @return string
      */
-    public function getListHtml($context = 0, $category = 0, $search = '', $filters = array(), $sorting = array(), $viewMode = 'grid', $selectedFiles = array())
+    public function getListHtml($category = 0, $search = '', $filters = array(), $sorting = array(), $viewMode = 'grid', $selectedFiles = array())
     {
         $viewMode = ($viewMode === 'grid' ? 'grid' : 'list');
 
@@ -467,13 +470,7 @@ class MediaManagerFilesHelper
      */
     private function setImageTypes()
     {
-        $this->imageTypes = array(
-            'jpg',
-            'jpeg',
-            'png',
-            'gif',
-            'bmp'
-        );
+        $this->imageTypes = array('jpg', 'png', 'gif', 'tiff', 'bmp', 'jpeg');
     }
 
     /**
@@ -567,7 +564,7 @@ class MediaManagerFilesHelper
         $file->set('file_size', $fileData['size']);
         $file->set('file_hash', $fileData['hash']);
         $file->set('uploaded_by', $this->mediaManager->modx->getUser()->get('id'));
-//        $file->set('mediamanager_contexts_id', $this->mediaManager->contexts->getCurrentContext());
+        $file->set('mediamanager_contexts_id', $this->mediaManager->contexts->getCurrentContext());
 
         // If file type is image set dimensions
         if ($this->isImage($fileData['extension'])) {
