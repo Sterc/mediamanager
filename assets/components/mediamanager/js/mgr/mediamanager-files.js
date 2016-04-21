@@ -30,6 +30,7 @@
         $fileArchiveButton       : 'button[data-file-archive-button]',
         $fileShareButton         : 'button[data-file-share-button]',
         $fileDeleteButton        : 'button[data-file-delete-button]',
+        $fileCopyButton          : 'button[data-file-copy-button]',
         $fileCrop                : 'img.crop',
 
         $selectContext           : 'select[data-select-context]',
@@ -1001,6 +1002,54 @@
         },
 
         /**
+         * Copy file to context.
+         *
+         * @param e
+         */
+        copyToContext: function(e) {
+            var self = this;
+
+            var $dialog = $('<div />').html(e.target.dataset.copyMessage).dialog({
+                draggable: false,
+                resizable: false,
+                modal: true,
+                title: e.target.dataset.copyTitle,
+                buttons : [{
+                    text: e.target.dataset.copyConfirm,
+                    class: 'btn btn-primary',
+                    click: function () {
+                        $.ajax ({
+                            type: 'POST',
+                            url: self.$connectorUrl,
+                            data: {
+                                action       : 'mgr/files',
+                                method       : 'copyToContext',
+                                HTTP_MODAUTH : self.$httpModAuth,
+                                fileId       : self.$currentFile
+                            },
+                            success: function(data) {
+                                $dialog.html(data.results.message);
+                                $dialog.next().find('.btn-primary').hide()
+                            }
+                        });
+                    }
+                }, {
+                    text: e.target.dataset.copyCancel,
+                    class: 'btn btn-default',
+                    click: function () {
+                        $(this).dialog('close');
+                    }
+                }],
+                open: function(event, ui) {
+                    $('.ui-dialog-titlebar-close', ui.dialog | ui).hide();
+                },
+                close : function() {
+                    $(this).dialog('destroy').remove();
+                }
+            });
+        },
+
+        /**
          * Open file popup.
          *
          * @param e
@@ -1221,6 +1270,10 @@
     $(document).on({
         click : $.proxy(MediaManagerFiles, 'deleteFile')
     }, MediaManagerFiles.$fileDeleteButton);
+
+    $(document).on({
+        click : $.proxy(MediaManagerFiles, 'copyToContext')
+    }, MediaManagerFiles.$fileCopyButton);
 
     // Bulk actions
 

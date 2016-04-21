@@ -23,6 +23,7 @@ $_lang['mediamanager.global.cancel'] = 'Cancel';
 $_lang['mediamanager.global.tags'] = 'Tags';
 $_lang['mediamanager.global.categories'] = 'Categories';
 $_lang['mediamanager.global.root'] = 'Root';
+$_lang['mediamanager.global.copy'] = 'Copy';
 
 /* Tags */
 $_lang['mediamanager.tags'] = 'Media Tags';
@@ -90,9 +91,11 @@ $_lang['mediamanager.files.error.file_linked'] = 'File `[[+file]]` is used in re
 $_lang['mediamanager.files.error.file_archive'] = 'Could not archive file with id `[[+id]]`.';
 $_lang['mediamanager.files.error.file_not_found'] = 'File not found.';
 $_lang['mediamanager.files.error.image_not_saved'] = 'Image not saved.';
+$_lang['mediamanager.files.error.file_copy'] = 'Could not copy file `[[+file]]` to own context.';
 $_lang['mediamanager.files.success.file_upload'] = 'File `[[+file]]` uploaded.';
 $_lang['mediamanager.files.success.files_moved'] = 'Successfully moved files.';
 $_lang['mediamanager.files.success.image_saved'] = 'Image saved.';
+$_lang['mediamanager.files.success.file_copy'] = 'File `[[+file]]` copied to own context.';
 $_lang['mediamanager.files.move_title'] = 'Move file';
 $_lang['mediamanager.files.archive_title'] = 'Archive file';
 $_lang['mediamanager.files.archive_message'] = 'Are you sure you want to archive this file?';
@@ -103,6 +106,7 @@ $_lang['mediamanager.files.delete_title'] = 'Delete file';
 $_lang['mediamanager.files.delete_message'] = 'Are you sure you want to delete this file?';
 
 $_lang['mediamanager.files.copy_to_context'] = 'Copy file to own context';
+$_lang['mediamanager.files.copy_to_context_message'] = 'Are you sure you want to copy this file to your own context?';
 
 $_lang['mediamanager.files.bulk.move_title'] = 'Move selected files';
 $_lang['mediamanager.files.bulk.archive_title'] = 'Archive selected files';

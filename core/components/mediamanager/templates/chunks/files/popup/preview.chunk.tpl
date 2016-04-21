@@ -47,7 +47,7 @@
                 </tr>
                 <tr>
                     <td>[[%mediamanager.files.file_uploaded_by]]</td>
-                    <td><a href="?a=security/user/update&id=[[+file.uploaded_by]]">[[+file.uploaded_by_name]]</a></td>
+                    <td>[[+file.uploaded_by_name]]</td>
                 </tr>
                 <tr>
                     <td>[[%mediamanager.files.file_upload_date]]</td>

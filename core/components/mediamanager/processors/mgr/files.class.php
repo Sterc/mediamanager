@@ -44,6 +44,10 @@ class MediaManagerFilesProcessor extends modProcessor
                 $data = $this->crop();
 
                 break;
+            case 'copyToContext':
+                $data = $this->copyToContext();
+
+                break;
             case 'list':
                 $data = $this->getList();
 
@@ -127,6 +131,16 @@ class MediaManagerFilesProcessor extends modProcessor
                 (int)    $this->getProperty('fileId'),
                 (string) $this->getProperty('cropData'),
                 (bool)   $this->getProperty('isNewImage')
+            )
+        );
+    }
+
+    private function copyToContext()
+    {
+        return $this->outputArray(
+            $this->mediaManager->files->copyToContext(
+                (int) $this->getProperty('fileId'),
+                (int) $this->getProperty('contextId')
             )
         );
     }
