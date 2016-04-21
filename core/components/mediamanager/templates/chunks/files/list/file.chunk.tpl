@@ -19,6 +19,6 @@
         [[+upload_date]]
     </td>
     <td>
-        <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="div[data-file-popup]" data-file-popup-button>[[%mediamanager.global.edit]]</button>
+        <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="div[data-file-popup]" data-file-popup-button>[[%mediamanager.global.preview]]</button>
     </td>
 </tr>

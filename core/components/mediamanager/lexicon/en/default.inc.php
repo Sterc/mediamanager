@@ -24,6 +24,7 @@ $_lang['mediamanager.global.tags'] = 'Tags';
 $_lang['mediamanager.global.categories'] = 'Categories';
 $_lang['mediamanager.global.root'] = 'Root';
 $_lang['mediamanager.global.copy'] = 'Copy';
+$_lang['mediamanager.global.preview'] = 'Preview';
 
 /* Tags */
 $_lang['mediamanager.tags'] = 'Media Tags';
@@ -104,10 +105,8 @@ $_lang['mediamanager.files.share_message'] = 'Press the `Share` button to genera
 $_lang['mediamanager.files.share_download'] = 'Your share link: [[+link]] The share link will expire in [[+expiration]] days.';
 $_lang['mediamanager.files.delete_title'] = 'Delete file';
 $_lang['mediamanager.files.delete_message'] = 'Are you sure you want to delete this file?';
-
 $_lang['mediamanager.files.copy_to_context'] = 'Copy file to own context';
 $_lang['mediamanager.files.copy_to_context_message'] = 'Are you sure you want to copy this file to your own context?';
-
 $_lang['mediamanager.files.bulk.move_title'] = 'Move selected files';
 $_lang['mediamanager.files.bulk.archive_title'] = 'Archive selected files';
 $_lang['mediamanager.files.bulk.archive_message'] = 'Are you sure you want to archive these files?';

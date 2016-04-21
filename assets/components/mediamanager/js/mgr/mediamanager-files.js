@@ -255,14 +255,14 @@
                 categoriesFilled = true;
 
             $(self.$fileCategories, $(self.$dropzonePreviews)).each(function() {
-                if (this.value === '') {
+                if (this.selectedOptions.length === 0) {
                     categoriesFilled = false;
                     return false;
                 }
             });
 
             $(self.$fileTags, $(self.$dropzonePreviews)).each(function() {
-                if (this.value === '') {
+                if (this.selectedOptions.length < 3) {
                     tagsFilled = false;
                     return false;
                 }
@@ -726,7 +726,9 @@
             }
 
             $fileContainer.toggleClass('file-selected');
-            $fileCheckbox.prop('checked', !$fileCheckbox.prop('checked'));
+            if (!$target.is('input')) {
+                $fileCheckbox.prop('checked', !$fileCheckbox.prop('checked'));
+            }
 
             var index = -1;
             $.each(self.$selectedFiles, function(i) {
