@@ -8,6 +8,7 @@
         $dropzone                : null,
         $dropzoneForm            : 'form[data-dropzone-form]',
         $dropzoneFileTemplate    : 'div[data-dropzone-file-template]',
+        $dropzonePreviews        : '.dropzone-previews',
         $dropzoneActions         : '.dropzone-actions',
 
         $uploadMedia             : 'button[data-upload-media]',
@@ -122,7 +123,7 @@
                 autoProcessQueue: false,
                 clickable: '.clickable',
                 dictDefaultMessage: '',
-                previewsContainer: '.dropzone-previews',
+                previewsContainer: self.$dropzonePreviews,
                 params: {
                     action: 'mgr/files',
                     method: 'add'
@@ -132,8 +133,10 @@
                         $copyButton = null;
 
                     this.on('addedfile', function(file) {
+                        var $filePreview = $(file.previewElement);
+
                         if (totalFiles === 0) {
-                            $(file.previewElement).find('.tags').append(
+                            $filePreview.find('.tags').append(
                                 $copyButton = $('<button />')
                                     .text('Use categories and tags above for all files')
                                     .addClass('btn btn-primary')
@@ -144,12 +147,20 @@
                                     })
                                     .hide()
                             );
+
+                            // Disable upload media button
+                            $(self.$uploadMedia).prop('disabled', true);
                         }
 
-                        $(self.$dropzoneActions).show();
-                        self.$filesCategories[totalFiles] = $(self.$fileCategories).select2(self.$filterCategoriesOptions);
-                        self.$filesTags[totalFiles] = $(self.$fileTags).select2(self.$filterTagsOptions);
+                        self.$filesCategories[totalFiles] = $(self.$fileCategories, $filePreview).select2(self.$filterCategoriesOptions)
+                            .on('select2:select select2:unselect', self.checkCategoriesAndTags);
+                        self.$filesTags[totalFiles] = $(self.$fileTags, $filePreview).select2(self.$filterTagsOptions)
+                            .on('select2:select select2:unselect', self.checkCategoriesAndTags);
 
+                        // Show upload selected files button
+                        $(self.$dropzoneActions).show();
+
+                        // Show copy categories and tags button if more than one file is added
                         if (totalFiles > 0) {
                             $copyButton.show();
                         }
@@ -162,6 +173,12 @@
 
                         if (queue.length === 0) {
                             totalFiles = 0;
+
+                            // Enable upload media button
+                            $(self.$uploadMedia).prop('disabled', false);
+
+                            // Disable and hide upload selected files button
+                            $(self.$uploadSelectedFiles).prop('disabled', true);
                             $(self.$dropzoneActions).hide();
                         }
                     });
@@ -172,23 +189,30 @@
                             $tags       = $(self.$fileTags, $file),
                             $button     = $(self.$fileRemoveButton, $file);
 
+                        // Set correct categories and tags for file
                         formData.append('categories', $categories.val());
                         formData.append('tags', $tags.val());
 
-                        $categories.attr('disabled', 'disabled');
-                        $tags.attr('disabled', 'disabled');
-                        $button.attr('disabled', 'disabled');
+                        // Disable input fields and buttons while file is being uploaded
+                        $categories.prop('disabled', true);
+                        $tags.prop('disabled', true);
+                        $button.prop('disabled', true);
                     });
 
                     this.on('complete', function(file) {
+                        if (typeof file.xhr === 'undefined') {
+                            return false;
+                        }
                         var response = JSON.parse(file.xhr.response);
-                        $(file.previewElement).delay(1000).html(response.message);
+                        $(file.previewElement).delay(1500).html(response.message);
                     });
 
                     this.on('queuecomplete', function() {
                         self.$filesCategories = [];
                         self.$filesTags = [];
 
+                        $(self.$uploadMedia).prop('disabled', false);
+                        $(self.$uploadSelectedFiles).prop('disabled', true);
                         $(self.$dropzoneActions).hide();
                         self.getList();
                     });
@@ -213,6 +237,41 @@
         dropzoneProcessQueue: function() {
             var self = this;
             self.$dropzone.processQueue();
+        },
+
+        /**
+         * Check if categories and tags are filled.
+         * Enable or disable upload selected files button.
+         *
+         * @returns {boolean}
+         */
+        checkCategoriesAndTags: function() {
+            var self             = MediaManagerFiles,
+                tagsFilled       = true,
+                categoriesFilled = true;
+
+            $(self.$fileCategories, $(self.$dropzonePreviews)).each(function() {
+                if (this.value === '') {
+                    categoriesFilled = false;
+                    return false;
+                }
+            });
+
+            $(self.$fileTags, $(self.$dropzonePreviews)).each(function() {
+                if (this.value === '') {
+                    tagsFilled = false;
+                    return false;
+                }
+            });
+
+            if (categoriesFilled === false || tagsFilled === false) {
+                $(self.$uploadSelectedFiles).prop('disabled', true);
+                return false;
+            }
+
+            // Enable upload selected files button
+            $(self.$uploadSelectedFiles).prop('disabled', false);
+            return true;
         },
 
         /**
@@ -242,6 +301,8 @@
 
                 file.html(options).val(values).trigger('change');
             });
+
+            self.checkCategoriesAndTags();
         },
 
         /**

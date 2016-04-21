@@ -22,7 +22,7 @@
                 <p class="note clickable">{$dropzone_maximum_upload_size}</p>
                 <div class="dropzone-previews"></div>
                 <div class="dropzone-actions">
-                    <button type="button" class="btn btn-success pull-right upload-selected-files">{$upload_selected_files}</button>
+                    <button type="button" class="btn btn-success pull-right upload-selected-files" disabled>{$upload_selected_files}</button>
                 </div>
             </form>
 
