@@ -135,7 +135,6 @@ class MediaManagerFilesProcessor extends modProcessor
     {
         return $this->outputArray(
             (array) $this->mediaManager->files->getListHtml(
-                (int)    $this->getProperty('context'),
                 (int)    $this->getProperty('category'),
                 (string) $this->getProperty('search'),
                 (array)  $this->getProperty('filters'),

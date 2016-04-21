@@ -5,6 +5,7 @@ class MediaManagerFilesHelper
     const STATUS_SUCCESS = 'success';
     const STATUS_ERROR = 'error';
 
+    const UPLOAD_DIRECTORY = 'uploads';
     const ARCHIVE_DIRECTORY = 'archive';
     const DOWNLOAD_DIRECTORY = 'download';
     const DOWNLOAD_EXPIRATION = 14;
@@ -14,11 +15,6 @@ class MediaManagerFilesHelper
      * The mediaManager object.
      */
     private $mediaManager = null;
-
-    /**
-     * The mediaSource object.
-     */
-    private $mediaSource = null;
 
     /**
      * Upload paths.
@@ -194,21 +190,25 @@ class MediaManagerFilesHelper
      * @param string $search
      * @param array $filters
      * @param array $sorting
+     * @param int $isArchive
      *
      * @return array
      */
     public function getList($search = '', $filters = array(), $sorting = array(), $isArchive = 0)
     {
-        $q = $this->mediaManager->modx->newQuery('MediamanagerFiles');
-
-        $sortColumn = 'MediamanagerFiles.upload_date';
+        $contextId     = $this->mediaManager->contexts->getCurrentContext();
+        $sortColumn    = 'MediamanagerFiles.upload_date';
         $sortDirection = 'DESC';
+        $where         = array();
 
+        $q      = $this->mediaManager->modx->newQuery('MediamanagerFiles');
         $select = $this->mediaManager->modx->getSelectColumns('MediamanagerFiles', 'MediamanagerFiles');
 
-        $where = array();
-//        $where[]['MediamanagerFiles.mediamanager_contexts_id'] = $this->mediaManager->contexts->getCurrentContext();
         $where[]['MediamanagerFiles.is_archived'] = $isArchive;
+
+        if ($contextId !== $this->mediaManager->contexts->getDefaultContext()) {
+            $where[]['MediamanagerFiles.mediamanager_contexts_id'] = $contextId;
+        }
 
         if (!empty($search) && strlen($search) > 2) {
             $where[]['name:LIKE'] = '%' . $search . '%';
@@ -274,7 +274,6 @@ class MediaManagerFilesHelper
     /**
      * Get files html.
      *
-     * @param int $context
      * @param int $category
      * @param string $search
      * @param array $filters
@@ -284,7 +283,7 @@ class MediaManagerFilesHelper
      *
      * @return string
      */
-    public function getListHtml($context = 0, $category = 0, $search = '', $filters = array(), $sorting = array(), $viewMode = 'grid', $selectedFiles = array())
+    public function getListHtml($category = 0, $search = '', $filters = array(), $sorting = array(), $viewMode = 'grid', $selectedFiles = array())
     {
         $viewMode = ($viewMode === 'grid' ? 'grid' : 'list');
 
@@ -471,13 +470,7 @@ class MediaManagerFilesHelper
      */
     private function setImageTypes()
     {
-        $this->imageTypes = array(
-            'jpg',
-            'jpeg',
-            'png',
-            'gif',
-            'bmp'
-        );
+        $this->imageTypes = array('jpg', 'png', 'gif', 'tiff', 'bmp', 'jpeg');
     }
 
     /**
@@ -571,7 +564,7 @@ class MediaManagerFilesHelper
         $file->set('file_size', $fileData['size']);
         $file->set('file_hash', $fileData['hash']);
         $file->set('uploaded_by', $this->mediaManager->modx->getUser()->get('id'));
-//        $file->set('mediamanager_contexts_id', $this->mediaManager->contexts->getCurrentContext());
+        $file->set('mediamanager_contexts_id', $this->mediaManager->contexts->getCurrentContext());
 
         // If file type is image set dimensions
         if ($this->isImage($fileData['extension'])) {
@@ -1077,28 +1070,22 @@ class MediaManagerFilesHelper
      */
     private function createUploadDirectory()
     {
-        // Get media source settings
-        $source = $this->mediaManager->modx->getObject('modMediaSource', $this->mediaManager->modx->getOption('mediamanager.media_source'));
-        $this->mediaSource = json_decode(json_encode($source->getProperties()));
-
         // Set upload directory, year and month
         $year = date('Y');
         $month = date('m');
 
         // Upload paths
-        $this->uploadUrl            = $this->addSlashes($this->mediaSource->baseUrl->value) .
-            $year . DIRECTORY_SEPARATOR . $month . DIRECTORY_SEPARATOR;
-        $this->uploadDirectory      = $this->addTrailingSlash(MODX_BASE_PATH) .
-            $this->addTrailingSlash(trim($this->mediaSource->basePath->value, DIRECTORY_SEPARATOR));
+        $this->uploadUrl            = $this->addSlashes(self::UPLOAD_DIRECTORY) . $year . DIRECTORY_SEPARATOR . $month . DIRECTORY_SEPARATOR;
+        $this->uploadDirectory      = $this->addTrailingSlash(MODX_BASE_PATH) . self::UPLOAD_DIRECTORY . DIRECTORY_SEPARATOR;
         $this->uploadDirectoryYear  = $this->uploadDirectory . $year . DIRECTORY_SEPARATOR;
         $this->uploadDirectoryMonth = $this->uploadDirectoryYear . $month . DIRECTORY_SEPARATOR;
 
         // Archive paths
-        $this->archiveUrl           = $this->addSlashes($this->mediaSource->baseUrl->value) . self::ARCHIVE_DIRECTORY . DIRECTORY_SEPARATOR;
+        $this->archiveUrl           = $this->addSlashes(self::UPLOAD_DIRECTORY) . self::ARCHIVE_DIRECTORY . DIRECTORY_SEPARATOR;
         $this->archiveDirectory     = $this->uploadDirectory . self::ARCHIVE_DIRECTORY . DIRECTORY_SEPARATOR;
 
         // Download paths
-        $this->downloadUrl          = $this->addSlashes($this->mediaSource->baseUrl->value) . self::DOWNLOAD_DIRECTORY . DIRECTORY_SEPARATOR;
+        $this->downloadUrl          = $this->addSlashes(self::UPLOAD_DIRECTORY) . self::DOWNLOAD_DIRECTORY . DIRECTORY_SEPARATOR;
         $this->downloadDirectory    = $this->uploadDirectory . self::DOWNLOAD_DIRECTORY . DIRECTORY_SEPARATOR;
 
         if (!file_exists($this->uploadDirectory)) {

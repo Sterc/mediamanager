@@ -129,7 +129,7 @@ class MediaManagerCategoriesHelper
 
     public function getCategoryTree($selected = 0)
     {
-        $list = $this->buildCategoryTree($this->getCategories(),0,$selected);
+        $list = $this->buildCategoryTree($this->getCategories(), 0, $selected);
         $list = array_values($list);
 
         $root = array(
@@ -172,7 +172,7 @@ class MediaManagerCategoriesHelper
                 $data[$item->get('id')] = array(
                     'text'       => $item->get('name'),
                     'categoryId' => $item->get('id'),
-                    'nodes'      => $this->buildCategoryTree($list, $item->get('id'),$selected),
+                    'nodes'      => $this->buildCategoryTree($list, $item->get('id'), $selected),
                     'state'      => array(
                         'selected' => ($item->get('id') == $selected ? true : false),
                     )
