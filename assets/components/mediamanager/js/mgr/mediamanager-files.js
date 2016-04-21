@@ -416,7 +416,6 @@
                 } 
             }).success(function(data) {
                 self.$categoriesSelectOptions = data.results.select;
-                console.log(data.results.list);
                 $(self.$categoryTree).treeview({
                     data: data.results.list,
                     levels: 1,
@@ -430,22 +429,10 @@
                         }
                     }
                 });
-            }).complete(function(data){
-                if(self.$currentCategory > 0) {
-
-
-                    // todo: set current active category
-                    // possible solutions:
-                    // https://github.com/jonmiles/bootstrap-treeview/issues?q=is%3Aissue+extend+is%3Aclosed
-                    // https://github.com/jonmiles/bootstrap-treeview/issues/1
-                    // https://github.com/jonmiles/bootstrap-treeview/commit/afb2c4ab172375bcea67697ad7669b72b3e04aa7
-                    // or in getCategoryTree() function in classes/categories.class.php
-
-
-                    // console.log(self.$currentCategory);
-                    // $(self.$categoryTree).treeview('revealNode', [ 4, { silent: true } ]);
-                    // $(self.$categoryTree).treeview('selectNode', [ 4, { silent: true } ]);
-                }
+                var selectedNodes = $(self.$categoryTree).treeview('getSelected');
+                $.each(selectedNodes,function(index,value){
+                    $(self.$categoryTree).treeview('revealNode', [ value.nodeId, { silent: true } ]);
+                });
             });
         },
 
