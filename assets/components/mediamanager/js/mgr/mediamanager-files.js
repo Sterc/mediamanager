@@ -89,6 +89,9 @@
 
         $filesCropper            : null,
 
+        $breadcrumbsContainer    : 'ol.breadcrumb',
+        $breadcrumbs             : [],
+
         /**
          * Init
          */
@@ -106,7 +109,7 @@
             self.setFilters();
             self.setPopup();
             self.getCategories();
-            self.getList();
+            // self.getList();
         },
 
         /**
@@ -481,19 +484,22 @@
                     data: data.results.list,
                     levels: 1,
                     onNodeSelected: function(event, data) {
-                        self.$currentCategory = data.categoryId;
-                        self.getList();
                         var currentUrl = window.location.href;
                         var newUrl = self.updateQueryStringParameter(currentUrl,'category',data.categoryId);
                         if(currentUrl != newUrl) {
                             history.pushState({}, '', newUrl);
                         }
+                        self.$currentCategory = data.categoryId;
+                        self.getList();
                     }
                 });
                 var selectedNodes = $(self.$categoryTree).treeview('getSelected');
                 $.each(selectedNodes,function(index,value){
                     $(self.$categoryTree).treeview('revealNode', [ value.nodeId, { silent: true } ]);
                 });
+                
+                self.getList();
+
             });
         },
 
@@ -522,6 +528,10 @@
                 self.resizeFileContainer();
                 self.setModxContentHeight();
                 self.lazyload();
+                self.buildBreadcrumbs();
+
+                // $(self.$breadcrumbsContainer).html(self.buildBreadcrumbs());
+
             });
         },
 
@@ -1096,6 +1106,45 @@
                     }
                 }
             });
+        },
+         /**
+         * Build the breadcrumbs html.
+         */
+        buildBreadcrumbs: function() {
+
+            var self = this;
+            self.$breadcrumbs = [];
+            var lastBreadcrumb = [];
+            var selectedNodes = $(self.$categoryTree).treeview('getSelected');
+            var selectedNodeId = 0;
+            $.each(selectedNodes,function(index,value){
+                $(self.$categoryTree).treeview('revealNode', [ value.nodeId, { silent: true } ]);
+                if(value.categoryId > 0) {
+                    lastBreadcrumb.push({'text':value.text,'categoryId':value.categoryId});
+                }
+                selectedNodeId = value.nodeId;
+            });
+            var expandedNodes = $(self.$categoryTree).treeview('getExpanded',selectedNodeId);
+            $.each(expandedNodes,function(index,value){
+                self.$breadcrumbs.push({'text':value.text,'categoryId':value.categoryId});
+            });
+
+            if(lastBreadcrumb.length > 0) {
+                self.$breadcrumbs = self.$breadcrumbs.concat(lastBreadcrumb);
+            }
+
+
+            var currentUrl = window.location.href;
+            var baseUrl = self.updateQueryStringParameter(currentUrl,'category',0);
+            var breadcrumbsHtml = '<li><a href="'+baseUrl+'">Root</a></li>';
+            if(self.$breadcrumbs && self.$breadcrumbs.length > 0) {
+                $.each(self.$breadcrumbs,function(index,value){
+                    var categoryUrl = self.updateQueryStringParameter(currentUrl,'category',value.categoryId);
+                    breadcrumbsHtml += '<li><a href="'+categoryUrl+'">'+value.text+'</a></li>';
+                });
+            }
+            $(self.$breadcrumbsContainer).html(breadcrumbsHtml);
+
         }
 
     }
