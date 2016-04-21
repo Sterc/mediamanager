@@ -129,8 +129,7 @@
                 previewsContainer: self.$dropzonePreviews,
                 params: {
                     action  : 'mgr/files',
-                    method  : 'add',
-                    context : self.$currentContext
+                    method  : 'add'
                 },
                 init: function() {
                     var totalFiles = 0,
@@ -517,7 +516,6 @@
                     action        : 'mgr/files',
                     method        : 'list',
                     HTTP_MODAUTH  : self.$httpModAuth,
-                    context       : self.$currentContext,
                     category      : self.$currentCategory,
                     search        : self.$currentSearch,
                     filters       : self.$currentFilters,

@@ -7,9 +7,16 @@ class MediaManagerHomeManagerController extends MediaManagerManagerController
 
     public function process(array $scriptProperties = array())
     {
+        $uploadMediaButton = '';
+        if ($this->mediaManager->permissions->upload()) {
+            $uploadMediaButton = $this->mediaManager->getChunk('files/upload_media_button', array(
+                'label' => $this->modx->lexicon('mediamanager.files.upload_media'),
+            ));
+        }
+
         $placeholders = array(
             'pagetitle'                    => $this->modx->lexicon('mediamanager'),
-            'upload_media'                 => $this->modx->lexicon('mediamanager.files.upload_media'),
+            'upload_media_button'          => $uploadMediaButton,
             'upload_selected_files'        => $this->modx->lexicon('mediamanager.files.upload_selected_files'),
             'search'                       => $this->modx->lexicon('mediamanager.files.search'),
             'dropzone_maximum_upload_size' => $this->modx->lexicon('mediamanager.files.dropzone.maximum_upload_size', array(

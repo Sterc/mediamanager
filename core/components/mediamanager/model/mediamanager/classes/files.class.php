@@ -143,6 +143,15 @@ class MediaManagerFilesHelper
         $bodyData   = array();
         $footerData = array();
 
+        $footerData['button'] = array(
+            'crop' => 1,
+            'share' => 1,
+            'download' => 1,
+            'archive' => 1,
+            'delete' => 1,
+            'copy' => 0
+        );
+
         $data = $this->getFile($fileId);
         $file = $data['file']->toArray();
 
@@ -157,11 +166,10 @@ class MediaManagerFilesHelper
         if ($this->isImage($file['file_type'])) {
             $bodyData['preview'] = '<img src="/connectors/system/phpthumb.php?src=' . $file['path'] . '&w=230&h=180" />';
             $bodyData['is_image'] = 1;
-            $footerData['is_image'] = 1;
         } else {
             $bodyData['preview'] = $this->mediaManager->getChunk('files/file_preview_svg', $file);
             $bodyData['is_image'] = 0;
-            $footerData['is_image'] = 0;
+            $footerData['button']['crop'] = 0;
         }
 
         foreach ($data['categories'] as $category) {
@@ -177,6 +185,34 @@ class MediaManagerFilesHelper
             $bodyData['content'][] = '<a href="?a=resource/update&id=' . $content->get('id') . '">' . $content->get('pagetitle') . '</a>';
         }
         $bodyData['content'] = implode(', ', $bodyData['content']);
+
+        $bodyData['can_edit'] = 1;
+        if ($file['is_archived'] === 1) {
+            $footerData['button']['crop'] = 0;
+            $footerData['button']['share'] = 0;
+            $footerData['button']['download'] = 0;
+            $footerData['button']['archive'] = 0;
+
+            $bodyData['can_edit'] = 0;
+        } else {
+            $footerData['button']['delete'] = 0;
+        }
+
+        if (!$this->mediaManager->permissions->edit()) {
+            $footerData['button']['crop'] = 0;
+            $footerData['button']['share'] = 0;
+            $footerData['button']['download'] = 0;
+            $footerData['button']['archive'] = 0;
+            $footerData['button']['delete'] = 0;
+
+            $footerData['button']['copy'] = 1;
+
+            $bodyData['can_edit'] = 0;
+        }
+
+        if (!$this->mediaManager->permissions->delete()) {
+            $footerData['button']['delete'] = 0;
+        }
 
         return [
             'body'   => $this->mediaManager->getChunk('files/popup/' . $template, $bodyData),
@@ -614,7 +650,9 @@ class MediaManagerFilesHelper
      */
     public function deleteFile($fileId)
     {
-        // @TODO: Check permissions
+        if (!$this->mediaManager->permissions->delete()) {
+            return false;
+        }
 
         $file = $this->mediaManager->modx->getObject('MediamanagerFiles', array('id' => $fileId));
         if (!$file) {

@@ -3,7 +3,7 @@
         <div class="col-xs-12">
             <h1>
                 <span>{$pagetitle}</span>
-                <button type="button" class="btn btn-success" data-upload-media>{$upload_media}</button>
+                {$upload_media_button}
             </h1>
         </div>
     </div>
