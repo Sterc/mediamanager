@@ -726,7 +726,9 @@
             }
 
             $fileContainer.toggleClass('file-selected');
-            $fileCheckbox.prop('checked', !$fileCheckbox.prop('checked'));
+            if (!$target.is('input')) {
+                $fileCheckbox.prop('checked', !$fileCheckbox.prop('checked'));
+            }
 
             var index = -1;
             $.each(self.$selectedFiles, function(i) {
