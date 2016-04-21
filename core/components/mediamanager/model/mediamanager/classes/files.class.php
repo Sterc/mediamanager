@@ -1199,7 +1199,7 @@ class MediaManagerFilesHelper
 
         $fileName = strtolower($fileName);
         $fileName = str_replace($find, $replace, $fileName);
-        $fileName = preg_replace('/[^a-z0-9_-]+/', '', $fileName);
+        $fileName = preg_replace('/[^a-z0-9_.-]+/', '', $fileName);
 
         return $fileName;
     }
