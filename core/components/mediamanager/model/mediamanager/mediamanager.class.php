@@ -132,9 +132,12 @@ class MediaManager
     public function includeScriptAssets() {
 
         // $this->modx->regClientCSS($this->config['assets_url'] . 'libs/bootstrap/3.3.6/css/bootstrap.min.css');
-        // $this->modx->regClientCSS($this->config['assets_url'] . 'css/mgr/mediamanager.css');
+        $this->modx->regClientCSS($this->config['assets_url'] . 'libs/jquery-ui/1.11.4/css/jquery-ui.min.css');
+        $this->modx->regClientCSS($this->config['assets_url'] . 'css/mgr/mediamanager-tv-input.css');
         $this->modx->regClientStartupScript($this->config['assets_url'] . 'libs/jquery/1.12.1/js/jquery.min.js');
+        $this->modx->regClientStartupScript($this->config['assets_url'] . 'libs/jquery-ui/1.11.4/js/jquery-ui.min.js');
         // $this->modx->regClientStartupScript($this->config['assets_url'] . 'libs/bootstrap/3.3.6/js/bootstrap.min.js');
+        $this->modx->regClientStartupScript($this->config['assets_url'] . 'js/mgr/mediamanager-tv-input.js');
 
         // $vers = $this->modx->getVersionData();
         // if ($this->getOption('debug')) {
