@@ -255,14 +255,14 @@
                 categoriesFilled = true;
 
             $(self.$fileCategories, $(self.$dropzonePreviews)).each(function() {
-                if (this.value === '') {
+                if (this.selectedOptions.length === 0) {
                     categoriesFilled = false;
                     return false;
                 }
             });
 
             $(self.$fileTags, $(self.$dropzonePreviews)).each(function() {
-                if (this.value === '') {
+                if (this.selectedOptions.length < 3) {
                     tagsFilled = false;
                     return false;
                 }
