@@ -600,7 +600,12 @@ class MediaManagerFilesHelper
         $file->set('file_size', $fileData['size']);
         $file->set('file_hash', $fileData['hash']);
         $file->set('uploaded_by', $this->mediaManager->modx->getUser()->get('id'));
-        $file->set('mediamanager_contexts_id', $this->mediaManager->contexts->getCurrentContext());
+
+        if (isset($fileData['context'])) {
+            $file->set('mediamanager_contexts_id', $fileData['context']);
+        } else {
+            $file->set('mediamanager_contexts_id', $this->mediaManager->contexts->getCurrentContext());
+        }
 
         // If file type is image set dimensions
         if ($this->isImage($fileData['extension'])) {
@@ -968,14 +973,14 @@ class MediaManagerFilesHelper
         $categories = $this->mediaManager->modx->getIterator('MediamanagerFilesCategories', array('mediamanager_files_id' => $file['id']));
 
         foreach ($categories as $category) {
-            $data['categories'] = $category->get('mediamanager_categories_id');
+            $data['categories'][] = $category->get('mediamanager_categories_id');
         }
 
         // Get file tags
         $tags = $this->mediaManager->modx->getIterator('MediamanagerFilesTags', array('mediamanager_files_id' => $file['id']));
 
         foreach ($tags as $tag) {
-            $data['tags'] = $tag->get('mediamanager_tags_id');
+            $data['tags'][] = $tag->get('mediamanager_tags_id');
         }
 
         // Add file to database
@@ -992,6 +997,82 @@ class MediaManagerFilesHelper
         return [
             'status'  => self::STATUS_SUCCESS,
             'message' => $this->alertMessageHtml($this->mediaManager->modx->lexicon('mediamanager.files.success.file_upload', array('file' => $fileName)), 'success')
+        ];
+    }
+
+    /**
+     * Copy file to context.
+     *
+     * @param int $fileId
+     * @param int $contextId
+     *
+     * @return array
+     */
+    public function copyToContext($fileId, $contextId = 0)
+    {
+        $file = $this->mediaManager->modx->getObject('MediamanagerFiles', array('id' => $fileId));
+        $file = $file->toArray();
+        $data = array();
+
+        if ($contextId === 0) {
+            $contextId = $this->mediaManager->contexts->getUserContext();
+        }
+
+        // Create upload directory
+        if (!$this->createUploadDirectory()) {
+            return [
+                'status'  => self::STATUS_ERROR,
+                'message' => $this->alertMessageHtml($this->mediaManager->modx->lexicon('mediamanager.files.error.create_directory'), 'danger')
+            ];
+        }
+
+        // Add unique id to file name if needed
+        $fileName = explode('.', $file['name']);
+        $fileName = $this->createUniqueFile($this->uploadDirectoryMonth, $fileName[0], $file['file_type']);
+
+        // Copy file
+        $fileCreated = $this->copyFile($this->addTrailingSlash(MODX_BASE_PATH) . $this->removeSlashes($file['path']), $this->uploadDirectoryMonth . $fileName);
+        if ($fileCreated === false) {
+            return [
+                'status'  => self::STATUS_ERROR,
+                'message' => $this->alertMessageHtml($this->mediaManager->modx->lexicon('mediamanager.files.error.file_copy', array('file' => $file['name'])), 'danger')
+            ];
+        }
+
+        $file['context']     = $contextId;
+        $file['extension']   = $file['file_type'];
+        $file['size']        = $file['file_size'];
+        $file['hash']        = $file['file_hash'];
+        $file['unique_name'] = $fileName;
+
+        // Get file categories
+        $categories = $this->mediaManager->modx->getIterator('MediamanagerFilesCategories', array('mediamanager_files_id' => $file['id']));
+
+        foreach ($categories as $category) {
+            $data['categories'][] = $category->get('mediamanager_categories_id');
+        }
+
+        // Get file tags
+        $tags = $this->mediaManager->modx->getIterator('MediamanagerFilesTags', array('mediamanager_files_id' => $file['id']));
+
+        foreach ($tags as $tag) {
+            $data['tags'][] = $tag->get('mediamanager_tags_id');
+        }
+
+        // Add file to database
+        if (!$this->insertFile($file, $data)) {
+            // Remove file from server if saving failed
+            $this->removeFile($file);
+
+            return [
+                'status'  => self::STATUS_ERROR,
+                'message' => $this->alertMessageHtml($this->mediaManager->modx->lexicon('mediamanager.files.error.file_save', array('file' => $fileName)), 'danger')
+            ];
+        }
+
+        return [
+            'status'  => self::STATUS_SUCCESS,
+            'message' => $this->alertMessageHtml($this->mediaManager->modx->lexicon('mediamanager.files.success.file_copy', array('file' => $fileName)), 'success')
         ];
     }
 
@@ -1248,13 +1329,14 @@ class MediaManagerFilesHelper
      */
     public function fileHashExists($fileHash)
     {
-        $fileObject = $this->mediaManager->modx->getObject('MediamanagerFiles',
+        $file = $this->mediaManager->modx->getObject('MediamanagerFiles',
             array(
-                'file_hash' => $fileHash
+                'file_hash' => $fileHash,
+                'mediamanager_contexts_id' => $this->mediaManager->contexts->getCurrentContext()
             )
         );
 
-        if ($fileObject === null) {
+        if ($file === null) {
             return false;
         }
 
