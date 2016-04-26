@@ -27,27 +27,27 @@
             var self   = this;
 
             $('.sortable').nestedSortable({
-                forcePlaceholderSize: true,
-                handle: 'div',
-                items: 'li',
-                placeholder: 'placeholder',
-                toleranceElement: '> div',
-                relocate: function() {
-                    $.ajax ({
-                        type: 'POST',
-                        url: $(self.$createForm).attr('action'),
-                        data: {
-                            action       : $('input[name="action"]', self.$createForm).val(),
-                            HTTP_MODAUTH : $('input[name="HTTP_MODAUTH"]', self.$createForm).val(),
-                            method       : 'sort',
-                            items        : $('.sortable').nestedSortable('serialize')
-                        },
-                        success: function(data) {
-                            //console.log(data);
-                        }
-                    });
-                }
-            });
+                                              forcePlaceholderSize: true,
+                                              handle: 'div',
+                                              items: 'li',
+                                              placeholder: 'placeholder',
+                                              toleranceElement: '> div',
+                                              relocate: function() {
+                                                  $.ajax ({
+                                                              type: 'POST',
+                                                              url: $(self.$createForm).attr('action'),
+                                                              data: {
+                                                                  action       : $('input[name="action"]', self.$createForm).val(),
+                                                                  HTTP_MODAUTH : $('input[name="HTTP_MODAUTH"]', self.$createForm).val(),
+                                                                  method       : 'sort',
+                                                                  items        : $('.sortable').nestedSortable('serialize')
+                                                              },
+                                                              success: function(data) {
+                                                                  //console.log(data);
+                                                              }
+                                                          });
+                                              }
+                                          });
         },
 
         create : function(e) {
@@ -61,34 +61,32 @@
             feedback.html('');
 
             $.ajax ({
-                type: 'POST',
-                url: $(self.$createForm).attr('action'),
-                data: values,
-                success: function(data) {
-                    if(data.results.error) {
-                        className = 'alert-danger';
-                    }
-                    else {
-                        $('select', self.$createForm).html(data.results.select);
-                    }
+                        type: 'POST',
+                        url: $(self.$createForm).attr('action'),
+                        data: values,
+                        success: function(data) {
+                            if(data.results.error) {
+                                className = 'alert-danger';
+                            }
+                            else {
+                                $('select', self.$createForm).html(data.results.select);
+                            }
 
-                    $('<div/>', {
-                        class: 'alert ' + className,
-                        text: data.results.message
-                    }).appendTo(feedback).delay(3000).fadeOut(300);
+                            $('<div/>', {
+                                class: 'alert ' + className,
+                                text: data.results.message
+                            }).appendTo(feedback).delay(3000).fadeOut(300);
 
-                    $('input[type="text"]', self.$createForm).val('');
-                    $('input[type="checkbox"]', self.$createForm).attr('checked', false);
-                    $(self.$listing).html(data.results.html);
-                    self.sortable();
-                }
-            });
+                            $('input[type="text"]', self.$createForm).val('');
+                            $('input[type="checkbox"]', self.$createForm).attr('checked', false);
+                            $(self.$listing).html(data.results.html);
+                            self.sortable();
+                        }
+                    });
 
             return false;
         },
 
-<<<<<<< HEAD
-=======
         edit : function(e) {
             var self = this,
                 form  = $(self.$createForm).clone();
@@ -107,43 +105,42 @@
             });
 
             $('<div />').html(e.target.dataset.editMessage).append(form).dialog({
-                draggable: false,
-                resizable: false,
-                modal: true,
-                title: e.target.dataset.editTitle,
-                buttons : [{
-                    text: e.target.dataset.editConfirm,
-                    class: 'btn btn-success',
-                    click: function () {
-                        $.ajax ({
-                            type: 'POST',
-                            url: $(self.$createForm).attr('action'),
-                            data: $(form).serializeArray(),
-                            success: function(data) {
-                                $(self.$listing).html(data.results.html);
-                                $('select', self.$createForm).html(data.results.select);
-                            }
-                        });
+                                                                                    draggable: false,
+                                                                                    resizable: false,
+                                                                                    modal: true,
+                                                                                    title: e.target.dataset.editTitle,
+                                                                                    buttons : [{
+                                                                                        text: e.target.dataset.editConfirm,
+                                                                                        class: 'btn btn-success',
+                                                                                        click: function () {
+                                                                                            $.ajax ({
+                                                                                                        type: 'POST',
+                                                                                                        url: $(self.$createForm).attr('action'),
+                                                                                                        data: $(form).serializeArray(),
+                                                                                                        success: function(data) {
+                                                                                                            $(self.$listing).html(data.results.html);
+                                                                                                            $('select', self.$createForm).html(data.results.select);
+                                                                                                        }
+                                                                                                    });
 
-                        $(this).dialog('close');
-                    }
-                }, {
-                    text: e.target.dataset.editCancel,
-                    class: 'btn btn-default',
-                    click: function () {
-                        $(this).dialog('close');
-                    }
-                }],
-                open: function(event, ui) {
-                    $('.ui-dialog-titlebar-close', ui.dialog | ui).hide();
-                },
-                close : function() {
-                    $(this).dialog('destroy').remove();
-                }
-            });
+                                                                                            $(this).dialog('close');
+                                                                                        }
+                                                                                    }, {
+                                                                                        text: e.target.dataset.editCancel,
+                                                                                        class: 'btn btn-default',
+                                                                                        click: function () {
+                                                                                            $(this).dialog('close');
+                                                                                        }
+                                                                                    }],
+                                                                                    open: function(event, ui) {
+                                                                                        $('.ui-dialog-titlebar-close', ui.dialog | ui).hide();
+                                                                                    },
+                                                                                    close : function() {
+                                                                                        $(this).dialog('destroy').remove();
+                                                                                    }
+                                                                                });
         },
 
->>>>>>> cb9568be106b245f03341d68031da70b113bbfdd
         delete : function(e) {
             var self        = this,
                 count       = null,
@@ -173,53 +170,46 @@
             select.val(select.find('option:first').val());
 
             $('<div />').html(e.target.dataset.deleteMessage).append(select).dialog({
-                draggable: false,
-                resizable: false,
-                modal: true,
-                title: e.target.dataset.deleteTitle,
-                buttons : [{
-                    text: e.target.dataset.deleteConfirm,
-                    class: 'btn btn-danger',
-                    click: function () {
-                        $.ajax ({
-                            type: 'POST',
-                            url: $(self.$createForm).attr('action'),
-                            data: {
-                                action       : $('input[name="action"]', self.$createForm).val(),
-                                HTTP_MODAUTH : $('input[name="HTTP_MODAUTH"]', self.$createForm).val(),
-                                method       : 'delete',
-                                category_id  : e.target.dataset.deleteCategory,
-                                move_to      : select.val()
-                            },
-                            success: function(data) {
-                                $(self.$listing).html(data.results.html);
-<<<<<<< HEAD
-                            }
-                        });
+                                                                                        draggable: false,
+                                                                                        resizable: false,
+                                                                                        modal: true,
+                                                                                        title: e.target.dataset.deleteTitle,
+                                                                                        buttons : [{
+                                                                                            text: e.target.dataset.deleteConfirm,
+                                                                                            class: 'btn btn-danger',
+                                                                                            click: function () {
+                                                                                                $.ajax ({
+                                                                                                            type: 'POST',
+                                                                                                            url: $(self.$createForm).attr('action'),
+                                                                                                            data: {
+                                                                                                                action       : $('input[name="action"]', self.$createForm).val(),
+                                                                                                                HTTP_MODAUTH : $('input[name="HTTP_MODAUTH"]', self.$createForm).val(),
+                                                                                                                method       : 'delete',
+                                                                                                                category_id  : e.target.dataset.deleteCategory,
+                                                                                                                move_to      : select.val()
+                                                                                                            },
+                                                                                                            success: function(data) {
+                                                                                                                $(self.$listing).html(data.results.html);
+                                                                                                                $('select', self.$createForm).html(data.results.select);
+                                                                                                            }
+                                                                                                        });
 
-                        //$(this).dialog('close');
-=======
-                                $('select', self.$createForm).html(data.results.select);
-                            }
-                        });
-
-                        $(this).dialog('close');
->>>>>>> cb9568be106b245f03341d68031da70b113bbfdd
-                    }
-                }, {
-                    text: e.target.dataset.deleteCancel,
-                    class: 'btn btn-default',
-                    click: function () {
-                        $(this).dialog('close');
-                    }
-                }],
-                open: function(event, ui) {
-                    $('.ui-dialog-titlebar-close', ui.dialog | ui).hide();
-                },
-                close : function() {
-                    $(this).dialog('destroy').remove();
-                }
-            });
+                                                                                                $(this).dialog('close');
+                                                                                            }
+                                                                                        }, {
+                                                                                            text: e.target.dataset.deleteCancel,
+                                                                                            class: 'btn btn-default',
+                                                                                            click: function () {
+                                                                                                $(this).dialog('close');
+                                                                                            }
+                                                                                        }],
+                                                                                        open: function(event, ui) {
+                                                                                            $('.ui-dialog-titlebar-close', ui.dialog | ui).hide();
+                                                                                        },
+                                                                                        close : function() {
+                                                                                            $(this).dialog('destroy').remove();
+                                                                                        }
+                                                                                    });
         }
     }
 
@@ -233,18 +223,15 @@
     });
 
     $(document).on({
-        submit : $.proxy(MediaManagerCategories, 'create')
-    }, MediaManagerCategories.$createForm);
+                       submit : $.proxy(MediaManagerCategories, 'create')
+                   }, MediaManagerCategories.$createForm);
 
     $(document).on({
-<<<<<<< HEAD
-=======
-        click : $.proxy(MediaManagerCategories, 'edit')
-    }, MediaManagerCategories.$edit);
+                       click : $.proxy(MediaManagerCategories, 'edit')
+                   }, MediaManagerCategories.$edit);
 
     $(document).on({
->>>>>>> cb9568be106b245f03341d68031da70b113bbfdd
-        click : $.proxy(MediaManagerCategories, 'delete')
-    }, MediaManagerCategories.$delete);
+                       click : $.proxy(MediaManagerCategories, 'delete')
+                   }, MediaManagerCategories.$delete);
 
 }(jQuery);
