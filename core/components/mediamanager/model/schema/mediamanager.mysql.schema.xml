@@ -87,7 +87,7 @@
         <field key="is_tmplvar" dbtype="tinyint" precision="1" attributes="unsigned" phptype="boolean" null="false" default="0" index="index" />
 
         <aggregate alias="Files" class="MediamanagerFiles" local="mediamanager_files_id" foreign="id" cardinality="one" owner="foreign" />
-        <aggregate alias="Content" class="modResource" local="site_content_id" foreign="id" cardinality="one" owner="foreign" />
+        <aggregate alias="modResource" class="modResource" local="site_content_id" foreign="id" cardinality="one" owner="foreign" />
         <aggregate alias="TemplateVariable" class="modTemplateVar" local="site_tmplvars_id" foreign="id" cardinality="one" owner="foreign" />
     </object>
 

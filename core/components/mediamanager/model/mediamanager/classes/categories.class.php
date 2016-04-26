@@ -17,7 +17,7 @@ class MediaManagerCategoriesHelper
         $this->mediaManager = $mediaManager;
     }
 
-    public function createCategory($name, $parent = 0, $rank = 9999)
+    public function createCategory($name, $parent = 0, $excludes = [], $rank = 9999)
     {
         $name = trim($name);
 
@@ -46,6 +46,15 @@ class MediaManagerCategoriesHelper
         $category->set('rank',      $rank);
         $category->save();
 
+        if (!empty($excludes) && $category) {
+            foreach ($excludes as $exclude) {
+                $excludeObject = $this->mediaManager->modx->newObject('MediamanagerCategoriesExcludes');
+                $excludeObject->set('mediamanager_contexts_id',   $exclude);
+                $excludeObject->set('mediamanager_categories_id', $category->get('id'));
+                $excludeObject->save();
+            }
+        }
+
         return [
             'error'   => false,
             'message' => $this->mediaManager->modx->lexicon('mediamanager.categories.success', ['name' => $name]),
@@ -54,6 +63,7 @@ class MediaManagerCategoriesHelper
         ];
     }
 
+<<<<<<< HEAD
     public function deleteCategory($id, $newId)
     {
         /*
@@ -63,6 +73,89 @@ class MediaManagerCategoriesHelper
         /*
          * 
          */
+=======
+    public function editCategory($id, $name, $excludes = [])
+    {
+        $category = $this->mediaManager->modx->getObject('MediamanagerCategories', (int) $id);
+
+        if ($category) {
+            $category->set('name', $name);
+            $category->save();
+
+            $this->mediaManager->modx->removeCollection('MediamanagerCategoriesExcludes', array(
+                'mediamanager_categories_id' => $category->get('id')
+            ));
+
+            if (!empty($excludes) && $category) {
+                foreach ($excludes as $exclude) {
+                    $excludeObject = $this->mediaManager->modx->newObject('MediamanagerCategoriesExcludes');
+                    $excludeObject->set('mediamanager_contexts_id',   $exclude);
+                    $excludeObject->set('mediamanager_categories_id', $category->get('id'));
+                    $excludeObject->save();
+                }
+            }
+        }
+
+        return [
+            'error'   => false,
+            'message' => '',
+            'html'    => $this->getList(),
+            'select'  => $this->getParentOptions()
+        ];
+    }
+
+    public function deleteCategory($id, $newId)
+    {
+        $id    = (int) $id;
+        $newId = (int) $newId;
+
+        $categoryIds = array_merge($this->mediaManager->getCategoryChildIds($this->getCategories(), $id), [$id]);
+
+        /**
+         * Move files to the new category.
+         */
+        $q = $this->mediaManager->modx->newQuery('MediamanagerFilesCategories');
+        $q->where(array('mediamanager_categories_id:IN' => $categoryIds));
+
+        $filesCategories = $this->mediaManager->modx->getCollection('MediamanagerFilesCategories', $q);
+        $filesIds = [];
+
+        /**
+         * Remove current connections.
+         */
+        foreach ($filesCategories as $filesCategory) {
+            $filesIds[$filesCategory->get('mediamanager_files_id')] = $filesCategory->get('mediamanager_files_id');
+
+            $filesCategory->remove();
+        }
+
+        /**
+         * Create new connections.
+         */
+        foreach ($filesIds as $fileId) {
+            $fileConnection = $this->mediaManager->modx->newObject('MediamanagerFilesCategories');
+            $fileConnection->set('mediamanager_files_id',      $fileId);
+            $fileConnection->set('mediamanager_categories_id', $newId);
+            $fileConnection->save();
+        }
+
+        /**
+         * Delete the category and child categories.
+         */
+        $this->mediaManager->modx->removeCollection('MediamanagerCategories', array(
+            'id:IN' => $categoryIds
+        ));
+
+        $this->mediaManager->modx->removeCollection('MediamanagerCategoriesExcludes', array(
+            'mediamanager_categories_id:IN' => $categoryIds
+        ));
+
+        return [
+            'error'   => false,
+            'html'    => $this->getList(),
+            'select'  => $this->getParentOptions()
+        ];
+>>>>>>> cb9568be106b245f03341d68031da70b113bbfdd
     }
 
     public function sortCategories($items)
@@ -89,7 +182,12 @@ class MediaManagerCategoriesHelper
 
     public function getParentOptions()
     {
-        $options = '<option value="0" selected>' .  $this->mediaManager->modx->lexicon('mediamanager.categories.root') . '</option>';
+        $options = $this->mediaManager->getChunk('categories/option', [
+            'value'    => 0,
+            'name'     => $this->mediaManager->modx->lexicon('mediamanager.categories.root'),
+            'selected' => 'selected',
+        ]);
+
         $options .= $this->buildParentOptions($this->getCategories());
 
         return $options;
@@ -103,7 +201,11 @@ class MediaManagerCategoriesHelper
             if ($item->get('parent_id') === $parent) {
                 $prefix = str_repeat('-', $level);
 
-                $options .= '<option value="' . $item->get('id') . '">' . $prefix . $item->get('name') . '</option>';
+                $options .= $this->mediaManager->getChunk('categories/option', [
+                    'value'    => $item->get('id'),
+                    'name'     => $prefix . $item->get('name'),
+                    'selected' => '',
+                ]);
 
                 $options .= $this->buildParentOptions($list, $item->get('id'), $level + 1);
             }
@@ -117,7 +219,9 @@ class MediaManagerCategoriesHelper
         $listHtml = $this->buildList($this->getCategories());
 
         if(!empty($listHtml)) {
-            $listHtml = '<ol class="sortable">' . $listHtml . '</ol>';
+            $listHtml = $this->mediaManager->getChunk('categories/list_sortable', [
+                'html' => $listHtml
+            ]);
         }
 
         return $listHtml;
@@ -129,6 +233,7 @@ class MediaManagerCategoriesHelper
 
         foreach($list as $item) {
             if ($item->get('parent_id') === $parent) {
+<<<<<<< HEAD
                 $listHtml .= '<li id="items_' . $item->get('id') . '"><div>' . $item->get('name') . '<span class="pull-right">
                 <a href="javascript:void(0)" data-delete-category="' . $item->get('id') . '" data-delete-message="' . $this->mediaManager->modx->lexicon('mediamanager.categories.delete_confirm_message', array('name' => $item->get('name'))) . '" data-delete-title="' . $this->mediaManager->modx->lexicon('mediamanager.categories.delete_confirm_title') . '" data-delete-confirm="' . $this->mediaManager->modx->lexicon('mediamanager.categories.delete') . '" data-delete-cancel="' . $this->mediaManager->modx->lexicon('mediamanager.categories.cancel') . '">
                     ' . $this->mediaManager->modx->lexicon('mediamanager.categories.delete') . '
@@ -136,6 +241,31 @@ class MediaManagerCategoriesHelper
                 </span></div><ol>';
                 $listHtml .= $this->buildList($list, $item->get('id'));
                 $listHtml .= '</ol></li>';
+=======
+                $contexts = 0;
+
+                $itemContexts = $item->get('contexts');
+                if(!empty($itemContexts)) {
+                    $contexts = $itemContexts;
+                }
+
+                $listHtml .= $this->mediaManager->getChunk('categories/list_item', [
+                    'id'            => $item->get('id'),
+                    'name'          => $item->get('name'),
+                    'contexts'      => $contexts,
+                    'deleteMessage' => $this->mediaManager->modx->lexicon('mediamanager.categories.delete_confirm_message', array('name' => $item->get('name'))),
+                    'deleteTitle'   => $this->mediaManager->modx->lexicon('mediamanager.categories.delete_confirm_title'),
+                    'deleteConfirm' => $this->mediaManager->modx->lexicon('mediamanager.categories.delete'),
+                    'deleteCancel'  => $this->mediaManager->modx->lexicon('mediamanager.categories.cancel'),
+                    'delete'        => $this->mediaManager->modx->lexicon('mediamanager.categories.delete'),
+                    'editMessage'   => $this->mediaManager->modx->lexicon('mediamanager.categories.edit_confirm_message', array('name' => $item->get('name'))),
+                    'editTitle'     => $this->mediaManager->modx->lexicon('mediamanager.categories.edit_confirm_title'),
+                    'editConfirm'   => $this->mediaManager->modx->lexicon('mediamanager.categories.edit'),
+                    'editCancel'    => $this->mediaManager->modx->lexicon('mediamanager.categories.cancel'),
+                    'edit'          => $this->mediaManager->modx->lexicon('mediamanager.categories.edit'),
+                    'children'      => $this->buildList($list, $item->get('id'))
+                ]);
+>>>>>>> cb9568be106b245f03341d68031da70b113bbfdd
             }
         }
 
@@ -150,10 +280,107 @@ class MediaManagerCategoriesHelper
     public function getCategories()
     {
         $q = $this->mediaManager->modx->newQuery('MediamanagerCategories');
+        $q->select(array(
+            'MediamanagerCategories.*',
+            'contexts' => 'GROUP_CONCAT(CategoriesExcludes.mediamanager_contexts_id SEPARATOR ",")'
+        ));
+        $q->leftJoin('MediamanagerCategoriesExcludes', 'CategoriesExcludes');
+        $q->sortby('parent_id', 'ASC');
+        $q->sortby('rank', 'ASC');
+        $q->groupby('MediamanagerCategories.id');
+
+        return $this->mediaManager->modx->getCollection('MediamanagerCategories', $q);
+    }
+
+    public function getMediaContexts($includeAll = false, $includeMain = false)
+    {
+        $q = $this->mediaManager->modx->newQuery('MediamanagerContexts');
+        $q->where(array('is_all' => (int) $includeAll));
+        $q->where(array('is_main' => (int) $includeMain));
+        $q->sortby('name', 'ASC');
+
+        return $this->mediaManager->modx->getCollection('MediamanagerContexts', $q);
+    }
+
+    public function getMediaContextsCheckboxes()
+    {
+        $checkboxes = '';
+
+        $mediaContexts = $this->getMediaContexts();
+        foreach($mediaContexts as $mediaContext)
+        {
+            $checkboxes .= $this->mediaManager->getChunk('categories/checkbox',  $mediaContext->toArray());
+        }
+
+        return $checkboxes;
+    }
+
+    public function getCategoryTree($selected = 0)
+    {
+        $q = $this->mediaManager->modx->newQuery('MediamanagerCategories');
+        $q->leftJoin('MediamanagerCategoriesExcludes', 'CategoriesExcludes');
         $q->sortby('parent_id', 'ASC');
         $q->sortby('rank', 'ASC');
 
-        return $this->mediaManager->modx->getCollection('MediamanagerCategories', $q);
+        $categories = $this->mediaManager->modx->getCollection('MediamanagerCategories', $q);
+
+        $list = $this->buildCategoryTree($categories, 0, $selected);
+        $list = array_values($list);
+
+        $root = array(
+            array(
+                'text'       => $this->mediaManager->modx->lexicon('mediamanager.global.root'),
+                'categoryId' => 0,
+                'state'      => array(
+                    'selected' => ($selected == 0 ? true : false)
+                )
+            )
+        );
+
+        $archive = array(
+            array(
+                'text'       => $this->mediaManager->modx->lexicon('mediamanager.global.archive'),
+                'categoryId' => -1,
+                'state'      => array(
+                    'selected' => ($selected == -1 ? true : false)
+                )
+            )
+        );
+
+        $list = array_merge($root, $list, $archive);
+
+        $select = $this->getParentOptions();
+
+        return [
+            'list'   => $list,
+            'select' => $select
+        ];
+    }
+
+    private function buildCategoryTree(array $list, $parent = 0, $selected)
+    {
+        $data = array();
+
+        foreach ($list as $item) {
+            if ($item->get('parent_id') === $parent) {
+
+                $data[$item->get('id')] = array(
+                    'text'       => $item->get('name'),
+                    'categoryId' => $item->get('id'),
+                    'nodes'      => $this->buildCategoryTree($list, $item->get('id'), $selected),
+                    'state'      => array(
+                        'selected' => ($item->get('id') == $selected ? true : false),
+                    )
+                );
+
+                // Remove nodes if empty
+                if (empty($data[$item->get('id')]['nodes'])) {
+                    unset($data[$item->get('id')]['nodes']);
+                }
+            }
+        }
+
+        return $data;
     }
 
     /**
@@ -178,5 +405,4 @@ class MediaManagerCategoriesHelper
 
         return $result;
     }
-
 }

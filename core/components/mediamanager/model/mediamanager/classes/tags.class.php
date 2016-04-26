@@ -137,13 +137,20 @@ class MediaManagerTagsHelper
      * Get tags by name.
      *
      * @param string $search
+     * @param bool $isContextTag
+     *
      * @return array
      */
-    public function getTagsByName($search)
+    public function getTagsByName($search, $isContextTag = false)
     {
+        $contextId = 0;
+        if ($isContextTag) {
+            $contextId = $this->mediaManager->contexts->getUserContext();
+        }
+
         $tags = $this->mediaManager->modx->getIterator('MediamanagerTags', [
             'is_deleted' => 0,
-            'mediamanager_contexts_id' => 0,
+            'mediamanager_contexts_id' => $contextId,
             'name:LIKE' => '%' . $search . '%'
         ]);
 

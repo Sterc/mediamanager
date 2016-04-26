@@ -30,7 +30,7 @@ class MediaManagerCategoriesProcessor extends modProcessor
                 break;
             case 'delete':
                 $data = $this->delete();
-                
+
                 break;
             case 'sort':
                 $data = $this->sort();
@@ -40,6 +40,10 @@ class MediaManagerCategoriesProcessor extends modProcessor
                 $data = $this->getCategoriesByName();
 
                 break;
+            case 'getTree':
+                $data = $this->getTree();
+
+                break;
         }
 
         return $this->outputArray($data);
@@ -47,18 +51,18 @@ class MediaManagerCategoriesProcessor extends modProcessor
 
     private function create()
     {
-        return $this->mediaManager->categories->createCategory($this->getProperty('name'), $this->getProperty('parent'));
+        return $this->mediaManager->categories->createCategory($this->getProperty('name'), $this->getProperty('parent'), $this->getProperty('excludes'));
     }
 
     private function edit()
     {
 
-        //return $this->mediaManager->tags->editTag($this->getProperty('tag_id'), $this->getProperty('tag'));
+        return $this->mediaManager->categories->editCategory($this->getProperty('category_id'), $this->getProperty('name'), $this->getProperty('excludes'));
     }
 
     private function delete()
     {
-        //return $this->mediaManager->tags->deleteTag($this->getProperty('tag_id'));
+        return $this->mediaManager->categories->deleteCategory($this->getProperty('category_id'), $this->getProperty('move_to'));
     }
 
     private function sort()
@@ -69,6 +73,11 @@ class MediaManagerCategoriesProcessor extends modProcessor
     private function getCategoriesByName()
     {
         return $this->mediaManager->categories->getCategoriesByName($this->getProperty('search'));
+    }
+
+    private function getTree()
+    {
+        return $this->mediaManager->categories->getCategoryTree($this->getProperty('selected'));
     }
 }
 

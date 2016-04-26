@@ -61,7 +61,7 @@ $xpdo_meta_map['MediamanagerFilesContent']= array (
       'cardinality' => 'one',
       'owner' => 'foreign',
     ),
-    'Content' => 
+    'modResource' =>
     array (
       'class' => 'modResource',
       'local' => 'site_content_id',

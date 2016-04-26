@@ -43,7 +43,8 @@ class MediaManager
      * @param    modX    $modx    The modX object.
      * @param    array   $config  Array with config values.
      */
-    public function __construct(modX &$modx, array $config = array()) {
+    public function __construct(modX &$modx, array $config = array())
+    {
         $this->modx =& $modx;
         $this->namespace = $this->modx->getOption('namespace', $config, 'mediamanager');
 
@@ -70,10 +71,10 @@ class MediaManager
         $this->modx->addPackage('mediamanager', $this->config['model_path']);
         $this->modx->lexicon->load('mediamanager:default');
 
+        $this->permissions  = new MediaManagerPermissionsHelper($this);
         $this->categories   = new MediaManagerCategoriesHelper($this);
         $this->contexts     = new MediaManagerContextsHelper($this);
         $this->files        = new MediaManagerFilesHelper($this);
-        $this->permissions  = new MediaManagerPermissionsHelper($this);
         $this->tags         = new MediaManagerTagsHelper($this);
     }
 
@@ -86,7 +87,8 @@ class MediaManager
      * @param array $properties The properties for the Chunk
      * @return string The processed content of the Chunk
      */
-    public function getChunk($name,array $properties = array()) {
+    public function getChunk($name,array $properties = array())
+    {
         $chunk = null;
         if (!isset($this->chunks[$name])) {
             $chunk = $this->modx->getObject('modChunk',array('name' => $name),true);
@@ -113,7 +115,8 @@ class MediaManager
      * @return modChunk/boolean Returns the modChunk object if found, otherwise
      * false.
      */
-    private function _getTplChunk($name, $suffix = '.chunk.tpl') {
+    private function _getTplChunk($name, $suffix = '.chunk.tpl')
+    {
         $chunk = false;
         $f = $this->config['chunks_path'].strtolower($name).$suffix;
         if (file_exists($f)) {
@@ -124,5 +127,34 @@ class MediaManager
             $chunk->setContent($o);
         }
         return $chunk;
+    }
+
+    /**
+     * Render supporting javascript for the custom TVs
+     */
+    public function includeScriptAssets()
+    {
+        $this->modx->regClientCSS($this->config['assets_url'] . 'libs/jquery-ui/1.11.4/css/jquery-ui.min.css');
+        $this->modx->regClientCSS($this->config['assets_url'] . 'libs/jquery-ui/1.11.4/css/jquery-ui.structure.min.css');
+        $this->modx->regClientCSS($this->config['assets_url'] . 'libs/jquery-ui/1.11.4/css/jquery-ui.theme.min.css');
+        $this->modx->regClientCSS($this->config['assets_url'] . 'css/mgr/mediamanager-tv-input.css');
+        $this->modx->regClientStartupScript($this->config['assets_url'] . 'libs/jquery/1.12.1/js/jquery.min.js');
+        $this->modx->regClientStartupScript($this->config['assets_url'] . 'libs/jquery-ui/1.11.4/js/jquery-ui.min.js');
+        $this->modx->regClientStartupScript($this->config['assets_url'] . 'js/mgr/mediamanager-tv-input.js');
+    }
+
+    public function getCategoryChildIds(array $categories, $parent = 0)
+    {
+        $children = [];
+
+        foreach ($categories as $item) {
+            if ($item->get('parent_id') === $parent) {
+                $children[] = $item->get('id');
+
+                $children = array_merge($this->getCategoryChildIds($categories, $item->get('id')), $children);
+            }
+        }
+
+        return $children;
     }
 }

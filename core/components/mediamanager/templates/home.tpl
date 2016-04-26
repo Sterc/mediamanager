@@ -3,26 +3,32 @@
         <div class="col-xs-12">
             <h1>
                 <span>{$pagetitle}</span>
-                <button type="button" class="btn btn-success" data-upload-media>{$upload_media}</button>
+                {$upload_media_button}
             </h1>
         </div>
     </div>
 
     <div class="row">
+        <div class="col-xs-12" data-alert-messages></div>
+    </div>
+
+    <div class="row">
         <div class="col-xs-12">
 
-            <form action="{$connector_url}" class="dropzone-form" id="mediaManagerDropzone" data-dropzone-form>
+            <div data-dropzone-feedback></div>
+
+            <form action="{$connector_url}" class="dropzone-form clickable" id="mediaManagerDropzone" data-dropzone-form>
                 <input type="hidden" name="HTTP_MODAUTH" value="{$token}">
 
-                <h2 class="dz-message">{$dropzone_title}</h2>
-                <button type="button" class="btn btn-default btn-lg">{$dropzone_button}</button>
+                <h2 class="dz-message clickable">{$dropzone_title}</h2>
+                <button type="button" class="btn btn-default btn-lg clickable">{$dropzone_button}</button>
                 <div class="fallback">
                     <input name="file" type="file" multiple />
                 </div>
-                <p class="note">{$dropzone_maximum_upload_size}</p>
+                <p class="note clickable">{$dropzone_maximum_upload_size}</p>
                 <div class="dropzone-previews"></div>
                 <div class="dropzone-actions">
-                    <button type="button" class="btn btn-success pull-right upload-selected-files">{$upload_selected_files}</button>
+                    <button type="button" class="btn btn-success pull-right upload-selected-files" disabled>{$upload_selected_files}</button>
                 </div>
             </form>
 
@@ -30,7 +36,7 @@
     </div>
 
     <div class="row">
-        <div class="col-sm-3 col-md-2">
+        <div class="col-sm-3 col-lg-2">
 
             <select class="form-control select-context" data-select-context>
                 {$context_list}
@@ -40,7 +46,7 @@
 
         </div>
 
-        <div class="col-sm-9 col-md-10">
+        <div class="col-sm-9 col-lg-10">
 
             {$filters}
 
@@ -50,5 +56,8 @@
 
         </div>
     </div>
+
+    {$popup}
+    {$dropzoneFile}
 
 </div>

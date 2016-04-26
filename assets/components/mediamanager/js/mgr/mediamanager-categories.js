@@ -9,6 +9,9 @@
         $createFeedback : 'div[data-create-feedback]',
         $listing        : 'div[data-listing]',
 
+        $edit           : 'a[data-edit-category]',
+        $editConfirm    : '[data-edit-confirm]',
+
         $delete         : 'a[data-delete-category]',
         $deleteConfirm  : '[data-delete-confirm]',
 
@@ -40,7 +43,7 @@
                             items        : $('.sortable').nestedSortable('serialize')
                         },
                         success: function(data) {
-                            console.log(data);
+                            //console.log(data);
                         }
                     });
                 }
@@ -75,6 +78,7 @@
                     }).appendTo(feedback).delay(3000).fadeOut(300);
 
                     $('input[type="text"]', self.$createForm).val('');
+                    $('input[type="checkbox"]', self.$createForm).attr('checked', false);
                     $(self.$listing).html(data.results.html);
                     self.sortable();
                 }
@@ -83,6 +87,63 @@
             return false;
         },
 
+<<<<<<< HEAD
+=======
+        edit : function(e) {
+            var self = this,
+                form  = $(self.$createForm).clone();
+
+            form.find('button').remove();
+            form.find('[name="parent"]').parents('.form-group').remove();
+            form.find('[name="name"]').val(e.target.dataset.editName);
+            form.find('[name="method"]').val('edit');
+            form.removeAttr('data-create-form');
+
+            form.append($('<input />', {name: 'category_id', type: 'hidden', value: e.target.dataset.editCategory}));
+
+            var contexts = e.target.dataset.editContexts.split(',');
+            $.each(contexts, function(index, value) {
+                form.find('input[value="' + value + '"]').prop('checked', true);
+            });
+
+            $('<div />').html(e.target.dataset.editMessage).append(form).dialog({
+                draggable: false,
+                resizable: false,
+                modal: true,
+                title: e.target.dataset.editTitle,
+                buttons : [{
+                    text: e.target.dataset.editConfirm,
+                    class: 'btn btn-success',
+                    click: function () {
+                        $.ajax ({
+                            type: 'POST',
+                            url: $(self.$createForm).attr('action'),
+                            data: $(form).serializeArray(),
+                            success: function(data) {
+                                $(self.$listing).html(data.results.html);
+                                $('select', self.$createForm).html(data.results.select);
+                            }
+                        });
+
+                        $(this).dialog('close');
+                    }
+                }, {
+                    text: e.target.dataset.editCancel,
+                    class: 'btn btn-default',
+                    click: function () {
+                        $(this).dialog('close');
+                    }
+                }],
+                open: function(event, ui) {
+                    $('.ui-dialog-titlebar-close', ui.dialog | ui).hide();
+                },
+                close : function() {
+                    $(this).dialog('destroy').remove();
+                }
+            });
+        },
+
+>>>>>>> cb9568be106b245f03341d68031da70b113bbfdd
         delete : function(e) {
             var self        = this,
                 count       = null,
@@ -132,10 +193,18 @@
                             },
                             success: function(data) {
                                 $(self.$listing).html(data.results.html);
+<<<<<<< HEAD
                             }
                         });
 
                         //$(this).dialog('close');
+=======
+                                $('select', self.$createForm).html(data.results.select);
+                            }
+                        });
+
+                        $(this).dialog('close');
+>>>>>>> cb9568be106b245f03341d68031da70b113bbfdd
                     }
                 }, {
                     text: e.target.dataset.deleteCancel,
@@ -168,6 +237,13 @@
     }, MediaManagerCategories.$createForm);
 
     $(document).on({
+<<<<<<< HEAD
+=======
+        click : $.proxy(MediaManagerCategories, 'edit')
+    }, MediaManagerCategories.$edit);
+
+    $(document).on({
+>>>>>>> cb9568be106b245f03341d68031da70b113bbfdd
         click : $.proxy(MediaManagerCategories, 'delete')
     }, MediaManagerCategories.$delete);
 

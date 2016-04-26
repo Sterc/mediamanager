@@ -1,7 +1,9 @@
 <div class="breadcrumbs-container clearfix">
-    <div class="pull-left" data-breadcrumbs>Breadcrumbs</div>
+    <div class="pull-left" data-breadcrumbs>
+        <ol class="breadcrumb"></ol>
+    </div>
 
-    <span class="glyphicon glyphicon-list pull-right" aria-hidden="true" data-view-mode="list"></span>
-    <span class="glyphicon glyphicon-th pull-right" aria-hidden="true" data-view-mode="grid"></span>
+    <i class="fa fa-list pull-right" aria-hidden="true" data-view-mode="list"></i>
+    <i class="fa fa-th pull-right" aria-hidden="true" data-view-mode="grid"></i>
 </div>
 <hr />

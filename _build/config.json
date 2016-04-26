@@ -1,0 +1,53 @@
+{
+    "name": "MediaManager",
+    "lowCaseName": "mediamanager",
+    "description": "Media Manager for MODX.",
+    "author": "Sterc",
+    "version": "0.1.1",
+    "package":{
+        "menus": [{
+            "text": "mediamanager",
+            "description": "mediamanager.desc",
+            "action": "home",
+            "parent": "media",
+            "permissions": "file_manager"
+        },{
+            "text": "mediamanager.categories",
+            "description": "mediamanager.categories.desc",
+            "action": "categories",
+            "parent": "media",
+            "permissions": "media_manager_admin"
+        },{
+            "text": "mediamanager.tags",
+            "description": "mediamanager.tags.desc",
+            "action": "tags",
+            "parent": "media",
+            "permissions": "media_manager_admin"
+        }],
+        "elements": {
+            "plugins": [{
+                "name": "mediaManagerCustomTv",
+                "file": "mediamanagercustomtv.plugin.php",
+                "events": ["OnDocFormRender","OnDocFormSave"]
+            },{
+                "name": "mediaManagerTinyMce",
+                "file": "mediamanagertinymce.plugin.php",
+                "events": ["OnDocFormPrerender"]
+            }]
+        }
+    },
+    "database": {
+        "tables": [
+            "MediamanagerContexts",
+            "MediamanagerCategories",
+            "MediamanagerTags",
+            "MediamanagerFiles",
+            "MediamanagerDownloads",
+            "MediamanagerCategoriesExcludes",
+            "MediamanagerFilesCategories",
+            "MediamanagerFilesTags",
+            "MediamanagerFilesContent",
+            "MediamanagerFilesRelations"
+        ]
+    }
+}

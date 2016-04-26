@@ -18,6 +18,11 @@ class MediaManagerContextsHelper
     private $currentContext = 1;
 
     /**
+     * @var int
+     */
+    private $userContext = 1;
+
+    /**
      * MediaManagerContextsHelper constructor.
      *
      * @param MediaManager $mediaManager
@@ -28,6 +33,8 @@ class MediaManagerContextsHelper
 
         $this->setDefaultContext();
         $this->setCurrentContext();
+        $this->setUserContext();
+        $this->hasPermission();
     }
 
     /**
@@ -61,6 +68,10 @@ class MediaManagerContextsHelper
     {
         $contextId = (int) $_REQUEST['context'];
 
+        if (!$contextId && isset($_SESSION['mediamanager']['context'])) {
+            return $this->currentContext = $_SESSION['mediamanager']['context'];
+        }
+
         if ($contextId) {
             $q = $this->mediaManager->modx->newQuery('MediamanagerContexts');
             $q->where(array(
@@ -69,11 +80,38 @@ class MediaManagerContextsHelper
             ));
 
             if ($this->mediaManager->modx->getObject('MediamanagerContexts', $q)) {
+                $_SESSION['mediamanager']['context'] = $contextId;
                 return $this->currentContext = $contextId;
             }
+
+            $this->mediaManager->modx->sendError('fatal');
         }
 
         return $this->currentContext = $this->defaultContext;
+    }
+
+    /**
+     * Set user context
+     *
+     * @return int
+     */
+    private function setUserContext()
+    {
+        return $this->userContext = (int) $this->mediaManager->modx->user->getOption('media_manager_context_id');
+    }
+
+    /**
+     * Check if user is allowed to view current context.
+     */
+    private function hasPermission()
+    {
+        if (
+            !$this->mediaManager->permissions->isAdmin()
+            && $this->userContext !== $this->currentContext
+            && $this->defaultContext !== $this->currentContext
+        ) {
+            $this->mediaManager->modx->sendError('fatal');
+        }
     }
 
     /**
@@ -87,13 +125,23 @@ class MediaManagerContextsHelper
     }
 
     /**
-     * Get current context
+     * Get current context.
      *
      * @return int
      */
     public function getCurrentContext()
     {
         return $this->currentContext;
+    }
+
+    /**
+     * Get user context.
+     *
+     * @return int
+     */
+    public function getUserContext()
+    {
+        return $this->userContext;
     }
 
     /**
@@ -123,8 +171,16 @@ class MediaManagerContextsHelper
 
         foreach ($contexts as $context) {
             $context = $context->toArray();
-            $context['selected'] = 0;
 
+            if (
+                !$this->mediaManager->permissions->isAdmin()
+                && $context['id'] !== $this->userContext
+                && $context['is_all'] === false
+            ) {
+                continue;
+            }
+
+            $context['selected'] = 0;
             if ($this->currentContext === $context['id']) {
                 $context['selected'] = 1;
             }
