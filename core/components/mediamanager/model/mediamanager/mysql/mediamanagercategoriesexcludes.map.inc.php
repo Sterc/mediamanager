@@ -42,7 +42,7 @@ $xpdo_meta_map['MediamanagerCategoriesExcludes']= array (
       'cardinality' => 'one',
       'owner' => 'foreign',
     ),
-    'Categories' =>
+    'Categories' => 
     array (
       'class' => 'MediamanagerCategories',
       'local' => 'mediamanager_categories_id',

@@ -13,5 +13,6 @@ $xpdo_meta_map = array (
     7 => 'MediamanagerFilesTags',
     8 => 'MediamanagerFilesContent',
     9 => 'MediamanagerFilesRelations',
+    10 => 'MediamanagerFilesVersions',
   ),
 );

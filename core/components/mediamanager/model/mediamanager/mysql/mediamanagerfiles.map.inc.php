@@ -135,7 +135,7 @@ $xpdo_meta_map['MediamanagerFiles']= array (
       'cardinality' => 'many',
       'owner' => 'local',
     ),
-    'Tags' =>
+    'Tags' => 
     array (
       'class' => 'MediamanagerFilesTags',
       'local' => 'id',

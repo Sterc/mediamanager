@@ -34,7 +34,7 @@ $xpdo_meta_map['MediamanagerFilesTags']= array (
   ),
   'aggregates' => 
   array (
-    'Files' =>
+    'Files' => 
     array (
       'class' => 'MediamanagerFiles',
       'local' => 'mediamanager_files_id',
@@ -42,7 +42,7 @@ $xpdo_meta_map['MediamanagerFilesTags']= array (
       'cardinality' => 'one',
       'owner' => 'foreign',
     ),
-    'Tags' =>
+    'Tags' => 
     array (
       'class' => 'MediamanagerTagsFiles',
       'local' => 'mediamanager_tags_id',
