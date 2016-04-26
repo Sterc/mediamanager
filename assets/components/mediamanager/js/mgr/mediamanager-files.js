@@ -1,3 +1,5 @@
+$.fn.modal.Constructor.prototype.enforceFocus = function () {};
+
 +function ($) {
 
     var MediaManagerFiles = {
@@ -10,7 +12,11 @@
         $dropzoneFileTemplate    : 'div[data-dropzone-file-template]',
         $dropzonePreviews        : '.dropzone-previews',
         $dropzoneActions         : '.dropzone-actions',
+        $dropzoneCopyButton      : '.btn-copy',
+        $dropzoneImageTypes      : ['image/jpg','image/png','image/gif'],
+        $dropzoneFeedback        : 'div[data-dropzone-feedback]',
 
+        $alertMessagesContainer  : 'div[data-alert-messages]',
         $uploadMedia             : 'button[data-upload-media]',
         $uploadSelectedFiles     : '.upload-selected-files',
 
@@ -18,6 +24,7 @@
         $fileContainer           : '.file',
         $fileCategories          : 'select[data-file-categories]',
         $fileTags                : 'select[data-file-tags]',
+        $fileContextTags         : 'select[data-file-context-tags]',
         $fileRemoveButton        : 'button[data-dz-remove]',
         $fileErrorMessage        : 'span[data-dz-errormessage]',
 
@@ -25,13 +32,18 @@
         $filePopupBody           : 'div[data-file-popup-body]',
         $filePopupFooter         : 'div[data-file-popup-footer]',
         $filePopupButton         : 'button[data-file-popup-button]',
+        $filePopupFeedback       : 'div[data-file-popup-feedback]',
+        $fileRelations           : 'td[data-file-relations]',
         $fileActionButton        : 'button[data-file-action-button]',
         $fileMoveButton          : 'button[data-file-move-button]',
         $fileArchiveButton       : 'button[data-file-archive-button]',
+        $fileArchiveReplaceButton: 'button[data-file-archive-replace-button]',
         $fileShareButton         : 'button[data-file-share-button]',
         $fileDeleteButton        : 'button[data-file-delete-button]',
         $fileCopyButton          : 'button[data-file-copy-button]',
+        $fileEditSaveButton      : 'button[data-file-edit-save]',
         $fileCrop                : 'img.crop',
+        $filePreviewLink         : 'a[data-preview-link]',
 
         $selectContext           : 'select[data-select-context]',
         $categoryTree            : 'div[data-category-tree]',
@@ -39,6 +51,7 @@
         $bulkActions             : '.bulk-actions',
         $bulkMoveButton          : 'button[data-bulk-move]',
         $bulkArchiveButton       : 'button[data-bulk-archive]',
+        $bulkUnArchiveButton     : 'button[data-bulk-unarchive]',
         $bulkShareButton         : 'button[data-bulk-share]',
         $bulkDownloadButton      : 'button[data-bulk-download]',
         $bulkDeleteButton        : 'button[data-bulk-delete]',
@@ -54,6 +67,8 @@
         $filterCategories        : 'select[data-filter-categories]',
         $filterTags              : 'select[data-filter-tags]',
         $filterUser              : 'select[data-filter-user]',
+        $filterDate              : 'select[data-filter-date]',
+        $filterDateCustom        : 'div[data-filter-date-custom]',
         $filterDateFrom          : 'input[data-filter-date-from]',
         $filterDateTo            : 'input[data-filter-date-to]',
 
@@ -69,16 +84,18 @@
         $currentSearch           : '',
         $currentSorting          : [],
         $currentFilters          : {
-            categories: [],
-            tags: [],
-            type: '',
-            user: '',
-            date: {
-                from: '',
-                to: ''
+            categories : [],
+            tags : [],
+            type : '',
+            user : '',
+            date : {
+                from : '',
+                to   : ''
             }
         },
 
+        $archiveReplaceFileId    : '',
+        $archiveCategoryId       : -1,
         $currentFile             : 0,
         $selectedFiles           : [],
 
@@ -110,7 +127,7 @@
             self.setFilters();
             self.setPopup();
             self.getCategories();
-            // self.getList();
+            self.getList();
         },
 
         /**
@@ -118,66 +135,60 @@
          */
         setDropzone: function() {
             var self = this;
+            var feedback = $(self.$dropzoneFeedback);
 
             self.$dropzone = new Dropzone(document.getElementById('mediaManagerDropzone'), {
-                parallelUploads: 9999,
-                maxFiles: 9999,
-                maxFilesize: mediaManagerOptions.maxFileSize,
-                maxThumbnailFilesize: 10,
-                autoProcessQueue: false,
-                clickable: '.clickable',
-                dictDefaultMessage: '',
-                previewsContainer: self.$dropzonePreviews,
+                parallelUploads      : 9999,
+                maxFiles             : 9999,
+                maxFilesize          : mediaManagerOptions.dropzone.maxFileSize,
+                maxThumbnailFilesize : 10,
+                autoProcessQueue     : false,
+                clickable            : '.clickable',
+                dictDefaultMessage   : '',
+                previewsContainer    : self.$dropzonePreviews,
+                acceptedFiles        : mediaManagerOptions.dropzone.acceptedFiles,
                 params: {
                     action  : 'mgr/files',
                     method  : 'add'
                 },
                 init: function() {
-                    var totalFiles = 0,
-                        $copyButton = null;
-
                     this.on('addedfile', function(file) {
                         var $filePreview = $(file.previewElement);
 
-                        if (totalFiles === 0) {
-                            $filePreview.find('.tags').append(
-                                $copyButton = $('<button />')
-                                    .text('Use categories and tags above for all files')
-                                    .addClass('btn btn-primary')
-                                    .on('click', function(e) {
-                                        e.preventDefault();
-                                        self.copyCategoriesAndTags();
-                                        return false;
-                                    })
-                                    .hide()
-                            );
+                        self.$filesCategories.push($(self.$fileCategories, $filePreview).select2(self.$filterCategoriesOptions)
+                            .on('select2:select select2:unselect', self.checkCategoriesAndTags)
+                        );
+                        self.$filesTags.push($(self.$fileTags, $filePreview).select2(self.$filterTagsOptions)
+                            .on('select2:select select2:unselect', self.checkCategoriesAndTags)
+                        );
 
-                            // Disable upload media button
-                            $(self.$uploadMedia).prop('disabled', true);
-                        }
-
-                        self.$filesCategories[totalFiles] = $(self.$fileCategories, $filePreview).select2(self.$filterCategoriesOptions)
-                            .on('select2:select select2:unselect', self.checkCategoriesAndTags);
-                        self.$filesTags[totalFiles] = $(self.$fileTags, $filePreview).select2(self.$filterTagsOptions)
-                            .on('select2:select select2:unselect', self.checkCategoriesAndTags);
+                        // Disable upload media button
+                        $(self.$uploadMedia).prop('disabled', true);
 
                         // Show upload selected files button
                         $(self.$dropzoneActions).show();
+                        $(self.$uploadSelectedFiles).prop('disabled', true);
 
-                        // Show copy categories and tags button if more than one file is added
-                        if (totalFiles > 0) {
-                            $copyButton.show();
+                        // Show copy categories and tags button if more than one file
+                        self.showCopyButton(this.files.length);
+
+                        // Images have lower max filesize, so check if type is image and check filesize
+                        if (self.$dropzoneImageTypes.indexOf(file.type) != -1) {
+                            var max = mediaManagerOptions.dropzone.maxFileSizeImages * 1000000;
+                            if (file.size > max) {
+                                $('<div/>', {
+                                    class: 'alert alert-danger',
+                                    text: mediaManagerOptions.message.maxFileSize
+                                }).appendTo(feedback).delay(3000).fadeOut(300);
+                                self.$dropzone.removeFile(file);
+                            }
                         }
-
-                        ++totalFiles;
                     });
 
                     this.on('removedfile', function(file) {
                         var queue = this.getQueuedFiles();
 
                         if (queue.length === 0) {
-                            totalFiles = 0;
-
                             // Enable upload media button
                             $(self.$uploadMedia).prop('disabled', false);
 
@@ -185,6 +196,9 @@
                             $(self.$uploadSelectedFiles).prop('disabled', true);
                             $(self.$dropzoneActions).hide();
                         }
+
+                        // Show copy categories and tags button if more than one file
+                        self.showCopyButton(this.files.length);
                     });
 
                     this.on('sending', function(file, xhr, formData) {
@@ -204,11 +218,22 @@
                     });
 
                     this.on('complete', function(file) {
+                        var self     = this,
+                            response = null;
+
                         if (typeof file.xhr === 'undefined') {
                             return false;
                         }
-                        var response = JSON.parse(file.xhr.response);
-                        $(file.previewElement).delay(1500).html(response.message);
+
+                        // If file is too big to upload, show error
+                        if (file.xhr.status === 413) {
+                            response = self.alert(mediaManagerOptions.message.maxFileSize, 'danger');
+                        } else {
+                            response = JSON.parse(file.xhr.response);
+                            response = response.message;
+                        }
+
+                        $(file.previewElement).delay(1500).html(response);
                     });
 
                     this.on('queuecomplete', function() {
@@ -310,11 +335,29 @@
         },
 
         /**
+         * Show or hide copy button.
+         *
+         * @param files
+         */
+        showCopyButton: function(files) {
+            var self = this;
+
+            if (files > 1) {
+                var $previews = $(self.$dropzonePreviews);
+                $(self.$dropzoneCopyButton, $previews).hide().off('click');
+                $(self.$dropzoneCopyButton, $previews).first().show().on('click', function(e) {
+                    e.preventDefault();
+                    self.copyCategoriesAndTags();
+                    return false;
+                });
+            }
+        },
+
+        /**
          * Initialize advanced search filters.
          */
         setFilters: function() {
-            var self = this,
-                flag = false;
+            var self = this;
 
             self.$filterCategoriesOptions = {
                 ajax: {
@@ -324,10 +367,10 @@
                     delay: 250,
                     data: function (params) {
                         return {
-                            action: 'mgr/categories',
-                            method: 'getCategoriesByName',
+                            action       : 'mgr/categories',
+                            method       : 'getCategoriesByName',
                             HTTP_MODAUTH : self.$httpModAuth,
-                            search: params.term
+                            search       : params.term
                         };
                     },
                     processResults: function (data, params) {
@@ -349,10 +392,11 @@
                     delay: 250,
                     data: function (params) {
                         return {
-                            action: 'mgr/tags',
-                            method: 'getTagsByName',
+                            action       : 'mgr/tags',
+                            method       : 'getTagsByName',
                             HTTP_MODAUTH : self.$httpModAuth,
-                            search: params.term
+                            search       : params.term,
+                            isContextTag : 0
                         };
                     },
                     processResults: function (data, params) {
@@ -447,7 +491,10 @@
 
             // Set current file
             $(self.$filePopup).on('show.bs.modal', function(e) {
-                self.$currentFile = $(e.relatedTarget).parents(self.$fileContainer).data('id');
+                var id = $(e.relatedTarget).parents(self.$fileContainer).data('id');
+                if (typeof id !== 'undefined') {
+                    self.$currentFile = id;
+                }
             });
 
             // Reset current file
@@ -485,22 +532,35 @@
                     data: data.results.list,
                     levels: 1,
                     onNodeSelected: function(event, data) {
-                        var currentUrl = window.location.href;
-                        var newUrl = self.updateQueryStringParameter(currentUrl,'category',data.categoryId);
-                        if(currentUrl != newUrl) {
+                        var currentUrl = window.location.href,
+                            newUrl     = self.updateQueryStringParameter(currentUrl, 'category', data.categoryId);
+
+                        if (currentUrl !== newUrl) {
                             history.pushState({}, '', newUrl);
                         }
+
+                        // Reset selected files when selecting other category
+                        self.clearSelectedFiles();
+
                         self.$currentCategory = data.categoryId;
                         self.getList();
+                        var selectedNodes = $(self.$categoryTree).treeview('getSelected');
+                        for (var i = 0; i < selectedNodes.length; i++) {
+                            if (data.nodeId !== selectedNodes[i].nodeId){
+                                $(self.$categoryTree).treeview('unselectNode', [ selectedNodes[i].nodeId, { silent: true } ]);
+                            }
+                        }
+                    },
+                    onNodeUnselected: function(event, data) {
+                        // prevent node unselected
+                        $(self.$categoryTree).treeview('selectNode', [ data.nodeId, { silent: true } ]);
                     }
                 });
-                var selectedNodes = $(self.$categoryTree).treeview('getSelected');
-                $.each(selectedNodes,function(index,value){
-                    $(self.$categoryTree).treeview('revealNode', [ value.nodeId, { silent: true } ]);
-                });
-                
-                self.getList();
 
+                var selectedNodes = $(self.$categoryTree).treeview('getSelected');
+                $.each(selectedNodes, function(index, value) {
+                    $(self.$categoryTree).treeview('revealNode', [value.nodeId, {silent: true}]);
+                });
             });
         },
 
@@ -530,9 +590,6 @@
                 self.setModxContentHeight();
                 self.lazyload();
                 self.buildBreadcrumbs();
-
-                // $(self.$breadcrumbsContainer).html(self.buildBreadcrumbs());
-
             });
         },
 
@@ -647,6 +704,26 @@
                     self.$currentFilters.type = e.target.value;
                     break;
 
+                case 'filterDate' :
+                    var from = '',
+                        to   = '';
+
+                    $(self.$filterDateCustom).find('input').hide();
+
+                    switch (e.target.value) {
+                        case 'recent' :
+                            from = new Date();
+                            from = from.setDate(from.getDate() - 7);
+                            break;
+                        case 'custom' :
+                            $(self.$filterDateCustom).find('input').val('').show();
+                            break;
+                    }
+
+                    self.$currentFilters['date']['from'] = from;
+                    self.$currentFilters['date']['to']   = to;
+                    break;
+
                 default :
                     return false;
             }
@@ -725,6 +802,59 @@
                 return false;
             }
 
+            // Select file to replace
+            if (self.$archiveReplaceFileId !== '') {
+                var $dialog = $('<div />').html(mediaManagerOptions.message.replaceConfirm).dialog({
+                    draggable: false,
+                    resizable: false,
+                    modal: true,
+                    title: mediaManagerOptions.message.replaceButton,
+                    buttons : [{
+                        text: mediaManagerOptions.message.replaceButton,
+                        class: 'btn btn-primary',
+                        click: function() {
+                            $.ajax ({
+                                type: 'POST',
+                                url: self.$connectorUrl,
+                                data: {
+                                    action       : 'mgr/files',
+                                    method       : 'archiveReplace',
+                                    HTTP_MODAUTH : self.$httpModAuth,
+                                    fileId       : self.$archiveReplaceFileId,
+                                    newFileId    : fileId
+                                },
+                                complete: function(data) {
+                                    self.$currentFile = fileId;
+                                    self.filePopup();
+                                    self.getList();
+                                    $(self.$filePopup).modal('show');
+
+                                    $dialog.dialog('close');
+                                }
+                            });
+                        }
+                    }, {
+                        text: mediaManagerOptions.cancel,
+                        class: 'btn btn-default',
+                        click: function () {
+                            $(this).dialog('close');
+                        }
+                    }],
+                    open: function(event, ui) {
+                        $('.ui-dialog-titlebar-close', ui.dialog | ui).hide();
+                    },
+                    close : function() {
+                        self.$archiveReplaceFileId = '';
+                        $(self.$alertMessagesContainer).html('');
+
+                        $(this).dialog('destroy').remove();
+                    }
+                });
+
+                return false;
+            }
+
+            // Select/unselect file
             $fileContainer.toggleClass('file-selected');
             if (!$target.is('input')) {
                 $fileCheckbox.prop('checked', !$fileCheckbox.prop('checked'));
@@ -771,6 +901,22 @@
                 $(self.$bulkActions).hide();
             } else {
                 $(self.$bulkActions).show();
+            }
+            // Disable / enable buttons in archive
+            if (self.$currentCategory == self.$archiveCategoryId) {
+                $(self.$bulkActions+' button[data-bulk-move]').addClass('hidden');
+                $(self.$bulkActions+' button[data-bulk-archive]').addClass('hidden');
+                $(self.$bulkActions+' button[data-bulk-share]').addClass('hidden');
+                $(self.$bulkActions+' button[data-bulk-download]').addClass('hidden');
+                $(self.$bulkActions+' button[data-bulk-delete]').removeClass('hidden');
+                $(self.$bulkActions+' button[data-bulk-unarchive]').removeClass('hidden');
+            } else {
+                $(self.$bulkActions+' button[data-bulk-move]').removeClass('hidden');
+                $(self.$bulkActions+' button[data-bulk-archive]').removeClass('hidden');
+                $(self.$bulkActions+' button[data-bulk-share]').removeClass('hidden');
+                $(self.$bulkActions+' button[data-bulk-download]').removeClass('hidden');
+                $(self.$bulkActions+' button[data-bulk-delete]').addClass('hidden');
+                $(self.$bulkActions+' button[data-bulk-unarchive]').addClass('hidden');
             }
         },
 
@@ -894,6 +1040,107 @@
         },
 
         /**
+         * Unarchive files.
+         *
+         * @param e
+         */
+        unArchiveFiles: function(e) {
+            var self = this,
+                files = self.$selectedFiles;
+
+            if (self.$currentFile !== 0) {
+                files = self.$currentFile;
+            }
+
+            var $dialog = $('<div />').html('<span data-error></span>' + e.target.dataset.archiveMessage).dialog({
+                draggable: false,
+                resizable: false,
+                modal: true,
+                title: e.target.dataset.archiveTitle,
+                buttons : [{
+                    text: e.target.dataset.archiveConfirm,
+                    class: 'btn btn-danger',
+                    click: function () {
+                        $.ajax ({
+                            type: 'POST',
+                            url: self.$connectorUrl,
+                            data: {
+                                action       : 'mgr/files',
+                                method       : 'unarchive',
+                                HTTP_MODAUTH : self.$httpModAuth,
+                                files        : files
+                            },
+                            success: function(data) {
+                                // Deselect files
+                                if (data.results.archivedFiles.length) {
+                                    $.each(data.results.archivedFiles, function (i) {
+                                        self.$selectedFiles.splice(i, 1);
+                                    });
+
+                                    $(self.$filePopup).modal('hide');
+                                    self.showBulkActions();
+                                    self.getList();
+                                }
+
+                                if (data.results.status === 'error') {
+                                    $dialog.find('span[data-error]').html(data.results.message);
+                                    return false;
+                                }
+
+                                $dialog.dialog('close');
+                            }
+                        });
+                    }
+                }, {
+                    text: e.target.dataset.archiveCancel,
+                    class: 'btn btn-default',
+                    click: function () {
+                        $(this).dialog('close');
+                    }
+                }],
+                open: function(event, ui) {
+                    $('.ui-dialog-titlebar-close', ui.dialog | ui).hide();
+                },
+                close : function() {
+                    $(this).dialog('destroy').remove();
+                }
+            });
+        },
+
+        archiveReplaceFile: function(e) {
+            var self = this;
+
+            $('<div />').html(e.target.dataset.archiveMessage).dialog({
+                draggable: false,
+                resizable: false,
+                modal: true,
+                title: e.target.dataset.archiveTitle,
+                buttons : [{
+                    text: e.target.dataset.archiveConfirm,
+                    class: 'btn btn-danger',
+                    click: function () {
+                        self.$archiveReplaceFileId = self.$currentFile;
+                        $(self.$alertMessagesContainer).html(self.alert(e.target.dataset.archiveSelectMessage, 'info'));
+                        $(self.$filePopup).modal('hide');
+                        $(this).dialog('close');
+                    }
+                }, {
+                    text: e.target.dataset.archiveCancel,
+                    class: 'btn btn-default',
+                    click: function () {
+                        $(this).dialog('close');
+                    }
+                }],
+                open: function(event, ui) {
+                    $('.ui-dialog-titlebar-close', ui.dialog | ui).hide();
+                },
+                close : function() {
+                    $(this).dialog('destroy').remove();
+                }
+            });
+        },
+
+        /**
          * Share files.
          *
          * @param e
@@ -927,7 +1174,7 @@
                             success: function(data) {
                                 if (data.results.status === 'success') {
                                     $dialog.html(data.results.message);
-                                    $dialog.next().find('.btn-primary').hide()
+                                    $dialog.next().find('.btn-primary').hide();
                                     self.clearSelectedFiles();
                                 } else {
                                     $dialog.find('span[data-error]').html(data.results.message);
@@ -937,6 +1184,61 @@
                     }
                 }, {
                     text: e.target.dataset.shareCancel,
+                    class: 'btn btn-default',
+                    click: function () {
+                        $(this).dialog('close');
+                    }
+                }],
+                open: function(event, ui) {
+                    $('.ui-dialog-titlebar-close', ui.dialog | ui).hide();
+                },
+                close : function() {
+                    $(this).dialog('destroy').remove();
+                }
+            });
+        },
+
+        /**
+         * Download files.
+         *
+         * @param e
+         */
+        downloadFiles: function(e) {
+            var self = this,
+                files = self.$selectedFiles;
+
+            var $dialog = $('<div />').html('<span data-error></span>' + e.target.dataset.downloadMessage).dialog({
+                draggable: false,
+                resizable: false,
+                modal: true,
+                title: e.target.dataset.downloadTitle,
+                buttons : [{
+                    text: e.target.dataset.downloadConfirm,
+                    class: 'btn btn-primary',
+                    click: function () {
+                        $.ajax ({
+                            type: 'POST',
+                            url: self.$connectorUrl,
+                            data: {
+                                action       : 'mgr/files',
+                                method       : 'download',
+                                HTTP_MODAUTH : self.$httpModAuth,
+                                files        : files
+                            },
+                            success: function(data) {
+                                if (data.results.status === 'success') {
+                                    self.clearSelectedFiles();
+                                    window.location.href = data.results.message;
+                                    $dialog.dialog('close');
+                                    return false;
+                                }
+
+                                $dialog.find('span[data-error]').html(data.results.message);
+                            }
+                        });
+                    }
+                }, {
+                    text: e.target.dataset.downloadCancel,
                     class: 'btn btn-default',
                     click: function () {
                         $(this).dialog('close');
@@ -977,7 +1279,7 @@
                                 HTTP_MODAUTH : self.$httpModAuth,
                                 fileId       : self.$currentFile
                             },
-                            success: function(data) {
+                            complete: function(data) {
                                 $(self.$filePopup).modal('hide');
                                 self.clearSelectedFiles();
                                 self.showBulkActions();
@@ -1072,7 +1374,7 @@
             $(self.$filePopupBody).html($('<div />').css('width', '100%').css('height', $(self.$filePopupBody).height()));
 
             // Get new template
-            $.ajax ({
+            $.ajax({
                 type: 'POST',
                 url: self.$connectorUrl,
                 data: {
@@ -1089,68 +1391,167 @@
                     $body.html(data.results.body);
                     $footer.html(data.results.footer);
 
-                    var $categories = $(self.$fileCategories, $body).select2(self.$filterCategoriesOptions);
-                    var $tags       = $(self.$fileTags, $body).select2(self.$filterTagsOptions);
+                    if (template === 'preview') {
+                        $(self.$fileRelations, $body).on('click', function(e) {
+                            e.preventDefault();
 
-                    // Add category to file
-                    $categories.on('select2:select', function(e) {
-                        $.ajax ({
-                            type: 'POST',
-                            url: self.$connectorUrl,
-                            data: {
-                                action       : 'mgr/files',
-                                method       : 'addCategory',
+                            if (typeof e.target.dataset.fileId === 'undefined') {
+                                return false;
+                            }
+
+                            self.$currentFile = e.target.dataset.fileId;
+                            self.filePopup();
+                        });
+
+                        var $categories  = $(self.$fileCategories, $body).select2(self.$filterCategoriesOptions);
+                        var $tags        = $(self.$fileTags, $body).select2(self.$filterTagsOptions);
+
+                        var contextTagsOptions = self.$filterTagsOptions;
+                        contextTagsOptions.ajax.data = function (params) {
+                            return {
+                                action       : 'mgr/tags',
+                                method       : 'getTagsByName',
                                 HTTP_MODAUTH : self.$httpModAuth,
-                                fileId       : self.$currentFile,
-                                categoryId   : e.params.data.id
+                                search       : params.term,
+                                isContextTag : 1
+                            };
+                        };
+                        var $contextTags = $(self.$fileContextTags, $body).select2(contextTagsOptions);
+
+                        // Add category to file
+                        $categories.on('select2:select', function(e) {
+                            $.ajax({
+                                type: 'POST',
+                                url: self.$connectorUrl,
+                                data: {
+                                    action       : 'mgr/files',
+                                    method       : 'addCategory',
+                                    HTTP_MODAUTH : self.$httpModAuth,
+                                    fileId       : self.$currentFile,
+                                    categoryId   : e.params.data.id
+                                }
+                            });
+                        });
+
+                        // Before removing category from file
+                        $categories.on('select2:unselecting', function(e) {
+                            // We shouldn't get to 0 categories
+                            if(this.selectedOptions.length === 1){
+                                var feedback = $(self.$filePopupFeedback);
+                                $categories.select2("close");
+                                $('<div/>', {
+                                    class: 'alert alert-danger',
+                                    text: mediaManagerOptions.message.minCategory
+                                }).appendTo(feedback).delay(3000).fadeOut(300);
+
+                                return false;
                             }
                         });
-                    });
 
-                    // Remove category from file
-                    $categories.on('select2:unselect', function(e) {
-                        $.ajax ({
-                            type: 'POST',
-                            url: self.$connectorUrl,
-                            data: {
-                                action       : 'mgr/files',
-                                method       : 'removeCategory',
-                                HTTP_MODAUTH : self.$httpModAuth,
-                                fileId       : self.$currentFile,
-                                categoryId   : e.params.data.id
-                            }
+                        // Remove category from file
+                        $categories.on('select2:unselect', function(e) {
+                            $.ajax({
+                                type: 'POST',
+                                url: self.$connectorUrl,
+                                data: {
+                                    action       : 'mgr/files',
+                                    method       : 'removeCategory',
+                                    HTTP_MODAUTH : self.$httpModAuth,
+                                    fileId       : self.$currentFile,
+                                    categoryId   : e.params.data.id
+                                }
+                            });
                         });
-                    });
 
-                    // Add tag to file
-                    $tags.on('select2:select', function(e) {
-                        $.ajax ({
-                            type: 'POST',
-                            url: self.$connectorUrl,
-                            data: {
-                                action       : 'mgr/files',
-                                method       : 'addTag',
-                                HTTP_MODAUTH : self.$httpModAuth,
-                                fileId       : self.$currentFile,
-                                tagId        : e.params.data.id
-                            }
+                        // Add tag to file
+                        $tags.on('select2:select', function(e) {
+                            $.ajax({
+                                type: 'POST',
+                                url: self.$connectorUrl,
+                                data: {
+                                    action       : 'mgr/files',
+                                    method       : 'addTag',
+                                    HTTP_MODAUTH : self.$httpModAuth,
+                                    fileId       : self.$currentFile,
+                                    tagId        : e.params.data.id
+                                }
+                            });
                         });
-                    });
 
-                    // Remove tag from file
-                    $tags.on('select2:unselect', function(e) {
-                        $.ajax ({
-                            type: 'POST',
-                            url: self.$connectorUrl,
-                            data: {
-                                action       : 'mgr/files',
-                                method       : 'removeTag',
-                                HTTP_MODAUTH : self.$httpModAuth,
-                                fileId       : self.$currentFile,
-                                tagId        : e.params.data.id
-                            }
+                        // Remove tag from file
+                        $tags.on('select2:unselect', function(e) {
+                            $.ajax({
+                                type: 'POST',
+                                url: self.$connectorUrl,
+                                data: {
+                                    action       : 'mgr/files',
+                                    method       : 'removeTag',
+                                    HTTP_MODAUTH : self.$httpModAuth,
+                                    fileId       : self.$currentFile,
+                                    tagId        : e.params.data.id
+                                }
+                            });
                         });
-                    });
+
+                        // Add context tag to file
+                        $contextTags.on('select2:select', function(e) {
+                            $.ajax({
+                                type: 'POST',
+                                url: self.$connectorUrl,
+                                data: {
+                                    action       : 'mgr/files',
+                                    method       : 'addTag',
+                                    HTTP_MODAUTH : self.$httpModAuth,
+                                    fileId       : self.$currentFile,
+                                    tagId        : e.params.data.id
+                                },
+                                success: function(data) {
+                                    self.addNewTag($body, $contextTags);
+                                }
+                            });
+                        });
+
+                        // Remove context tag from file
+                        $contextTags.on('select2:unselect', function(e) {
+                            $.ajax({
+                                type: 'POST',
+                                url: self.$connectorUrl,
+                                data: {
+                                    action       : 'mgr/files',
+                                    method       : 'removeTag',
+                                    HTTP_MODAUTH : self.$httpModAuth,
+                                    fileId       : self.$currentFile,
+                                    tagId        : e.params.data.id
+                                },
+                                success: function(data) {
+                                    self.addNewTag($body, $contextTags);
+                                }
+                            });
+                        });
+
+                        self.addNewTag($body, $contextTags);
+                    }
+
+                    if (template === 'edit') {
+                        $(self.$fileEditSaveButton).on('click', function() {
+                            $.ajax({
+                                type: 'POST',
+                                url: self.$connectorUrl,
+                                data: {
+                                    action       : 'mgr/files',
+                                    method       : 'save',
+                                    HTTP_MODAUTH : self.$httpModAuth,
+                                    fileId       : self.$currentFile,
+                                    data         : {
+                                        name: $('form input', $body).val()
+                                    }
+                                },
+                                success: function(data) {
+                                    self.filePopup();
+                                }
+                            });
+                        });
+                    }
 
                     if (template === 'crop') {
                         self.$filesCropper.init($(self.$fileCrop, $body), self);
@@ -1158,6 +1559,40 @@
                 }
             });
         },
+
+        addNewTag: function($body, $contextTags) {
+            var self = this;
+
+            // Add context specific tag
+            $(self.$fileContextTags + ' + span.select2 .select2-search__field', $body).on('keyup', function(e) {
+                if (e.keyCode === 13) {
+                    $.ajax({
+                        type: 'POST',
+                        url: self.$connectorUrl,
+                        data: {
+                            action       : 'mgr/files',
+                            method       : 'addTag',
+                            HTTP_MODAUTH : self.$httpModAuth,
+                            fileId       : self.$currentFile,
+                            tagId        : 0,
+                            name         : this.value
+                        },
+                        success: function(data) {
+                            if (data.results.status === 'success') {
+                                var html   = $contextTags.html(),
+                                    values = $contextTags.val();
+
+                                html += data.results.html;
+                                values.push(data.results.tagId);
+
+                                $contextTags.html(html).val(values).trigger('change');
+                            }
+                        }
+                    });
+                }
+            });
+        },
+
          /**
          * Build the breadcrumbs html.
          */
@@ -1196,6 +1631,25 @@
             }
             $(self.$breadcrumbsContainer).html(breadcrumbsHtml);
 
+        },
+
+        alert: function(message, type) {
+            if (typeof type === 'undefined') {
+                type = 'danger';
+            }
+
+            return $('<div/>', {
+                class: 'alert alert-' + type,
+                text: message
+            });
+        },
+
+        previewLink: function(e) {
+            var self = this;
+
+            self.$currentFile = e.target.dataset.fileId;
+            self.filePopup();
+            $(self.$filePopup).modal('show');
         }
 
     }
@@ -1207,6 +1661,7 @@
             MediaManagerFiles.resizeFileContainer();
             MediaManagerFiles.setModxContentHeight();
         });
+
     });
 
     $(document).on({
@@ -1242,6 +1697,10 @@
     }, MediaManagerFiles.$filterType);
 
     $(document).on({
+        change : $.proxy(MediaManagerFiles, 'changeFilter')
+    }, MediaManagerFiles.$filterDate);
+
+    $(document).on({
         click : $.proxy(MediaManagerFiles, 'switchViewMode')
     }, MediaManagerFiles.$viewMode);
 
@@ -1259,11 +1718,19 @@
         click : $.proxy(MediaManagerFiles, 'filePopup')
     }, MediaManagerFiles.$fileActionButton);
 
+    $(document).on({
+        click : $.proxy(MediaManagerFiles, 'previewLink')
+    }, MediaManagerFiles.$filePreviewLink);
+
     // File actions
 
     $(document).on({
         click : $.proxy(MediaManagerFiles, 'archiveFiles')
     }, MediaManagerFiles.$fileArchiveButton);
+
+    $(document).on({
+        click : $.proxy(MediaManagerFiles, 'archiveReplaceFile')
+    }, MediaManagerFiles.$fileArchiveReplaceButton);
 
     $(document).on({
         click : $.proxy(MediaManagerFiles, 'shareFiles')
@@ -1288,8 +1755,16 @@
     }, MediaManagerFiles.$bulkArchiveButton);
 
     $(document).on({
+        click : $.proxy(MediaManagerFiles, 'unArchiveFiles')
+    }, MediaManagerFiles.$bulkUnArchiveButton);
+
+    $(document).on({
         click : $.proxy(MediaManagerFiles, 'shareFiles')
     }, MediaManagerFiles.$bulkShareButton);
+
+    $(document).on({
+        click : $.proxy(MediaManagerFiles, 'downloadFiles')
+    }, MediaManagerFiles.$bulkDownloadButton);
 
     $(document).on({
         click : $.proxy(MediaManagerFiles, 'clearSelectedFiles')

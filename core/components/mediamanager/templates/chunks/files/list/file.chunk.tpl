@@ -13,6 +13,9 @@
         [[+file_size]]
     </td>
     <td>
+        [[+categories]]
+    </td>
+    <td>
         [[+uploaded_by]]
     </td>
     <td>

@@ -2,6 +2,7 @@
     <span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span>
     <div class="file-preview">
         [[+preview]]
+        <button type="button" class="btn btn-success btn-lg tv-tiny-use">[[%mediamanager.global.use]]</button>
     </div>
     <div class="file-name">
         [[+name]]
@@ -9,4 +10,5 @@
     <div class="file-options">
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="div[data-file-popup]" data-file-popup-button>[[%mediamanager.global.preview]]</button>
     </div>
+
 </div>

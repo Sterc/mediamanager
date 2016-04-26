@@ -32,8 +32,20 @@ class MediaManagerFilesProcessor extends modProcessor
                 $data = $this->archive();
 
                 break;
+            case 'unarchive':
+                $data = $this->unarchive();
+
+                break;
+            case 'archiveReplace':
+                $data = $this->archiveReplace();
+
+                break;
             case 'share':
                 $data = $this->share();
+
+                break;
+            case 'download':
+                $data = $this->download();
 
                 break;
             case 'delete':
@@ -46,6 +58,10 @@ class MediaManagerFilesProcessor extends modProcessor
                 break;
             case 'copyToContext':
                 $data = $this->copyToContext();
+
+                break;
+            case 'save':
+                $data = $this->save();
 
                 break;
             case 'list':
@@ -106,11 +122,39 @@ class MediaManagerFilesProcessor extends modProcessor
         );
     }
 
+    private function unarchive()
+    {
+        return $this->outputArray(
+            $this->mediaManager->files->unArchiveFiles(
+                $this->getProperty('files')
+            )
+        );
+    }
+
+    private function archiveReplace()
+    {
+        return $this->outputArray(
+            $this->mediaManager->files->archiveReplaceFile(
+                (int) $this->getProperty('fileId'),
+                (int) $this->getProperty('newFileId')
+            )
+        );
+    }
+
     private function share()
     {
         return $this->outputArray(
             $this->mediaManager->files->shareFiles(
                 $this->getProperty('files')
+            )
+        );
+    }
+
+    private function download()
+    {
+        return $this->outputArray(
+            $this->mediaManager->files->downloadFiles(
+                (array) $this->getProperty('files')
             )
         );
     }
@@ -141,6 +185,16 @@ class MediaManagerFilesProcessor extends modProcessor
             $this->mediaManager->files->copyToContext(
                 (int) $this->getProperty('fileId'),
                 (int) $this->getProperty('contextId')
+            )
+        );
+    }
+
+    private function save()
+    {
+        return $this->outputArray(
+            $this->mediaManager->files->saveFile(
+                (int)   $this->getProperty('fileId'),
+                (array) $this->getProperty('data')
             )
         );
     }
@@ -194,7 +248,8 @@ class MediaManagerFilesProcessor extends modProcessor
         return $this->outputArray(
             $this->mediaManager->files->addTag(
                 (int) $this->getProperty('fileId'),
-                (int) $this->getProperty('tagId')
+                (int) $this->getProperty('tagId'),
+                      $this->getProperty('name')
             )
         );
     }

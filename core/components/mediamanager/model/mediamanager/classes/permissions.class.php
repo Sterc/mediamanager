@@ -40,6 +40,20 @@ class MediaManagerPermissionsHelper
     }
 
     /**
+     * Check if user is media manager user.
+     *
+     * @param modUser $user
+     * @return bool
+     */
+    public function isMediaManagerUser($user)
+    {
+        return $user->isMember(array(
+            self::USER_GROUP,
+            self::ADMIN_GROUP
+        ));
+    }
+
+    /**
      * Check if user has upload permission.
      *
      * @return bool

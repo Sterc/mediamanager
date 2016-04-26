@@ -9,7 +9,13 @@
     </div>
 
     <div class="row">
+        <div class="col-xs-12" data-alert-messages></div>
+    </div>
+
+    <div class="row">
         <div class="col-xs-12">
+
+            <div data-dropzone-feedback></div>
 
             <form action="{$connector_url}" class="dropzone-form clickable" id="mediaManagerDropzone" data-dropzone-form>
                 <input type="hidden" name="HTTP_MODAUTH" value="{$token}">

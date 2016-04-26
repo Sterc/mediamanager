@@ -59,7 +59,10 @@ class MediaManagerTagsProcessor extends modProcessor
 
     private function getTagsByName()
     {
-        return $this->mediaManager->tags->getTagsByName($this->getProperty('search'));
+        return $this->mediaManager->tags->getTagsByName(
+            $this->getProperty('search'),
+            (bool) $this->getProperty('isContextTag')
+        );
     }
 }
 

@@ -14,7 +14,9 @@
                 </div>
                 <div class="tags">
                     <select name="t[]" class="form-control" multiple="multiple" data-placeholder="[[%mediamanager.global.tags]]" data-file-tags></select>
+                    <span class="notice">[[%mediamanager.tags.notice]]</span>
                 </div>
+                <button type="button" class="btn btn-primary btn-copy">[[%mediamanager.files.copy_categories_and_tags]]</button>
             </div>
             <div class="col-sm-2">
                 <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">

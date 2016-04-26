@@ -16,6 +16,11 @@
             [[+tags]]
         </select>
 
+        <label class="spacing">[[%mediamanager.files.context_tags]]</label>
+        <select name="context_tags[]" class="form-control" multiple="multiple" data-placeholder="[[%mediamanager.files.context_tags]]" data-file-context-tags [[+can_edit:is=`0`:then=` disabled`]]>
+            [[+context_tags]]
+        </select>
+
     </div>
     <div class="col-md-7">
 
@@ -38,7 +43,7 @@
                 </tr>
                 <tr>
                     <td>[[%mediamanager.files.file_size_available]]</td>
-                    <td></td>
+                    <td data-file-relations>[[+relations]]</td>
                 </tr>
                 `]]
                 <tr>

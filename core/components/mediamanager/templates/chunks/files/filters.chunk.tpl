@@ -7,8 +7,11 @@
             <button type="button" class="btn btn-default" data-archive-title="[[%mediamanager.files.bulk.archive_title]]" data-archive-message="[[%mediamanager.files.bulk.archive_message]]" data-archive-confirm="[[%mediamanager.global.archive]]" data-archive-cancel="[[%mediamanager.global.cancel]]" data-bulk-archive>[[%mediamanager.global.archive]]</button>
             <button type="button" class="btn btn-default" data-share-title="[[%mediamanager.files.bulk.share_title]]" data-share-message="[[%mediamanager.files.bulk.share_message]]" data-share-confirm="[[%mediamanager.global.share]]" data-share-cancel="[[%mediamanager.global.cancel]]" data-bulk-share>[[%mediamanager.global.share]]</button>
             <button type="button" class="btn btn-default" data-bulk-download>[[%mediamanager.global.download]]</button>
-            <!--<button type="button" class="btn btn-danger" data-bulk-delete>[[%mediamanager.global.delete]]</button>-->
             <button type="button" class="btn btn-default" data-bulk-cancel>[[%mediamanager.global.cancel]]</button>
+
+            <button type="button" class="btn btn-default hidden" data-archive-title="[[%mediamanager.files.bulk.unarchive_title]]" data-archive-message="[[%mediamanager.files.bulk.unarchive_message]]" data-archive-confirm="[[%mediamanager.global.unarchive]]" data-archive-cancel="[[%mediamanager.global.cancel]]" data-bulk-unarchive>[[%mediamanager.global.unarchive]]</button>
+            <button type="button" class="btn btn-danger hidden" data-bulk-delete>[[%mediamanager.global.delete]]</button>
+            
         </div>
 
         <div class="search-form pull-right">
@@ -26,8 +29,12 @@
                 <select class="form-control" multiple="multiple" data-placeholder="[[%mediamanager.global.categories]]" data-filter-categories></select>
                 <select class="form-control" multiple="multiple" data-placeholder="[[%mediamanager.global.tags]]" data-filter-tags></select>
                 <select class="form-control" data-filter-user>[[+filter_options.users]]</select>
-                <input class="form-control" type="text" placeholder="[[%mediamanager.files.filter.date_from]]" data-filter-date-from>
-                <input class="form-control" type="text" placeholder="[[%mediamanager.files.filter.date_to]]" data-filter-date-to>
+                <select class="form-control pull-right" data-filter-date>[[+filter_options.dates]]</select>
+
+                <div class="clearfix" data-filter-date-custom>
+                    <input class="form-control pull-right" type="text" placeholder="[[%mediamanager.files.filter.date_to]]" data-filter-date-to>
+                    <input class="form-control pull-right" type="text" placeholder="[[%mediamanager.files.filter.date_from]]" data-filter-date-from>
+                </div>
 
             </div>
         </div>

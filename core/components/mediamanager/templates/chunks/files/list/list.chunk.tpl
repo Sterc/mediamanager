@@ -4,9 +4,10 @@
     <thead>
         <tr>
             <th>#</th>
-            <th width="60%">Name</th>
+            <th width="40%">Name</th>
             <th>Type</th>
             <th>Size</th>
+            <th>Category</th>
             <th>Uploaded by</th>
             <th>Upload date</th>
             <th></th>

@@ -112,6 +112,7 @@ var MediaManagerFilesCropper = {
                             if (data.results.status === 'success') {
                                 self.removeEventListeners();
                                 self.$mediaManagerFiles.filePopup();
+                                self.$mediaManagerFiles.getList();
                                 return false;
                             }
 

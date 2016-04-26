@@ -27,6 +27,9 @@
                             <input type="text" class="form-control" name="name" placeholder="{$create_placeholder}">
                         </div>
 
+                        <strong>{$create_exclude}</strong>
+                        {$create_checkboxes}
+
                         <button type="submit" class="btn btn-success">{$create_button}</button>
                     </form>
                 </div>
