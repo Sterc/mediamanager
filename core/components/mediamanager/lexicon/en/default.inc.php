@@ -52,7 +52,7 @@ $_lang['mediamanager.categories.edit'] = 'Edit';
 $_lang['mediamanager.categories.cancel'] = 'Cancel';
 $_lang['mediamanager.categories.delete_success'] = 'Category is deleted.';
 $_lang['mediamanager.categories.delete_confirm_title'] = 'Delete';
-$_lang['mediamanager.categories.delete_confirm_message'] = 'Are you sure you want to delete the category `[[+name]]`.';
+$_lang['mediamanager.categories.delete_confirm_message'] = 'Are you sure you want to delete the category `[[+name]]` and all the sub categories.<br /><br /> Move all files to category:';
 
 
 /* Files */

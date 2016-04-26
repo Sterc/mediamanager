@@ -54,6 +54,17 @@ class MediaManagerCategoriesHelper
         ];
     }
 
+    public function deleteCategory($id, $newId)
+    {
+        /*
+         * First move all files to the new category.
+         */
+
+        /*
+         * 
+         */
+    }
+
     public function sortCategories($items)
     {
         parse_str($items);
@@ -118,7 +129,11 @@ class MediaManagerCategoriesHelper
 
         foreach($list as $item) {
             if ($item->get('parent_id') === $parent) {
-                $listHtml .= '<li id="items_' . $item->get('id') . '"><div>' . $item->get('name') . '<span class="pull-right">Edit - Delete</span></div><ol>';
+                $listHtml .= '<li id="items_' . $item->get('id') . '"><div>' . $item->get('name') . '<span class="pull-right">
+                <a href="javascript:void(0)" data-delete-category="' . $item->get('id') . '" data-delete-message="' . $this->mediaManager->modx->lexicon('mediamanager.categories.delete_confirm_message', array('name' => $item->get('name'))) . '" data-delete-title="' . $this->mediaManager->modx->lexicon('mediamanager.categories.delete_confirm_title') . '" data-delete-confirm="' . $this->mediaManager->modx->lexicon('mediamanager.categories.delete') . '" data-delete-cancel="' . $this->mediaManager->modx->lexicon('mediamanager.categories.cancel') . '">
+                    ' . $this->mediaManager->modx->lexicon('mediamanager.categories.delete') . '
+                </a>
+                </span></div><ol>';
                 $listHtml .= $this->buildList($list, $item->get('id'));
                 $listHtml .= '</ol></li>';
             }

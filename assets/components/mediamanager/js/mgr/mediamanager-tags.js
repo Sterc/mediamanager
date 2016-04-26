@@ -24,7 +24,7 @@
                 panels = $(self.$panelFit),
                 height = $(window).height();
 
-            $(self.$panelFit).css({'overflow-y': 'scroll', 'height': height - 150});
+            $(self.$panelFit).css({'overflow-y': 'scroll', 'height': height - 180});
         },
 
         scrollTo : function(e) {
