@@ -9,12 +9,15 @@ $xpdo_meta_map['MediamanagerFiles']= array (
     'mediamanager_contexts_id' => 0,
     'name' => '',
     'path' => '',
+    'version_id' => 0,
     'file_type' => '',
     'file_size' => 0,
     'file_dimensions' => '',
     'file_hash' => '',
     'upload_date' => 'CURRENT_TIMESTAMP',
     'uploaded_by' => 0,
+    'edited_on' => 'CURRENT_TIMESTAMP',
+    'edited_by' => 0,
     'is_archived' => 0,
     'archive_date' => NULL,
     'archive_path' => NULL,
@@ -47,6 +50,16 @@ $xpdo_meta_map['MediamanagerFiles']= array (
       'phptype' => 'string',
       'null' => false,
       'default' => '',
+    ),
+    'version_id' => 
+    array (
+      'dbtype' => 'int',
+      'precision' => '10',
+      'attributes' => 'unsigned',
+      'phptype' => 'integer',
+      'null' => false,
+      'default' => 0,
+      'index' => 'index',
     ),
     'file_type' => 
     array (
@@ -91,6 +104,23 @@ $xpdo_meta_map['MediamanagerFiles']= array (
       'index' => 'index',
     ),
     'uploaded_by' => 
+    array (
+      'dbtype' => 'int',
+      'precision' => '10',
+      'phptype' => 'integer',
+      'null' => false,
+      'default' => 0,
+      'index' => 'index',
+    ),
+    'edited_on' => 
+    array (
+      'dbtype' => 'timestamp',
+      'phptype' => 'timestamp',
+      'null' => false,
+      'default' => 'CURRENT_TIMESTAMP',
+      'index' => 'index',
+    ),
+    'edited_by' => 
     array (
       'dbtype' => 'int',
       'precision' => '10',

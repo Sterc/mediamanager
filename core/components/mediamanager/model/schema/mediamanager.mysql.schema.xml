@@ -31,12 +31,15 @@
         <field key="mediamanager_contexts_id" dbtype="int" precision="10" attributes="unsigned" phptype="integer" null="false" default="0" index="index" />
         <field key="name" dbtype="varchar" precision="255" phptype="string" null="false" default="" index="index" />
         <field key="path" dbtype="varchar" precision="255" phptype="string" null="false" default="" />
+        <field key="version_id" dbtype="int" precision="10" attributes="unsigned" phptype="integer" null="false" default="0" index="index" />
         <field key="file_type" dbtype="varchar" precision="10" phptype="string" null="false" default="" index="index" />
         <field key="file_size" dbtype="int" precision="11" phptype="integer" null="false" default="" />
         <field key="file_dimensions" dbtype="varchar" precision="15" phptype="string" null="false" default="" />
         <field key="file_hash" dbtype="varchar" precision="32" phptype="string" null="false" default="" index="index" />
         <field key="upload_date" dbtype="timestamp" phptype="timestamp" null="false" default="CURRENT_TIMESTAMP" index="index" />
         <field key="uploaded_by" dbtype="int" precision="10" phptype="integer" null="false" default="" index="index" />
+        <field key="edited_on" dbtype="timestamp" phptype="timestamp" null="false" default="CURRENT_TIMESTAMP" index="index" />
+        <field key="edited_by" dbtype="int" precision="10" phptype="integer" null="false" default="" index="index" />
         <field key="is_archived" dbtype="tinyint" precision="1" attributes="unsigned" phptype="boolean" null="false" default="" index="index" />
         <field key="archive_date" dbtype="timestamp" phptype="timestamp" null="true" default="NULL" />
         <field key="archive_path" dbtype="varchar" precision="255" phptype="string" null="true" default="NULL" />

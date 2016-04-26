@@ -15,6 +15,7 @@ class MediaManagerFilesHelper
     const UPLOAD_DIRECTORY = 'uploads';
     const ARCHIVE_DIRECTORY = 'archive';
     const DOWNLOAD_DIRECTORY = 'download';
+    const VERSION_DIRECTORY = 'versions';
     const DOWNLOAD_EXPIRATION = 14;
     const MAX_FILE_SIZE = 50;
     const MAX_FILE_SIZE_IMAGES = 5;
@@ -43,6 +44,12 @@ class MediaManagerFilesHelper
      */
     private $downloadUrl = null;
     private $downloadDirectory = null;
+
+    /**
+     * Version paths.
+     */
+    private $versionUrl = null;
+    private $versionDirectory = null;
 
     /**
      * Image types.
@@ -691,13 +698,15 @@ class MediaManagerFilesHelper
         }
 
         // Add file to database
-        $fileId = $this->insertFile($file, $data);
-        if (!$fileId) {
+        $fileId         = $this->insertFile($file, $data);
+        $versionCreated = $this->saveFileVersion($fileId, $file, 1);
+
+        if (!$fileId || !$versionCreated) {
             // Remove file from server if saving failed
             $this->removeFile($file);
 
             return [
-                'status'  => self::STATUS_ERROR,
+                'status' => self::STATUS_ERROR,
                 'message' => $this->alertMessageHtml($this->mediaManager->modx->lexicon('mediamanager.files.error.file_save', array('file' => $file['name'])), 'danger')
             ];
         }
@@ -788,6 +797,57 @@ class MediaManagerFilesHelper
         $file->save();
 
         return [];
+    }
+
+    /**
+     * Save file version.
+     *
+     * @TODO Add row to record with corresponding values.
+     * @TODO Add path
+     * @TODO Add dimensions
+     *
+     * @param int $fileId
+     * @param $file array $file
+     * @param int $versionNumber
+     */
+    public function saveFileVersion($fileId, $file, $versionNumber) {
+        $version = $this->mediaManager->modx->newObject('MediamanagerFilesVersions');
+
+        $file['file_id']        = $fileId;
+        $file['version']        = $versionNumber;
+        $file['version_path']   = $this->versionDirectory . $file['file_id'];
+
+        // Add unique id to file name if needed
+        $fileInformation = pathinfo($file['unique_name']);
+        $versionFileName = $this->sanitizeFileName($fileInformation['filename']) . '-v' . $versionNumber . '.' . $fileInformation['extension'];
+
+        $file['version_name']   = $versionFileName;
+        if($this->uploadVersionFile($file) === false) {
+            return false;
+        }
+
+        $path = $this->versionUrl . ltrim($versionFileName, '/');
+
+        $version->set('mediamanager_files_id',  $fileId);
+        $version->set('version',                $versionNumber);
+        $version->set('path',                   $path);
+        $version->set('file_name',              $file['unique_name']);
+        $version->set('file_size',              $file['size']);
+
+        // If file type is image set dimensions
+        if ($this->isImage($file['extension'])) {
+            $image = getimagesize($this->uploadDirectoryMonth . $file['unique_name']);
+            if ($image) {
+                $version->set('file_dimensions', $image[0] . 'x' . $image[1]);
+            }
+        }
+
+        $version->set('file_hash',              $file['hash']);
+
+        if($version->save()){
+            return true;
+        }
+
     }
 
     /**
@@ -1624,6 +1684,10 @@ class MediaManagerFilesHelper
         $this->downloadUrl          = $this->addSlashes(self::UPLOAD_DIRECTORY) . self::DOWNLOAD_DIRECTORY . DIRECTORY_SEPARATOR;
         $this->downloadDirectory    = $this->uploadDirectory . self::DOWNLOAD_DIRECTORY . DIRECTORY_SEPARATOR;
 
+        // Version paths
+        $this->versionUrl           = $this->addSlashes(self::VERSION_DIRECTORY) . DIRECTORY_SEPARATOR;
+        $this->versionDirectory     = $this->mediaManager->modx->getOption('mediamanager.versions_path', null, $this->uploadDirectory . self::VERSION_DIRECTORY . DIRECTORY_SEPARATOR);
+
         if (!file_exists($this->uploadDirectory)) {
             if (!$this->createDirectory($this->uploadDirectory)) return false;
         }
@@ -1642,6 +1706,10 @@ class MediaManagerFilesHelper
 
         if (!file_exists($this->downloadDirectory)) {
             if (!$this->createDirectory($this->downloadDirectory)) return false;
+        }
+
+        if (!file_exists($this->versionDirectory)) {
+            if (!$this->createDirectory($this->versionDirectory)) return false;
         }
 
         return true;
@@ -1673,6 +1741,33 @@ class MediaManagerFilesHelper
         $uploadFile = move_uploaded_file($file['tmp_name'], $target);
         if ($uploadFile) {
             return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Upload version file.
+     *
+     * @param array $file
+     *
+     * @return bool
+     */
+    private function uploadVersionFile($file)
+    {
+        $path   = $file['version_path'];
+        $target = $path . '/' . $file['version_name'];
+
+        if (!file_exists($path)) {
+            mkdir($path, 0755, true);
+        }
+
+        $uploadedFile = $this->uploadDirectoryMonth . $file['unique_name'];
+        if(is_file($uploadedFile)) {
+            $uploadFile = copy($uploadedFile, $target);
+            if ($uploadFile) {
+                return true;
+            }
         }
 
         return false;
