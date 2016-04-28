@@ -6,12 +6,12 @@ $xpdo_meta_map['MediamanagerCategoriesExcludes']= array (
   'extends' => 'xPDOSimpleObject',
   'fields' => 
   array (
-    'mediamanager_sources_id' => 0,
+    'media_sources_id' => 0,
     'mediamanager_categories_id' => 0,
   ),
   'fieldMeta' => 
   array (
-    'mediamanager_sources_id' => 
+    'media_sources_id' =>
     array (
       'dbtype' => 'int',
       'precision' => '10',
@@ -37,7 +37,7 @@ $xpdo_meta_map['MediamanagerCategoriesExcludes']= array (
     'MediaSource' => 
     array (
       'class' => 'modMediaSource',
-      'local' => 'mediamanager_sources_id',
+      'local' => 'media_sources_id',
       'foreign' => 'id',
       'cardinality' => 'one',
       'owner' => 'foreign',

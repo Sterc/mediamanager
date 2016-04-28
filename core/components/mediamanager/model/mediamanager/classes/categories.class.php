@@ -49,7 +49,7 @@ class MediaManagerCategoriesHelper
         if (!empty($excludes) && $category) {
             foreach ($excludes as $exclude) {
                 $excludeObject = $this->mediaManager->modx->newObject('MediamanagerCategoriesExcludes');
-                $excludeObject->set('mediamanager_sources_id',    $exclude);
+                $excludeObject->set('media_sources_id',    $exclude);
                 $excludeObject->set('mediamanager_categories_id', $category->get('id'));
                 $excludeObject->save();
             }
@@ -78,7 +78,7 @@ class MediaManagerCategoriesHelper
             if (!empty($excludes) && $category) {
                 foreach ($excludes as $exclude) {
                     $excludeObject = $this->mediaManager->modx->newObject('MediamanagerCategoriesExcludes');
-                    $excludeObject->set('mediamanager_sources_id',    $exclude);
+                    $excludeObject->set('media_sources_id',    $exclude);
                     $excludeObject->set('mediamanager_categories_id', $category->get('id'));
                     $excludeObject->save();
                 }
@@ -260,7 +260,7 @@ class MediaManagerCategoriesHelper
         $q = $this->mediaManager->modx->newQuery('MediamanagerCategories');
         $q->select(array(
             'MediamanagerCategories.*',
-            'sources' => 'GROUP_CONCAT(CategoriesExcludes.mediamanager_sources_id SEPARATOR ",")'
+            'sources' => 'GROUP_CONCAT(CategoriesExcludes.media_sources_id SEPARATOR ",")'
         ));
         $q->leftJoin('MediamanagerCategoriesExcludes', 'CategoriesExcludes');
         $q->sortby('parent_id', 'ASC');

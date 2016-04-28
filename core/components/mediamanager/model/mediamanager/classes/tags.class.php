@@ -72,7 +72,7 @@ class MediaManagerTagsHelper
     public function getTags($sourceId = 0)
     {
         $tags = $this->mediaManager->modx->getIterator('MediamanagerTags', [
-            'mediamanager_sources_id' => $sourceId
+            'media_sources_id' => $sourceId
         ]);
 
         return $tags;
@@ -150,7 +150,7 @@ class MediaManagerTagsHelper
 
         $tags = $this->mediaManager->modx->getIterator('MediamanagerTags', [
             'is_deleted' => 0,
-            'mediamanager_sources_id' => $sourceId,
+            'media_sources_id' => $sourceId,
             'name:LIKE' => '%' . $search . '%'
         ]);
 

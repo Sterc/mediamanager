@@ -91,7 +91,7 @@ class MediaManagerSourcesHelper
      */
     private function setUserSource()
     {
-        return $this->userSource = (int) $this->mediaManager->modx->user->getOption('mediamanager_sources_id');
+        return $this->userSource = (int) $this->mediaManager->modx->user->getOption('media_sources_id');
     }
 
     /**

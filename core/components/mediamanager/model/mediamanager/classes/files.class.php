@@ -221,7 +221,7 @@ class MediaManagerFilesHelper
 
         // File tags
         foreach ($data['tags'] as $tag) {
-            if ($tag->get('mediamanager_sources_id') === 0) {
+            if ($tag->get('media_sources_id') === 0) {
                 $tagSource = 'tags';
             } else {
                 $tagSource = 'source_tags';
@@ -307,7 +307,7 @@ class MediaManagerFilesHelper
         $where[]['MediamanagerFiles.is_archived'] = $isArchive;
 
         if ($sourceId !== $this->mediaManager->sources->getDefaultSource()) {
-            $where[]['MediamanagerFiles.mediamanager_sources_id'] = $sourceId;
+            $where[]['MediamanagerFiles.media_sources_id'] = $sourceId;
         }
 
         if (!empty($search) && strlen($search) > 2) {
@@ -742,9 +742,9 @@ class MediaManagerFilesHelper
         $file->set('edited_by', $this->mediaManager->modx->getUser()->get('id'));
 
         if (isset($fileData['source'])) {
-            $file->set('mediamanager_sources_id', $fileData['source']);
+            $file->set('media_sources_id', $fileData['source']);
         } else {
-            $file->set('mediamanager_sources_id', $this->mediaManager->sources->getCurrentSource());
+            $file->set('media_sources_id', $this->mediaManager->sources->getCurrentSource());
         }
 
         // If file type is image set dimensions
@@ -1611,7 +1611,7 @@ class MediaManagerFilesHelper
             $tag = $this->mediaManager->modx->getObject('MediamanagerTags', array('name:=' => $name));
             if (!$tag) {
                 $newTag = $this->mediaManager->modx->newObject('MediamanagerTags');
-                $newTag->set('mediamanager_sources_id', $this->mediaManager->sources->getUserSource());
+                $newTag->set('media_sources_id', $this->mediaManager->sources->getUserSource());
                 $newTag->set('name', $name);
                 $newTag->save();
 
@@ -1949,7 +1949,7 @@ class MediaManagerFilesHelper
         $file = $this->mediaManager->modx->getObject('MediamanagerFiles',
             array(
                 'file_hash' => $fileHash,
-                'mediamanager_sources_id' => $this->mediaManager->sources->getCurrentSource()
+                'media_sources_id' => $this->mediaManager->sources->getCurrentSource()
             )
         );
 
