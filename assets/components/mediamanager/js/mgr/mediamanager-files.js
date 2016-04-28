@@ -286,12 +286,12 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                 }
             });
 
-            $(self.$fileTags, $(self.$dropzonePreviews)).each(function() {
+            /*$(self.$fileTags, $(self.$dropzonePreviews)).each(function() {
                 if (this.selectedOptions.length < 3) {
                     tagsFilled = false;
                     return false;
                 }
-            });
+            });*/
 
             if (categoriesFilled === false || tagsFilled === false) {
                 $(self.$uploadSelectedFiles).prop('disabled', true);
