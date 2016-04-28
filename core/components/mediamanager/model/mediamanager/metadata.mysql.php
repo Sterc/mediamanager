@@ -3,16 +3,15 @@
 $xpdo_meta_map = array (
   'xPDOSimpleObject' => 
   array (
-    0 => 'MediamanagerContexts',
-    1 => 'MediamanagerCategories',
-    2 => 'MediamanagerTags',
-    3 => 'MediamanagerFiles',
-    4 => 'MediamanagerDownloads',
-    5 => 'MediamanagerCategoriesExcludes',
-    6 => 'MediamanagerFilesCategories',
-    7 => 'MediamanagerFilesTags',
-    8 => 'MediamanagerFilesContent',
-    9 => 'MediamanagerFilesRelations',
-    10 => 'MediamanagerFilesVersions',
+    0 => 'MediamanagerCategories',
+    1 => 'MediamanagerTags',
+    2 => 'MediamanagerFiles',
+    3 => 'MediamanagerDownloads',
+    4 => 'MediamanagerCategoriesExcludes',
+    5 => 'MediamanagerFilesCategories',
+    6 => 'MediamanagerFilesTags',
+    7 => 'MediamanagerFilesContent',
+    8 => 'MediamanagerFilesRelations',
+    9 => 'MediamanagerFilesVersions',
   ),
 );

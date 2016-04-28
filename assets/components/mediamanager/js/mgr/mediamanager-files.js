@@ -24,7 +24,7 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
         $fileContainer           : '.file',
         $fileCategories          : 'select[data-file-categories]',
         $fileTags                : 'select[data-file-tags]',
-        $fileContextTags         : 'select[data-file-context-tags]',
+        $fileSourceTags          : 'select[data-file-source-tags]',
         $fileRemoveButton        : 'button[data-dz-remove]',
         $fileErrorMessage        : 'span[data-dz-errormessage]',
 
@@ -46,7 +46,7 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
         $fileCrop                : 'img.crop',
         $filePreviewLink         : 'a[data-preview-link]',
 
-        $selectContext           : 'select[data-select-context]',
+        $selectSource            : 'select[data-select-source]',
         $categoryTree            : 'div[data-category-tree]',
 
         $bulkActions             : '.bulk-actions',
@@ -80,7 +80,7 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
         $viewMode                : 'i[data-view-mode]',
         $currentViewMode         : 'grid',
 
-        $currentContext          : 0,
+        $currentSource           : 0,
         $currentCategory         : 0,
         $currentSearch           : '',
         $currentSorting          : [],
@@ -122,7 +122,7 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
 
             self.$filesCropper = MediaManagerFilesCropper;
 
-            self.setContext();
+            self.setSource();
             self.setCategory();
             self.setDropzone();
             self.setFilters();
@@ -397,7 +397,7 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                             method       : 'getTagsByName',
                             HTTP_MODAUTH : self.$httpModAuth,
                             search       : params.term,
-                            isContextTag : 0
+                            isSourceTag  : 0
                         };
                     },
                     processResults: function (data, params) {
@@ -595,29 +595,29 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
         },
 
         /**
-         * Set context.
+         * Set source.
          *
          * @returns {*}
          */
-        setContext: function() {
+        setSource: function() {
             var self = this,
-                context = /context=([^&]+)/.exec(window.location.href);
+                source = /source=([^&]+)/.exec(window.location.href);
 
-            if (context === null) {
+            if (source === null) {
                 return;
             }
 
-            return self.$currentContext = context[1];
+            return self.$currentSource = source[1];
         },
 
         /**
-         * Update context.
+         * Update source.
          *
          * @param e
          */
-        changeContext: function(e) {
+        changeSource: function(e) {
             var self = this;
-            window.location.href = self.updateQueryStringParameter(window.location.href, 'context', e.target.value);
+            window.location.href = self.updateQueryStringParameter(window.location.href, 'source', e.target.value);
         },
 
         /**
@@ -1307,11 +1307,11 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
         },
 
         /**
-         * Copy file to context.
+         * Copy file to source.
          *
          * @param e
          */
-        copyToContext: function(e) {
+        copyToSource: function(e) {
             var self = this;
 
             var $dialog = $('<div />').html(e.target.dataset.copyMessage).dialog({
@@ -1328,7 +1328,7 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                             url: self.$connectorUrl,
                             data: {
                                 action       : 'mgr/files',
-                                method       : 'copyToContext',
+                                method       : 'copyToSource',
                                 HTTP_MODAUTH : self.$httpModAuth,
                                 fileId       : self.$currentFile
                             },
@@ -1407,17 +1407,17 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                         var $categories  = $(self.$fileCategories, $body).select2(self.$filterCategoriesOptions);
                         var $tags        = $(self.$fileTags, $body).select2(self.$filterTagsOptions);
 
-                        var contextTagsOptions = self.$filterTagsOptions;
-                        contextTagsOptions.ajax.data = function (params) {
+                        var sourceTagsOptions = self.$filterTagsOptions;
+                        sourceTagsOptions.ajax.data = function (params) {
                             return {
                                 action       : 'mgr/tags',
                                 method       : 'getTagsByName',
                                 HTTP_MODAUTH : self.$httpModAuth,
                                 search       : params.term,
-                                isContextTag : 1
+                                isSourceTag  : 1
                             };
                         };
-                        var $contextTags = $(self.$fileContextTags, $body).select2(contextTagsOptions);
+                        var $sourceTags = $(self.$fileSourceTags, $body).select2(sourceTagsOptions);
 
                         // Add category to file
                         $categories.on('select2:select', function(e) {
@@ -1494,8 +1494,8 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                             });
                         });
 
-                        // Add context tag to file
-                        $contextTags.on('select2:select', function(e) {
+                        // Add source tag to file
+                        $sourceTags.on('select2:select', function(e) {
                             $.ajax({
                                 type: 'POST',
                                 url: self.$connectorUrl,
@@ -1507,13 +1507,13 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                                     tagId        : e.params.data.id
                                 },
                                 success: function(data) {
-                                    self.addNewTag($body, $contextTags);
+                                    self.addNewTag($body, $sourceTags);
                                 }
                             });
                         });
 
-                        // Remove context tag from file
-                        $contextTags.on('select2:unselect', function(e) {
+                        // Remove source tag from file
+                        $sourceTags.on('select2:unselect', function(e) {
                             $.ajax({
                                 type: 'POST',
                                 url: self.$connectorUrl,
@@ -1525,12 +1525,12 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                                     tagId        : e.params.data.id
                                 },
                                 success: function(data) {
-                                    self.addNewTag($body, $contextTags);
+                                    self.addNewTag($body, $sourceTags);
                                 }
                             });
                         });
 
-                        self.addNewTag($body, $contextTags);
+                        self.addNewTag($body, $sourceTags);
                     }
 
                     if (template === 'edit') {
@@ -1561,11 +1561,11 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
             });
         },
 
-        addNewTag: function($body, $contextTags) {
+        addNewTag: function($body, $sourceTags) {
             var self = this;
 
-            // Add context specific tag
-            $(self.$fileContextTags + ' + span.select2 .select2-search__field', $body).on('keyup', function(e) {
+            // Add source specific tag
+            $(self.$fileSourceTags + ' + span.select2 .select2-search__field', $body).on('keyup', function(e) {
                 if (e.keyCode === 13) {
                     $.ajax({
                         type: 'POST',
@@ -1580,13 +1580,13 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                         },
                         success: function(data) {
                             if (data.results.status === 'success') {
-                                var html   = $contextTags.html(),
-                                    values = $contextTags.val();
+                                var html   = $sourceTags.html(),
+                                    values = $sourceTags.val();
 
                                 html += data.results.html;
                                 values.push(data.results.tagId);
 
-                                $contextTags.html(html).val(values).trigger('change');
+                                $sourceTags.html(html).val(values).trigger('change');
                             }
                         }
                     });
@@ -1678,8 +1678,8 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
     }, MediaManagerFiles.$advancedSearch);
 
     $(document).on({
-        change : $.proxy(MediaManagerFiles, 'changeContext')
-    }, MediaManagerFiles.$selectContext);
+        change : $.proxy(MediaManagerFiles, 'changeSource')
+    }, MediaManagerFiles.$selectSource);
 
     $(document).on({
         keyup : $.proxy(MediaManagerFiles, 'changeSearch')
@@ -1742,7 +1742,7 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
     }, MediaManagerFiles.$fileDeleteButton);
 
     $(document).on({
-        click : $.proxy(MediaManagerFiles, 'copyToContext')
+        click : $.proxy(MediaManagerFiles, 'copyToSource')
     }, MediaManagerFiles.$fileCopyButton);
 
     // Bulk actions

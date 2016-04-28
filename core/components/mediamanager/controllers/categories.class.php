@@ -16,7 +16,7 @@ class MediaManagerCategoriesManagerController extends MediaManagerManagerControl
             'create_placeholder'  => $this->modx->lexicon('mediamanager.categories.placeholder'),
             'create_button'       => $this->modx->lexicon('mediamanager.categories.button'),
             'create_exclude'      => $this->modx->lexicon('mediamanager.categories.exclude'),
-            'create_checkboxes'   => $this->mediaManager->categories->getMediaContextsCheckboxes(),
+            'create_checkboxes'   => $this->mediaManager->categories->getMediaSourcesCheckboxes(),
             'list'                => $this->mediaManager->categories->getList(),
             'token'               => $this->modx->user->getUserToken($this->modx->context->get('key')),
         ];

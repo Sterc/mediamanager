@@ -18,7 +18,7 @@ class MediaManagerTagsManagerController extends MediaManagerManagerController
             'create_label'       => $this->modx->lexicon('mediamanager.tags.label'),
             'create_placeholder' => $this->modx->lexicon('mediamanager.tags.placeholder'),
             'create_button'      => $this->modx->lexicon('mediamanager.tags.button'),
-            'list'               => $this->mediaManager->tags-> getList(),
+            'list'               => $this->mediaManager->tags->getList(),
             'token'              => $this->modx->user->getUserToken($this->modx->context->get('key')),
         ];
 

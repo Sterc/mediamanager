@@ -221,12 +221,12 @@ class MediaManagerFilesHelper
 
         // File tags
         foreach ($data['tags'] as $tag) {
-            if ($tag->get('mediamanager_contexts_id') === 0) {
-                $tagContext = 'tags';
+            if ($tag->get('media_sources_id') === 0) {
+                $tagSource = 'tags';
             } else {
-                $tagContext = 'context_tags';
+                $tagSource = 'source_tags';
             }
-            $bodyData[$tagContext] .= '<option value="' . $tag->get('id') . '" selected="selected">' . $tag->get('name') . '</option>';
+            $bodyData[$tagSource] .= '<option value="' . $tag->get('id') . '" selected="selected">' . $tag->get('name') . '</option>';
         }
 
         // File content
@@ -312,7 +312,7 @@ class MediaManagerFilesHelper
      */
     public function getList($search = '', $filters = array(), $sorting = array(), $isArchive = 0)
     {
-        $contextId     = $this->mediaManager->contexts->getCurrentContext();
+        $sourceId     = $this->mediaManager->sources->getCurrentSource();
         $sortColumn    = 'MediamanagerFiles.upload_date';
         $sortDirection = 'DESC';
         $where         = array();
@@ -322,8 +322,8 @@ class MediaManagerFilesHelper
 
         $where[]['MediamanagerFiles.is_archived'] = $isArchive;
 
-        if ($contextId !== $this->mediaManager->contexts->getDefaultContext()) {
-            $where[]['MediamanagerFiles.mediamanager_contexts_id'] = $contextId;
+        if ($sourceId !== $this->mediaManager->sources->getDefaultSource()) {
+            $where[]['MediamanagerFiles.media_sources_id'] = $sourceId;
         }
 
         if (!empty($search) && strlen($search) > 2) {
@@ -757,10 +757,10 @@ class MediaManagerFilesHelper
         $file->set('uploaded_by', $this->mediaManager->modx->getUser()->get('id'));
         $file->set('edited_by', $this->mediaManager->modx->getUser()->get('id'));
 
-        if (isset($fileData['context'])) {
-            $file->set('mediamanager_contexts_id', $fileData['context']);
+        if (isset($fileData['source'])) {
+            $file->set('media_sources_id', $fileData['source']);
         } else {
-            $file->set('mediamanager_contexts_id', $this->mediaManager->contexts->getCurrentContext());
+            $file->set('media_sources_id', $this->mediaManager->sources->getCurrentSource());
         }
 
         // If file type is image set dimensions
@@ -1474,21 +1474,21 @@ class MediaManagerFilesHelper
     }
 
     /**
-     * Copy file to context.
+     * Copy file to source.
      *
      * @param int $fileId
-     * @param int $contextId
+     * @param int $sourceId
      *
      * @return array
      */
-    public function copyToContext($fileId, $contextId = 0)
+    public function copyToSource($fileId, $sourceId = 0)
     {
         $file = $this->mediaManager->modx->getObject('MediamanagerFiles', array('id' => $fileId));
         $file = $file->toArray();
         $data = array();
 
-        if ($contextId === 0) {
-            $contextId = $this->mediaManager->contexts->getUserContext();
+        if ($sourceId === 0) {
+            $sourceId = $this->mediaManager->sources->getUserSource();
         }
 
         // Create upload directory
@@ -1512,7 +1512,7 @@ class MediaManagerFilesHelper
             ];
         }
 
-        $file['context']     = $contextId;
+        $file['source']      = $sourceId;
         $file['extension']   = $file['file_type'];
         $file['size']        = $file['file_size'];
         $file['hash']        = $file['file_hash'];
@@ -1627,7 +1627,7 @@ class MediaManagerFilesHelper
             $tag = $this->mediaManager->modx->getObject('MediamanagerTags', array('name:=' => $name));
             if (!$tag) {
                 $newTag = $this->mediaManager->modx->newObject('MediamanagerTags');
-                $newTag->set('mediamanager_contexts_id', $this->mediaManager->contexts->getUserContext());
+                $newTag->set('media_sources_id', $this->mediaManager->sources->getUserSource());
                 $newTag->set('name', $name);
                 $newTag->save();
 
@@ -1965,7 +1965,7 @@ class MediaManagerFilesHelper
         $file = $this->mediaManager->modx->getObject('MediamanagerFiles',
             array(
                 'file_hash' => $fileHash,
-                'mediamanager_contexts_id' => $this->mediaManager->contexts->getCurrentContext()
+                'media_sources_id' => $this->mediaManager->sources->getCurrentSource()
             )
         );
 

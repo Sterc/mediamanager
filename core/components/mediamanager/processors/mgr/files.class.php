@@ -56,8 +56,8 @@ class MediaManagerFilesProcessor extends modProcessor
                 $data = $this->crop();
 
                 break;
-            case 'copyToContext':
-                $data = $this->copyToContext();
+            case 'copyToSource':
+                $data = $this->copyToSource();
 
                 break;
             case 'save':
@@ -179,12 +179,12 @@ class MediaManagerFilesProcessor extends modProcessor
         );
     }
 
-    private function copyToContext()
+    private function copyToSource()
     {
         return $this->outputArray(
-            $this->mediaManager->files->copyToContext(
+            $this->mediaManager->files->copyToSource(
                 (int) $this->getProperty('fileId'),
-                (int) $this->getProperty('contextId')
+                (int) $this->getProperty('sourceId')
             )
         );
     }

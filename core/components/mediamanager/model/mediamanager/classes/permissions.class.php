@@ -64,7 +64,7 @@ class MediaManagerPermissionsHelper
 
         if (
             $this->mediaManager->modx->hasPermission('file_upload')
-            && $this->mediaManager->contexts->getCurrentContext() === $this->mediaManager->contexts->getUserContext()
+            && $this->mediaManager->sources->getCurrentSource() === $this->mediaManager->sources->getUserSource()
         ) {
             return true;
         }
@@ -83,7 +83,7 @@ class MediaManagerPermissionsHelper
 
         if (
             $this->mediaManager->modx->hasPermission('file_update')
-            && $this->mediaManager->contexts->getCurrentContext() === $this->mediaManager->contexts->getUserContext()
+            && $this->mediaManager->sources->getCurrentSource() === $this->mediaManager->sources->getUserSource()
         ) {
             return true;
         }
@@ -102,7 +102,7 @@ class MediaManagerPermissionsHelper
 
         if (
             $this->mediaManager->modx->hasPermission('file_remove')
-            && $this->mediaManager->contexts->getCurrentContext() === $this->mediaManager->contexts->getUserContext()
+            && $this->mediaManager->sources->getCurrentSource() === $this->mediaManager->sources->getUserSource()
         ) {
             return true;
         }

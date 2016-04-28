@@ -61,7 +61,7 @@ class MediaManagerTagsProcessor extends modProcessor
     {
         return $this->mediaManager->tags->getTagsByName(
             $this->getProperty('search'),
-            (bool) $this->getProperty('isContextTag')
+            (bool) $this->getProperty('isSourceTag')
         );
     }
 }

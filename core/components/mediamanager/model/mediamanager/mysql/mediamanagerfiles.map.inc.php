@@ -6,7 +6,7 @@ $xpdo_meta_map['MediamanagerFiles']= array (
   'extends' => 'xPDOSimpleObject',
   'fields' => 
   array (
-    'mediamanager_contexts_id' => 0,
+    'media_sources_id' => 0,
     'name' => '',
     'path' => '',
     'version' => 0,
@@ -24,7 +24,7 @@ $xpdo_meta_map['MediamanagerFiles']= array (
   ),
   'fieldMeta' => 
   array (
-    'mediamanager_contexts_id' => 
+    'media_sources_id' =>
     array (
       'dbtype' => 'int',
       'precision' => '10',
@@ -196,6 +196,17 @@ $xpdo_meta_map['MediamanagerFiles']= array (
       'foreign' => 'mediamanager_files_id_relation',
       'cardinality' => 'many',
       'owner' => 'local',
+    ),
+  ),
+  'aggregates' => 
+  array (
+    'MediaSource' => 
+    array (
+      'class' => 'modMediaSource',
+      'local' => 'media_sources_id',
+      'foreign' => 'id',
+      'cardinality' => 'one',
+      'owner' => 'foreign',
     ),
   ),
 );
