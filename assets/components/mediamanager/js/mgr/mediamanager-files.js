@@ -34,6 +34,7 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
         $filePopupButton         : 'button[data-file-popup-button]',
         $filePopupFeedback       : 'div[data-file-popup-feedback]',
         $fileRelations           : 'td[data-file-relations]',
+        $fileHistoryButton       : 'button[data-file-history-button]',
         $fileActionButton        : 'button[data-file-action-button]',
         $fileMoveButton          : 'button[data-file-move-button]',
         $fileArchiveButton       : 'button[data-file-archive-button]',
@@ -286,12 +287,12 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                 }
             });
 
-            $(self.$fileTags, $(self.$dropzonePreviews)).each(function() {
+            /*$(self.$fileTags, $(self.$dropzonePreviews)).each(function() {
                 if (this.selectedOptions.length < 3) {
                     tagsFilled = false;
                     return false;
                 }
-            });
+            });*/
 
             if (categoriesFilled === false || tagsFilled === false) {
                 $(self.$uploadSelectedFiles).prop('disabled', true);

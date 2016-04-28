@@ -74,7 +74,7 @@ class MediaManagerSourcesHelper
             ]);
 
             if ($source) {
-                $_SESSION['mediamanager']['context'] = $sourceId;
+                $_SESSION['mediamanager']['source'] = $sourceId;
                 return $this->currentSource = $sourceId;
             }
 

@@ -270,16 +270,6 @@ class MediaManagerCategoriesHelper
         return $this->mediaManager->modx->getCollection('MediamanagerCategories', $q);
     }
 
-//    public function getMediaSources($includeAll = false, $includeMain = false)
-//    {
-//        $q = $this->mediaManager->modx->newQuery('MediamanagerSources');
-//        $q->where(array('is_all' => (int) $includeAll));
-//        $q->where(array('is_main' => (int) $includeMain));
-//        $q->sortby('name', 'ASC');
-//
-//        return $this->mediaManager->modx->getCollection('MediamanagerContexts', $q);
-//    }
-
     public function getMediaSourcesCheckboxes()
     {
         $checkboxes = '';

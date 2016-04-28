@@ -102,6 +102,8 @@
         <field key="file_size" dbtype="int" precision="11" phptype="integer" null="false" default="" />
         <field key="file_dimensions" dbtype="varchar" precision="15" phptype="string" null="false" default="" />
         <field key="file_hash" dbtype="varchar" precision="32" phptype="string" null="false" default="" index="index" />
+        <field key="action" dbtype="varchar" precision="32" phptype="string" null="false" default="" index="index" />
+        <field key="replaced_file_id" dbtype="int" precision="10" phptype="integer" null="false" default="" index="index" />
         <field key="created" dbtype="timestamp" phptype="timestamp" null="false" default="CURRENT_TIMESTAMP" index="index" />
 
         <aggregate alias="Files" class="MediamanagerFiles" local="mediamanager_files_id" foreign="id" cardinality="one" owner="foreign" />

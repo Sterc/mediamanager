@@ -185,6 +185,7 @@ class MediaManagerFilesHelper
             'archive'  => 1,
             'archive_replace' => 1,
             'delete'   => 1,
+            'history'  => 1,
             'copy'     => 0
         );
 
@@ -697,12 +698,12 @@ class MediaManagerFilesHelper
             $pdfPreview->destroy();
         }
 
-        $file['version']    = 1;
+        $file['version']    = $this->createVersionNumber();
         $file['upload_dir'] = $this->uploadDirectoryMonth;
 
         // Add file to database
         $fileId         = $this->insertFile($file, $data);
-        $versionCreated = $this->saveFileVersion($fileId, $file);
+        $versionCreated = $this->saveFileVersion($fileId, $file, 'create');
         if (!$fileId || !$versionCreated) {
             // Remove file from server if saving failed
             $this->removeFile($file);
@@ -789,8 +790,6 @@ class MediaManagerFilesHelper
     /**
      * Save file.
      *
-     * @todo Unique name has to be changed. Now version file will not be copied.
-     *
      * @param int $fileId
      * @param array $data
      *
@@ -800,7 +799,7 @@ class MediaManagerFilesHelper
     {
         $file = $this->mediaManager->modx->getObject('MediamanagerFiles', array('id' => $fileId));
 
-        $version                = $file->get('version') + 1;
+        $version                = $this->createVersionNumber($file->get('id'));
         $data['version']        = $version;
 
         $file->set('name',      $this->sanitizeFileName($data['name']));
@@ -809,17 +808,19 @@ class MediaManagerFilesHelper
         $file->set('edited_by', $this->mediaManager->modx->getUser()->get('id'));
         $file->save();
 
-
-
         $pathInfo               = pathinfo($file->get('path'));
         $data                   = array_merge($file->toArray(), $data);
-        $data['unique_name']    = $data['path'];
-        $data['upload_dir']     = $pathInfo['dirname'] . DIRECTORY_SEPARATOR;
+        $fileInformation        = pathinfo($data['path']);
+        $filename               = $this->sanitizeFileName($fileInformation['filename']) . '.' . $fileInformation['extension'];
+
+        $data['unique_name']    = $filename;
+        $data['extension']      = $fileInformation['extension'];
+        $data['upload_dir']     = MODX_BASE_PATH . ltrim($pathInfo['dirname'], '/') . DIRECTORY_SEPARATOR;
         $data['file_id']        = $data['id'];
         $data['size']           = $data['file_size'];
         $data['hash']           = $data['file_hash'];
 
-        $this->saveFileVersion($file->get('id'), $data);
+        $this->saveFileVersion($file->get('id'), $data, 'rename');
 
         return [];
     }
@@ -828,11 +829,13 @@ class MediaManagerFilesHelper
      * Save file version.
      *
      * @param int $fileId
-     * @param $file array $file
+     * @param array $file
+     * @param string $action
+     * @param int $replaceId
      *
      * @return bool
      */
-    public function saveFileVersion($fileId, $file) {
+    public function saveFileVersion($fileId, $file, $action = '', $replacedId = 0) {
         if(!isset($fileId) || empty($fileId) || $fileId === 0){
             return false;
         }
@@ -860,7 +863,7 @@ class MediaManagerFilesHelper
         $version->set('mediamanager_files_id',  $fileId);
         $version->set('version',                $file['version']);
         $version->set('path',                   $path);
-        $version->set('file_name',              $file['unique_name']);
+        $version->set('file_name',              $file['name']);
         $version->set('file_size',              $file['size']);
 
         // If file type is image set dimensions
@@ -876,7 +879,30 @@ class MediaManagerFilesHelper
         if($version->save()){
             return true;
         }
+    }
 
+    /*
+     * Retrieve versionnumber for creating a new version of a file.
+     *
+     * @param int $fileId
+     *
+     * @return int $versionNumber
+     */
+    private function createVersionNumber($fileId = 0) {
+        $versionNumber = 1;
+        if($fileId != 0){
+            $sql = "SELECT MAX(version) as highestVersionNumber FROM " . $this->mediaManager->modx->getTableName('MediamanagerFilesVersions') . " WHERE mediamanager_files_id = '$fileId'";
+            $query = $this->mediaManager->modx->query($sql);
+            if($query){
+                while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
+                    if($row['highestVersionNumber']){
+                        $versionNumber = ++$row['highestVersionNumber'];
+                    }
+                }
+            }
+        }
+
+        return $versionNumber;
     }
 
     /**
@@ -1083,6 +1109,9 @@ class MediaManagerFilesHelper
                 $resource->save();
             }
         }
+
+        //save File version
+        //$this->saveFileVersion($);
 
         // Replace old file id with new file id
         $this->mediaManager->modx->updateCollection('MediamanagerFilesContent',
@@ -1326,14 +1355,25 @@ class MediaManagerFilesHelper
                 return $response;
             }
 
-            $hash  = $this->getFileHashByPath($filePath);
-            $image = getimagesize($filePath);
-            $size  = filesize($filePath);
+            $hash           = $this->getFileHashByPath($filePath);
+            $image          = getimagesize($filePath);
+            $size           = filesize($filePath);
+            $versionNumber  = $this->createVersionNumber($file->get('id'));
 
             $file->set('file_dimensions', $image[0] . 'x' . $image[1]);
             $file->set('file_hash', $hash);
             $file->set('file_size', $size);
+            $file->set('version', $versionNumber);
             $file->save();
+
+            $data                   = $file->toArray();
+            $fileInformation        = pathinfo($data['path']);
+            $data['version']        = $versionNumber;
+            $data['upload_dir']     = $this->addTrailingSlash(MODX_BASE_PATH) . ltrim($this->addTrailingSlash($fileInformation['dirname']), '/');
+            $data['unique_name']    = $fileInformation['filename'] . '.' . $fileInformation['extension'];
+
+            // Save file version.
+            $this->saveFileVersion($file->get('id'), $data, 'crop');
 
             $response['message'] = $this->alertMessageHtml($this->mediaManager->modx->lexicon('mediamanager.files.success.image_saved'), 'success');
         }
@@ -1394,9 +1434,12 @@ class MediaManagerFilesHelper
             $data['tags'][] = $tag->get('mediamanager_tags_id');
         }
 
+        $file['version']        = $this->createVersionNumber();
+        $file['upload_dir']     = $this->uploadDirectoryMonth;
         // Add file to database
         $fileId = $this->insertFile($file, $data);
-        if (!$fileId) {
+        $versionCreated = $this->saveFileVersion($fileId, $file, 'create');
+        if (!$fileId || !$versionCreated) {
             // Remove file from server if saving failed
             $this->removeFile($file);
 
@@ -1772,15 +1815,11 @@ class MediaManagerFilesHelper
             return true;
         }
 
-
-
         return false;
     }
 
     /**
      * Upload version file.
-     *
-     * @TODO If existing image, get path from data and dont use uploadDirectoryMonth.
      *
      * @param array $file
      *
@@ -1795,14 +1834,12 @@ class MediaManagerFilesHelper
             mkdir($path, 0755, true);
         }
 
-        $uploadedFile = MODX_BASE_PATH . $file['upload_dir'] . $file['unique_name'];
-        var_dump($uploadedFile);
-
+        $uploadedFile = $file['upload_dir'] . $file['unique_name'];
+        $this->mediaManager->modx->log(xPDO::LOG_LEVEL_ERROR,'UPLOADED: ' . $uploadedFile);
         if(is_file($uploadedFile)) {
             $uploadFile = copy($uploadedFile, $target);
-            var_dump($uploadFile);
-            var_dump($target);
-
+            $this->mediaManager->modx->log(xPDO::LOG_LEVEL_ERROR, $target);
+            $this->mediaManager->modx->log(xPDO::LOG_LEVEL_ERROR,'target: ' . $target);
             if ($uploadFile) {
                 return true;
             }
