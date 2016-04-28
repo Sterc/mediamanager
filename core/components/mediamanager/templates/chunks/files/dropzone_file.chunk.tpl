@@ -14,7 +14,6 @@
                 </div>
                 <div class="tags">
                     <select name="t[]" class="form-control" multiple="multiple" data-placeholder="[[%mediamanager.global.tags]]" data-file-tags></select>
-                    <span class="notice">[[%mediamanager.tags.notice]]</span>
                 </div>
                 <button type="button" class="btn btn-primary btn-copy">[[%mediamanager.files.copy_categories_and_tags]]</button>
             </div>
