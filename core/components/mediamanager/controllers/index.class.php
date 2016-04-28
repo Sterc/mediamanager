@@ -11,9 +11,13 @@ abstract class MediaManagerManagerController extends modExtraManagerController
         $this->mediaManager = new MediaManager($this->modx);
 
         $mediaSource = $this->mediaManager->sources->getSource($this->mediaManager->sources->getCurrentSource());
-
         if (!$mediaSource) {
             return false;
+        }
+
+        $acceptedFiles = '';
+        if (!empty($mediaSource['allowedFileTypes'])) {
+            $acceptedFiles = '.' . str_replace(',', ',.', $mediaSource['allowedFileTypes']);
         }
 
         /**
@@ -45,7 +49,7 @@ abstract class MediaManagerManagerController extends modExtraManagerController
                 dropzone : {
                     maxFileSize       : ' . MediaManagerFilesHelper::MAX_FILE_SIZE . ',
                     maxFileSizeImages : ' . MediaManagerFilesHelper::MAX_FILE_SIZE_IMAGES . ',
-                    acceptedFiles     : ".' . str_replace(',', ',.', $mediaSource['allowedFileTypes']) . '"
+                    acceptedFiles     : "' . $acceptedFiles . '"
                 },
                 message : {
                     maxFileSize    : "' . $this->modx->lexicon('mediamanager.files.error.filetoobig') . '",
