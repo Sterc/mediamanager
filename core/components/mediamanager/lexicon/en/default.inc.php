@@ -20,6 +20,7 @@ $_lang['mediamanager.global.crop'] = 'Crop';
 $_lang['mediamanager.global.share'] = 'Share';
 $_lang['mediamanager.global.archive'] = 'Archive';
 $_lang['mediamanager.global.download'] = 'Download';
+$_lang['mediamanager.global.history'] = 'History';
 $_lang['mediamanager.global.cancel'] = 'Cancel';
 $_lang['mediamanager.global.tags'] = 'Tags';
 $_lang['mediamanager.global.categories'] = 'Categories';

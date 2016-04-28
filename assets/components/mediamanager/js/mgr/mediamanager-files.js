@@ -34,6 +34,7 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
         $filePopupButton         : 'button[data-file-popup-button]',
         $filePopupFeedback       : 'div[data-file-popup-feedback]',
         $fileRelations           : 'td[data-file-relations]',
+        $fileHistoryButton       : 'button[data-file-history-button]',
         $fileActionButton        : 'button[data-file-action-button]',
         $fileMoveButton          : 'button[data-file-move-button]',
         $fileArchiveButton       : 'button[data-file-archive-button]',
