@@ -38,7 +38,7 @@
     },
     "database": {
         "tables": [
-            "MediamanagerContexts",
+            "MediamanagerSources",
             "MediamanagerCategories",
             "MediamanagerTags",
             "MediamanagerFiles",

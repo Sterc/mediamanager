@@ -2,7 +2,7 @@
     <div class="ui-sortable-handle">
         [[+name]]
         <span class="pull-right">
-            <a href="javascript:void(0)" data-edit-category="[[+id]]" data-edit-name="[[+name]]" data-edit-contexts="[[+contexts]]" data-edit-message="[[+editMessage]]" data-edit-title="[[+editTitle]]" data-edit-confirm="[[+editConfirm]]" data-edit-cancel="[[+editCancel]]">
+            <a href="javascript:void(0)" data-edit-category="[[+id]]" data-edit-name="[[+name]]" data-edit-sources="[[+sources]]" data-edit-message="[[+editMessage]]" data-edit-title="[[+editTitle]]" data-edit-confirm="[[+editConfirm]]" data-edit-cancel="[[+editCancel]]">
                 [[+edit]]
             </a>
             -

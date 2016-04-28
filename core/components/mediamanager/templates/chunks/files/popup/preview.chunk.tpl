@@ -16,9 +16,9 @@
             [[+tags]]
         </select>
 
-        <label class="spacing">[[%mediamanager.files.context_tags]]</label>
-        <select name="context_tags[]" class="form-control" multiple="multiple" data-placeholder="[[%mediamanager.files.context_tags]]" data-file-context-tags [[+can_edit:is=`0`:then=` disabled`]]>
-            [[+context_tags]]
+        <label class="spacing">[[%mediamanager.files.source_tags]]</label>
+        <select name="source_tags[]" class="form-control" multiple="multiple" data-placeholder="[[%mediamanager.files.source_tags]]" data-file-source-tags [[+can_edit:is=`0`:then=` disabled`]]>
+            [[+source_tags]]
         </select>
 
     </div>

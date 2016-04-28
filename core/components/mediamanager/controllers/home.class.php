@@ -26,7 +26,7 @@ class MediaManagerHomeManagerController extends MediaManagerManagerController
             'dropzone_button'              => $this->modx->lexicon('mediamanager.files.dropzone.button'),
             'dropzone_title'               => $this->modx->lexicon('mediamanager.files.dropzone.title'),
             'token'                        => $this->modx->user->getUserToken($this->modx->context->get('key')),
-            'context_list'                 => $this->mediaManager->contexts->getListHtml(),
+            'source_list'                  => $this->mediaManager->sources->getListHtml(),
             'sort_options'                 => $this->mediaManager->files->getSortOptionsHtml(),
             'filter_options'               => $this->mediaManager->files->getFilterOptionsHtml(),
             'popup'                        => $this->mediaManager->getChunk('files/popup'),

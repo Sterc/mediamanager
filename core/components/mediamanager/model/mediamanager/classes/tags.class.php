@@ -69,10 +69,10 @@ class MediaManagerTagsHelper
         ];
     }
 
-    public function getTags($contextId = 0)
+    public function getTags($sourceId = 0)
     {
         $tags = $this->mediaManager->modx->getIterator('MediamanagerTags', [
-            'mediamanager_contexts_id' => $contextId
+            'mediamanager_sources_id' => $sourceId
         ]);
 
         return $tags;
@@ -137,20 +137,20 @@ class MediaManagerTagsHelper
      * Get tags by name.
      *
      * @param string $search
-     * @param bool $isContextTag
+     * @param bool $isSourceTag
      *
      * @return array
      */
-    public function getTagsByName($search, $isContextTag = false)
+    public function getTagsByName($search, $isSourceTag = false)
     {
-        $contextId = 0;
-        if ($isContextTag) {
-            $contextId = $this->mediaManager->contexts->getUserContext();
+        $sourceId = 0;
+        if ($isSourceTag) {
+            $sourceId = $this->mediaManager->sources->getUserSource();
         }
 
         $tags = $this->mediaManager->modx->getIterator('MediamanagerTags', [
             'is_deleted' => 0,
-            'mediamanager_contexts_id' => $contextId,
+            'mediamanager_sources_id' => $sourceId,
             'name:LIKE' => '%' . $search . '%'
         ]);
 

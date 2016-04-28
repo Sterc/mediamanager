@@ -6,13 +6,13 @@ $xpdo_meta_map['MediamanagerTags']= array (
   'extends' => 'xPDOSimpleObject',
   'fields' => 
   array (
-    'mediamanager_contexts_id' => 0,
+    'mediamanager_sources_id' => 0,
     'name' => '',
     'is_deleted' => 0,
   ),
   'fieldMeta' => 
   array (
-    'mediamanager_contexts_id' => 
+    'mediamanager_sources_id' => 
     array (
       'dbtype' => 'int',
       'precision' => '10',
@@ -53,10 +53,10 @@ $xpdo_meta_map['MediamanagerTags']= array (
   ),
   'aggregates' => 
   array (
-    'Context' => 
+    'MediaSource' => 
     array (
-      'class' => 'MediamanagerContexts',
-      'local' => 'mediamanager_contexts_id',
+      'class' => 'modMediaSource',
+      'local' => 'mediamanager_sources_id',
       'foreign' => 'id',
       'cardinality' => 'one',
       'owner' => 'foreign',

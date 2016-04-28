@@ -34,7 +34,7 @@ $xpdo_meta_map['MediamanagerFilesCategories']= array (
   ),
   'aggregates' => 
   array (
-    'File' => 
+    'Files' => 
     array (
       'class' => 'MediamanagerFiles',
       'local' => 'mediamanager_files_id',

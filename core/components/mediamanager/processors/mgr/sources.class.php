@@ -1,8 +1,8 @@
 <?php
 /**
- * Contexts processor
+ * Sources processor
  */
-class MediaManagerContextsProcessor extends modProcessor
+class MediaManagerSourcesProcessor extends modProcessor
 {
 
     private $mediaManager = null;
@@ -31,9 +31,9 @@ class MediaManagerContextsProcessor extends modProcessor
 
     private function getList()
     {
-        return $this->mediaManager->contexts->getListHtml();
+        return $this->mediaManager->sources->getListHtml();
     }
 
 }
 
-return 'MediaManagerContextsProcessor';
+return 'MediaManagerSourcesProcessor';

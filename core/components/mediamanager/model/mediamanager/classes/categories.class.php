@@ -49,7 +49,7 @@ class MediaManagerCategoriesHelper
         if (!empty($excludes) && $category) {
             foreach ($excludes as $exclude) {
                 $excludeObject = $this->mediaManager->modx->newObject('MediamanagerCategoriesExcludes');
-                $excludeObject->set('mediamanager_contexts_id',   $exclude);
+                $excludeObject->set('mediamanager_sources_id',    $exclude);
                 $excludeObject->set('mediamanager_categories_id', $category->get('id'));
                 $excludeObject->save();
             }
@@ -78,7 +78,7 @@ class MediaManagerCategoriesHelper
             if (!empty($excludes) && $category) {
                 foreach ($excludes as $exclude) {
                     $excludeObject = $this->mediaManager->modx->newObject('MediamanagerCategoriesExcludes');
-                    $excludeObject->set('mediamanager_contexts_id',   $exclude);
+                    $excludeObject->set('mediamanager_sources_id',    $exclude);
                     $excludeObject->set('mediamanager_categories_id', $category->get('id'));
                     $excludeObject->save();
                 }
@@ -221,17 +221,17 @@ class MediaManagerCategoriesHelper
 
         foreach($list as $item) {
             if ($item->get('parent_id') === $parent) {
-                $contexts = 0;
+                $sources = 0;
 
-                $itemContexts = $item->get('contexts');
-                if(!empty($itemContexts)) {
-                    $contexts = $itemContexts;
+                $itemSources = $item->get('sources');
+                if(!empty($itemSources)) {
+                    $sources = $itemSources;
                 }
 
                 $listHtml .= $this->mediaManager->getChunk('categories/list_item', [
                     'id'            => $item->get('id'),
                     'name'          => $item->get('name'),
-                    'contexts'      => $contexts,
+                    'sources'       => $sources,
                     'deleteMessage' => $this->mediaManager->modx->lexicon('mediamanager.categories.delete_confirm_message', array('name' => $item->get('name'))),
                     'deleteTitle'   => $this->mediaManager->modx->lexicon('mediamanager.categories.delete_confirm_title'),
                     'deleteConfirm' => $this->mediaManager->modx->lexicon('mediamanager.categories.delete'),
@@ -260,7 +260,7 @@ class MediaManagerCategoriesHelper
         $q = $this->mediaManager->modx->newQuery('MediamanagerCategories');
         $q->select(array(
             'MediamanagerCategories.*',
-            'contexts' => 'GROUP_CONCAT(CategoriesExcludes.mediamanager_contexts_id SEPARATOR ",")'
+            'sources' => 'GROUP_CONCAT(CategoriesExcludes.mediamanager_sources_id SEPARATOR ",")'
         ));
         $q->leftJoin('MediamanagerCategoriesExcludes', 'CategoriesExcludes');
         $q->sortby('parent_id', 'ASC');
@@ -270,24 +270,23 @@ class MediaManagerCategoriesHelper
         return $this->mediaManager->modx->getCollection('MediamanagerCategories', $q);
     }
 
-    public function getMediaContexts($includeAll = false, $includeMain = false)
-    {
-        $q = $this->mediaManager->modx->newQuery('MediamanagerContexts');
-        $q->where(array('is_all' => (int) $includeAll));
-        $q->where(array('is_main' => (int) $includeMain));
-        $q->sortby('name', 'ASC');
+//    public function getMediaSources($includeAll = false, $includeMain = false)
+//    {
+//        $q = $this->mediaManager->modx->newQuery('MediamanagerSources');
+//        $q->where(array('is_all' => (int) $includeAll));
+//        $q->where(array('is_main' => (int) $includeMain));
+//        $q->sortby('name', 'ASC');
+//
+//        return $this->mediaManager->modx->getCollection('MediamanagerContexts', $q);
+//    }
 
-        return $this->mediaManager->modx->getCollection('MediamanagerContexts', $q);
-    }
-
-    public function getMediaContextsCheckboxes()
+    public function getMediaSourcesCheckboxes()
     {
         $checkboxes = '';
 
-        $mediaContexts = $this->getMediaContexts();
-        foreach($mediaContexts as $mediaContext)
-        {
-            $checkboxes .= $this->mediaManager->getChunk('categories/checkbox',  $mediaContext->toArray());
+        $mediaSources = $this->mediaManager->sources->getList();
+        foreach ($mediaSources as $mediaSource) {
+            $checkboxes .= $this->mediaManager->getChunk('categories/checkbox', $mediaSource);
         }
 
         return $checkboxes;

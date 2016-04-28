@@ -1,7 +1,7 @@
 <?php
 
 require_once __DIR__ . '/classes/categories.class.php';
-require_once __DIR__ . '/classes/contexts.class.php';
+require_once __DIR__ . '/classes/sources.class.php';
 require_once __DIR__ . '/classes/files.class.php';
 require_once __DIR__ . '/classes/permissions.class.php';
 require_once __DIR__ . '/classes/tags.class.php';
@@ -31,7 +31,7 @@ class MediaManager
     public $chunks = array();
 
     public $categories = null;
-    public $contexts = null;
+    public $sources = null;
     public $files = null;
     public $permissions = null;
     public $tags = null;
@@ -73,7 +73,7 @@ class MediaManager
 
         $this->permissions  = new MediaManagerPermissionsHelper($this);
         $this->categories   = new MediaManagerCategoriesHelper($this);
-        $this->contexts     = new MediaManagerContextsHelper($this);
+        $this->sources      = new MediaManagerSourcesHelper($this);
         $this->files        = new MediaManagerFilesHelper($this);
         $this->tags         = new MediaManagerTagsHelper($this);
     }
