@@ -195,7 +195,6 @@ class MediaManagerFilesHelper
 
         $file['file_size']        = $this->formatFileSize($file['file_size']);
         $file['uploaded_by_name'] = $data['user']->get('fullname');
-        $file['full_link']        = $this->removeSlashes($this->mediaManager->modx->getOption('site_url')) . $file['path'];
         $file['is_archived']      = (int) $file['is_archived'];
 
         $bodyData['file']         = $file;
@@ -1742,7 +1741,7 @@ class MediaManagerFilesHelper
         // Set upload directory, year and month
         $year            = date('Y');
         $month           = date('m');
-        $uploadDirectory = self::UPLOAD_DIRECTORY;
+        $uploadDirectory = $this->addSlashes(self::UPLOAD_DIRECTORY);
 
         // Get media source
         $mediaSource = $this->mediaManager->sources->getSource($this->mediaManager->sources->getCurrentSource());
@@ -1751,17 +1750,17 @@ class MediaManagerFilesHelper
         }
 
         // Upload paths
-        $this->uploadUrl            = $this->addSlashes($uploadDirectory) . $year . DIRECTORY_SEPARATOR . $month . DIRECTORY_SEPARATOR;
+        $this->uploadUrl            = $uploadDirectory . $year . DIRECTORY_SEPARATOR . $month . DIRECTORY_SEPARATOR;
         $this->uploadDirectory      = $this->addTrailingSlash(MODX_BASE_PATH) . $uploadDirectory . DIRECTORY_SEPARATOR;
         $this->uploadDirectoryYear  = $this->uploadDirectory . $year . DIRECTORY_SEPARATOR;
         $this->uploadDirectoryMonth = $this->uploadDirectoryYear . $month . DIRECTORY_SEPARATOR;
 
         // Archive paths
-        $this->archiveUrl           = $this->addSlashes($uploadDirectory) . self::ARCHIVE_DIRECTORY . DIRECTORY_SEPARATOR;
+        $this->archiveUrl           = $uploadDirectory . self::ARCHIVE_DIRECTORY . DIRECTORY_SEPARATOR;
         $this->archiveDirectory     = $this->uploadDirectory . self::ARCHIVE_DIRECTORY . DIRECTORY_SEPARATOR;
 
         // Download paths
-        $this->downloadUrl          = $this->addSlashes($uploadDirectory) . self::DOWNLOAD_DIRECTORY . DIRECTORY_SEPARATOR;
+        $this->downloadUrl          = $uploadDirectory . self::DOWNLOAD_DIRECTORY . DIRECTORY_SEPARATOR;
         $this->downloadDirectory    = $this->uploadDirectory . self::DOWNLOAD_DIRECTORY . DIRECTORY_SEPARATOR;
 
         // Version paths
