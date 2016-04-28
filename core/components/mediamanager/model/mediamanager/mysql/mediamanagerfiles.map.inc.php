@@ -9,7 +9,7 @@ $xpdo_meta_map['MediamanagerFiles']= array (
     'mediamanager_contexts_id' => 0,
     'name' => '',
     'path' => '',
-    'version_id' => 0,
+    'version' => 0,
     'file_type' => '',
     'file_size' => 0,
     'file_dimensions' => '',
@@ -51,7 +51,7 @@ $xpdo_meta_map['MediamanagerFiles']= array (
       'null' => false,
       'default' => '',
     ),
-    'version_id' => 
+    'version' => 
     array (
       'dbtype' => 'int',
       'precision' => '10',
