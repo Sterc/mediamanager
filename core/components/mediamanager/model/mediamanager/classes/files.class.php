@@ -278,6 +278,22 @@ class MediaManagerFilesHelper
             $footerData['button']['delete']   = 0;
         }
 
+        //File history
+        $v = $this->mediaManager->modx->newQuery('MediamanagerFilesVersions');
+        $v->where(
+            array(
+                'mediamanager_files_id' => $fileId,
+            )
+        );
+        $v->sortBy('version', 'desc');
+
+        $versions = $this->mediaManager->modx->getIterator('MediamanagerFilesVersions', $v);
+
+        $bodyData['history'] = '';
+        foreach ($versions as $version) {
+            $bodyData['history'] .= $this->mediaManager->modx->getChunk('files/history', $version->toArray());
+        }
+
         return [
             'body'   => $this->mediaManager->getChunk('files/popup/' . $template, $bodyData),
             'footer' => $this->mediaManager->getChunk('files/popup/buttons/' . $template, $footerData)

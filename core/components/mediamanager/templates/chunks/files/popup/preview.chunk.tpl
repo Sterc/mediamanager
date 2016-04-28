@@ -73,4 +73,20 @@
 
     </div>
 
+    <div class="col-md-12">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>[[%mediamanager.files.file_name]]</th>
+                    <th>[[%mediamanager.files.file_dimension]]</th>
+                    <th>[[%mediamanager.files.file_size_available]]</th>
+                    <th>[[%mediamanager.files.file_size]]</th>
+                </tr>
+           </thead>
+            <tbody>
+                [[+history]]
+            </tbody>
+        </table>
+    </div>
+
 </div>
