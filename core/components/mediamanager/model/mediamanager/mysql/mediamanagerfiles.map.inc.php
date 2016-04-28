@@ -24,7 +24,7 @@ $xpdo_meta_map['MediamanagerFiles']= array (
   ),
   'fieldMeta' => 
   array (
-    'media_sources_id' =>
+    'media_sources_id' => 
     array (
       'dbtype' => 'int',
       'precision' => '10',
@@ -207,6 +207,14 @@ $xpdo_meta_map['MediamanagerFiles']= array (
       'foreign' => 'id',
       'cardinality' => 'one',
       'owner' => 'foreign',
+    ),
+    'Meta' => 
+    array (
+      'class' => 'MediamanagerFilesMeta',
+      'local' => 'id',
+      'foreign' => 'mediamanager_files_id',
+      'cardinality' => 'many',
+      'owner' => 'local',
     ),
   ),
 );

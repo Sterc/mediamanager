@@ -12,7 +12,7 @@ $xpdo_meta_map['MediamanagerTags']= array (
   ),
   'fieldMeta' => 
   array (
-    'media_sources_id' =>
+    'media_sources_id' => 
     array (
       'dbtype' => 'int',
       'precision' => '10',
