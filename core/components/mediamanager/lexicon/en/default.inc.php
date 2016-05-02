@@ -163,3 +163,5 @@ $_lang['mediamanager.files.copy_categories_and_tags'] = 'Use categories and tags
 $_lang['mediamanager.files.source_tags'] = 'Source tags';
 
 $_lang['mm_input_image'] = 'Media Manager Image'; // custom tv input type
+
+$_lang['mediamanager.permissions.admin'] = 'Media Manager administrator permission';

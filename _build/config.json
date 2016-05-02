@@ -3,7 +3,7 @@
     "lowCaseName": "mediamanager",
     "description": "Media Manager for MODX.",
     "author": "Sterc",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "package":{
         "menus": [{
             "text": "mediamanager",
@@ -28,11 +28,15 @@
             "plugins": [{
                 "name": "mediaManagerCustomTv",
                 "file": "mediamanagercustomtv.plugin.php",
-                "events": ["OnDocFormRender","OnDocFormSave"]
+                "events": ["OnDocFormPrerender","OnDocFormSave","OnTVInputRenderList"]
             },{
                 "name": "mediaManagerTinyMce",
                 "file": "mediamanagertinymce.plugin.php",
                 "events": ["OnDocFormPrerender"]
+            },{
+                "name": "mediaManagerContentBlocks",
+                "file": "mediamanagercontentblocks.plugin.php",
+                "events": ["ContentBlocks_RegisterInputs"]
             }]
         }
     },
@@ -50,5 +54,10 @@
             "MediamanagerFilesVersions",
             "MediamanagerFilesMeta"
         ]
+    },
+    "build": {
+        "resolver": {
+            "after": "resolve.policies.php"
+        }
     }
 }

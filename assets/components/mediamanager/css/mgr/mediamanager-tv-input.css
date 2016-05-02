@@ -21,8 +21,9 @@
 }
 
 .mediamanager-input-wrapper {
-    width: 499px;
+    width: 449px;
+    margin-top: 5px;
 }
 .mediamanager-input-wrapper input {
-    width: 91%;
+    width: 90%;
 }

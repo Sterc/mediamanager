@@ -1,10 +1,10 @@
 <div id="tv-image-{$tv->id}"></div>
-<div id="tv-image-preview-{$tv->id}" class="modx-tv-image-preview">
+<div id="tv-image-preview-{$tv->id}" class="modx-tv-image-preview" data-base-phpthumb-url="{$_config.connectors_url}system/phpthumb.php?w=450&src=">
     {if $tv->value}
         {if $tv->value|substr:-3 == "svg"}
         <img src="/{$params.basePath}{$tv->value}" alt="" width="150"/>
         {else}
-        <img src="{$_config.connectors_url}system/phpthumb.php?w=400&src={$tv->value}&source={$source}" alt="" />
+        <img src="{$_config.connectors_url}system/phpthumb.php?w=450&src={$tv->value}&source={$source}" alt="" />
         {/if}
     {/if}
 </div>
