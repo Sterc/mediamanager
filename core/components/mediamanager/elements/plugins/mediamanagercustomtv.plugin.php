@@ -4,6 +4,9 @@ $mediamanager = $modx->getService('mediamanager', 'MediaManager', $corePath . 'm
     'core_path' => $corePath
 ));
 switch ($modx->event->name) {
+    case 'OnTVInputRenderList':
+        $modx->event->output($corePath.'elements/tv/input/');
+        break;
     case 'OnDocFormRender':
         $mediamanager->includeScriptAssets();
         break;

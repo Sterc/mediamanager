@@ -65,7 +65,7 @@
                 </tr>
                 <tr>
                     <td>[[%mediamanager.files.file_link]]</td>
-                    <td><input class="form-control" value="[[+file.full_link]]" readonly></td>
+                    <td><input class="form-control" value="[[+file.path]]" readonly></td>
                 </tr>
                 `]]
             </tbody>

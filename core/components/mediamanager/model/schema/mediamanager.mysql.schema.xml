@@ -41,6 +41,7 @@
         <composite alias="Content" class="MediamanagerFilesContent" local="id" foreign="mediamanager_files_id" cardinality="many" owner="local" />
         <composite alias="Relations" class="MediamanagerFilesRelations" local="id" foreign="mediamanager_files_id" cardinality="many" owner="local" />
         <composite alias="Relations2" class="MediamanagerFilesRelations" local="id" foreign="mediamanager_files_id_relation" cardinality="many" owner="local" />
+        <aggregate alias="Meta" class="MediamanagerFilesMeta" local="id" foreign="mediamanager_files_id" cardinality="many" owner="local" />
     </object>
 
     <object class="MediamanagerDownloads" table="mediamanager_downloads" extends="xPDOSimpleObject">
@@ -110,4 +111,11 @@
         <aggregate alias="Files" class="MediamanagerFiles" local="mediamanager_files_id" foreign="id" cardinality="one" owner="foreign" />
     </object>
 
+    <object class="MediamanagerFilesMeta" table="mediamanager_files_meta" extends="xPDOSimpleObject">
+        <field key="mediamanager_files_id" dbtype="int" precision="10" attributes="unsigned" phptype="integer" null="false" default="0" index="index" />
+        <field key="meta_key" dbtype="varchar" precision="255" phptype="string" null="false" default="" />
+        <field key="meta_value" dbtype="longtext" phptype="string" null="false" default="" />
+
+        <aggregate alias="Files" class="MediamanagerFiles" local="mediamanager_files_id" foreign="id" cardinality="one" owner="foreign" />
+    </object>
 </model>
