@@ -202,7 +202,7 @@ class MediaManagerFilesHelper
 
         // Set file type
         if ($this->isImage($file['file_type'])) {
-            $bodyData['preview'] = '<img src="/connectors/system/phpthumb.php?src=' . $file['path'] . '&w=230&h=180&md5s=' . $file['file_hash'] . '" />';
+            $bodyData['preview'] = '<img src="/connectors/system/phpthumb.php?src=' . $file['path'] . '&w=230&h=180" />';
             $bodyData['is_image'] = 1;
         } elseif($file['file_type'] === 'pdf' && extension_loaded('Imagick')) {
             $bodyData['preview'] = '<img src="' . str_replace('.pdf', '_thumb.jpg', $file['path']) . '" />';
@@ -468,7 +468,7 @@ class MediaManagerFilesHelper
 
             if ($viewMode === 'grid') {
                 if ($this->isImage($file['file_type'])) {
-                    $file['preview_path'] = '/connectors/system/phpthumb.php?src=' . $file['path'] . '&w=230&h=180&md5s=' . $file['file_hash'] . '';
+                    $file['preview_path'] = '/connectors/system/phpthumb.php?src=' . $file['path'] . '&w=230&h=180';
                     $file['preview'] = $this->mediaManager->getChunk('files/file_preview_img', $file);
                 } elseif($file['file_type'] === 'pdf' && extension_loaded('Imagick')) {
                     $file['preview_path'] = str_replace('.pdf', '_thumb.jpg', $file['path']);
@@ -839,6 +839,26 @@ class MediaManagerFilesHelper
      */
     public function saveFile($fileId, $data)
     {
+        $rawData        = $data;
+        $data['name']   = $data[0]['value'];
+        unset($rawData[0]);
+
+        $metaArray = array();
+        foreach($rawData as $row){
+            preg_match_all("/\[[^\]]*\]/", $row['name'], $matches);
+
+            if(sizeof($matches[0])){
+
+                $metaArrayKey = filter_var($matches[0][0], FILTER_SANITIZE_NUMBER_INT);
+                if (strpos($row['name'], 'metakey') !== false) {
+                    $metaArray[$metaArrayKey]['key'] = $row['value'];
+                }
+                else {
+                    $metaArray[$metaArrayKey]['value'] = $row['value'];
+                }
+            }
+        }
+
         $file = $this->mediaManager->modx->getObject('MediamanagerFiles', array('id' => $fileId));
 
         $version                = $this->createVersionNumber($file->get('id'));
@@ -858,6 +878,8 @@ class MediaManagerFilesHelper
         $data['unique_name']    = $filename;
         $data['extension']      = $fileInformation['extension'];
         $data['upload_dir']     = MODX_BASE_PATH . ltrim($pathInfo['dirname'], '/') . DIRECTORY_SEPARATOR;
+
+        $this->saveMetaFields($fileId, $metaArray);
 
         $this->saveFileVersion($file->get('id'), $data, 'rename');
 
@@ -1869,7 +1891,7 @@ class MediaManagerFilesHelper
 
         // Upload paths
         $this->uploadUrl            = $uploadDirectory . $year . DIRECTORY_SEPARATOR . $month . DIRECTORY_SEPARATOR;
-        $this->uploadDirectory      = $this->addTrailingSlash(MODX_BASE_PATH) . $uploadDirectory . DIRECTORY_SEPARATOR;
+        $this->uploadDirectory      = $this->addTrailingSlash(MODX_BASE_PATH) . $this->removeSlashes($uploadDirectory) . DIRECTORY_SEPARATOR;
         $this->uploadDirectoryYear  = $this->uploadDirectory . $year . DIRECTORY_SEPARATOR;
         $this->uploadDirectoryMonth = $this->uploadDirectoryYear . $month . DIRECTORY_SEPARATOR;
 
@@ -1962,9 +1984,6 @@ class MediaManagerFilesHelper
 
         $uploadedFile = $file['upload_dir'] . $file['unique_name'];
         $this->mediaManager->modx->log(xPDO::LOG_LEVEL_ERROR,'UPLOADED: ' . $uploadedFile);
-//        var_dump($path);
-//        var_dump($uploadedFile);
-//        var_dump($target);
         if(is_file($uploadedFile)) {
             $uploadFile = copy($uploadedFile, $target);
             $this->mediaManager->modx->log(xPDO::LOG_LEVEL_ERROR, $target);
@@ -1975,6 +1994,29 @@ class MediaManagerFilesHelper
         }
 
         return false;
+    }
+
+    /**
+     * Save additional meta data for a file.
+     *
+     * @param int $fileId
+     * @param array $data   Contains the meta keys and values.
+     */
+    private function saveMetaFields($fileId, $data) {
+
+        if($data && is_array($data)){
+            foreach($data as $meta){
+                if(!empty($meta['key']) && !empty($meta['value'])){
+                    $metaObj = $this->mediaManager->modx->newObject('MediamanagerFilesMeta');
+
+                    $metaObj->set('mediamanager_files_id',      $fileId);
+                    $metaObj->set('meta_key',                   trim($meta['key']));
+                    $metaObj->set('meta_value',                 trim($meta['value']));
+
+                    $metaObj->save();
+                }
+            }
+        }
     }
 
     /**

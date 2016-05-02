@@ -86,7 +86,7 @@
                         <th>[[%mediamanager.files.action]]</th>
                         <th>[[%mediamanager.files.type]]</th>
                         <th>[[%mediamanager.files.file_size]]</th>
-                        <th>[[%mediamanager.files.file_dimension]]</th>
+                        [[+is_image:eq=`1`:then=`<th>[[%mediamanager.files.file_dimension]]</th>`]]
                         <th>[[%mediamanager.files.file_uploaded_by]]</th>
                         <th>[[%mediamanager.files.file_upload_date]]</th>
                         <th></th>

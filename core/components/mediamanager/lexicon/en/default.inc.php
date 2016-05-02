@@ -78,6 +78,9 @@ $_lang['mediamanager.categories.minimum_categories_message'] = 'A file needs at 
 /* Files */
 $_lang['mediamanager.files.upload_media'] = 'Upload Media';
 $_lang['mediamanager.files.upload_selected_files'] = 'Upload Selected Files';
+$_lang['mediamanager.files.add_meta_title'] = 'Add file information';
+$_lang['mediamanager.files.meta.key'] = 'Key';
+$_lang['mediamanager.files.meta.value'] = 'Value';
 $_lang['mediamanager.files.search'] = 'Search';
 $_lang['mediamanager.files.advanced_search'] = 'Advanced Search';
 $_lang['mediamanager.files.dropzone.maximum_upload_size'] = 'Maximum upload file size: [[+limit]].<br>For images (png,jpg,gif) the maximum file size is [[+limit_images]].';
