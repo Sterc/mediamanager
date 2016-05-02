@@ -16,10 +16,10 @@
             [[+tags]]
         </select>
 
-        <label class="spacing">[[%mediamanager.files.source_tags]]</label>
+        [[-<label class="spacing">[[%mediamanager.files.source_tags]]</label>
         <select name="source_tags[]" class="form-control" multiple="multiple" data-placeholder="[[%mediamanager.files.source_tags]]" data-file-source-tags [[+can_edit:is=`0`:then=` disabled`]]>
             [[+source_tags]]
-        </select>
+        </select>]]
 
     </div>
     <div class="col-md-7">

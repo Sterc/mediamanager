@@ -7,12 +7,7 @@ class MediaManagerTagsManagerController extends MediaManagerManagerController
 
     public function process(array $scriptProperties = array())
     {
-        /**
-         * Base tags are disabled for this project.
-         */
-        return false;
-
-        $placeholders = [
+       $placeholders = [
             'pagetitle'          => $this->getPageTitle(),
             'create_title'       => $this->modx->lexicon('mediamanager.tags.title'),
             'create_label'       => $this->modx->lexicon('mediamanager.tags.label'),
@@ -31,11 +26,6 @@ class MediaManagerTagsManagerController extends MediaManagerManagerController
     }
     public function getTemplateFile()
     {
-        /**
-         * Base tags are disabled for this project.
-         */
-        return false;
-        
         return $this->mediaManager->config['templatesPath'] . 'tags.tpl';
     }
 
