@@ -839,6 +839,26 @@ class MediaManagerFilesHelper
      */
     public function saveFile($fileId, $data)
     {
+        $rawData        = $data;
+        $data['name']   = $data[0]['value'];
+        unset($rawData[0]);
+
+        $metaArray = array();
+        foreach($rawData as $row){
+            preg_match_all("/\[[^\]]*\]/", $row['name'], $matches);
+
+            if(sizeof($matches[0])){
+
+                $metaArrayKey = filter_var($matches[0][0], FILTER_SANITIZE_NUMBER_INT);
+                if (strpos($row['name'], 'metakey') !== false) {
+                    $metaArray[$metaArrayKey]['key'] = $row['value'];
+                }
+                else {
+                    $metaArray[$metaArrayKey]['value'] = $row['value'];
+                }
+            }
+        }
+
         $file = $this->mediaManager->modx->getObject('MediamanagerFiles', array('id' => $fileId));
 
         $version                = $this->createVersionNumber($file->get('id'));
@@ -858,6 +878,8 @@ class MediaManagerFilesHelper
         $data['unique_name']    = $filename;
         $data['extension']      = $fileInformation['extension'];
         $data['upload_dir']     = MODX_BASE_PATH . ltrim($pathInfo['dirname'], '/') . DIRECTORY_SEPARATOR;
+
+        $this->saveMetaFields($fileId, $metaArray);
 
         $this->saveFileVersion($file->get('id'), $data, 'rename');
 
@@ -1972,6 +1994,29 @@ class MediaManagerFilesHelper
         }
 
         return false;
+    }
+
+    /**
+     * Save additional meta data for a file.
+     *
+     * @param int $fileId
+     * @param array $data   Contains the meta keys and values.
+     */
+    private function saveMetaFields($fileId, $data) {
+
+        if($data && is_array($data)){
+            foreach($data as $meta){
+                if(!empty($meta['key']) && !empty($meta['value'])){
+                    $metaObj = $this->mediaManager->modx->newObject('MediamanagerFilesMeta');
+
+                    $metaObj->set('mediamanager_files_id',      $fileId);
+                    $metaObj->set('meta_key',                   trim($meta['key']));
+                    $metaObj->set('meta_value',                 trim($meta['value']));
+
+                    $metaObj->save();
+                }
+            }
+        }
     }
 
     /**

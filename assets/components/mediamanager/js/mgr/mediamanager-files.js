@@ -16,9 +16,14 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
         $dropzoneImageTypes      : ['image/jpg','image/png','image/gif'],
         $dropzoneFeedback        : 'div[data-dropzone-feedback]',
 
+        $editForm                : 'form[data-edit-form]',
+
         $alertMessagesContainer  : 'div[data-alert-messages]',
         $uploadMedia             : 'button[data-upload-media]',
         $uploadSelectedFiles     : '.upload-selected-files',
+
+        $addMetaFieldsButton     : '.addButton',
+        $removeMetaFieldsButton  : '.removeButton',
 
         $filesContainer          : 'div[data-files]',
         $fileContainer           : '.file',
@@ -124,6 +129,8 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
             self.$httpModAuth = $('input[name="HTTP_MODAUTH"]', self.$dropzoneForm).val();
 
             self.$filesCropper = MediaManagerFilesCropper;
+
+            self.metaFieldsIndex = 0;
 
             self.setSource();
             self.setCategory();
@@ -1563,7 +1570,8 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                     }
 
                     if (template === 'edit') {
-                        $(self.$fileEditSaveButton).on('click', function() {
+                        $(self.$fileEditSaveButton).on('click', function(e) {
+                            var values  = $(self.$editForm).serializeArray();
                             $.ajax({
                                 type: 'POST',
                                 url: self.$connectorUrl,
@@ -1572,9 +1580,7 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                                     method       : 'save',
                                     HTTP_MODAUTH : self.$httpModAuth,
                                     fileId       : self.$currentFile,
-                                    data         : {
-                                        name: $('form input', $body).val()
-                                    }
+                                    data         : values
                                 },
                                 success: function(data) {
                                     self.filePopup();
@@ -1680,8 +1686,39 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
             self.$currentFile = e.target.dataset.fileId;
             self.filePopup();
             $(self.$filePopup).modal('show');
-        }
+        },
 
+        /**
+         * Add meta fields inside file edit screen.
+         */
+        addMetaFields: function() {
+            var self  = this;
+
+            self.metaFieldsIndex++;
+            var $template = $('#metaTemplate'),
+                $clone    = $template
+                    .clone()
+                    .removeClass('hide')
+                    .removeAttr('id')
+                    .attr('data-meta-index', self.metaFieldsIndex)
+                    .insertBefore($template);
+
+            $clone
+                .find('[name="metakey"]').attr('name', 'meta[' + self.metaFieldsIndex + '].metakey').end()
+                .find('[name="metavalue"]').attr('name', 'meta[' + self.metaFieldsIndex + '].metavalue').end()
+
+        },
+
+        /**
+         * Remove meta fields from file edit screen.
+         */
+        removeMetaFields: function(e) {
+            var $row  = $(e.target).parents('.form-group'),
+                index = $row.attr('data-meta-index');
+
+            // Remove element containing the fields
+            $row.remove();
+        }
     }
 
     $(document).ready(function() {
@@ -1807,5 +1844,15 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
     $(document).on({
         click : $.proxy(MediaManagerFiles, 'clearSelectedFiles')
     }, MediaManagerFiles.$bulkCancelButton);
+
+    $(document).on({
+        click : $.proxy(MediaManagerFiles, 'addMetaFields')
+    }, MediaManagerFiles.$addMetaFieldsButton);
+
+    $(document).on({
+        click : $.proxy(MediaManagerFiles, 'removeMetaFields')
+    }, MediaManagerFiles.$removeMetaFieldsButton);
+
+
 
 }(jQuery);
