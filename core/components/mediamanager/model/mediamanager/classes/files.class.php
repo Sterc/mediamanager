@@ -320,6 +320,26 @@ class MediaManagerFilesHelper
             $bodyData['history'] .= $this->mediaManager->getChunk('files/history', $versionArr);
         }
 
+        $i = 0;
+        if($template == 'edit'){
+            $metaChunk = 'files/formgroup_filemeta';
+        }
+        else {
+            $metaChunk = 'files/filemeta_row';
+        }
+
+        $bodyData['filemeta']  = '';
+        $filesMeta                  = $this->mediaManager->modx->getCollection('MediamanagerFilesMeta', array('mediamanager_files_id'  => $fileId));
+        if(sizeof($filesMeta) > 0){
+            foreach($filesMeta as $meta){
+                $metaArr = $meta->toArray();
+                $metaArr['nameprefix'] = 'meta[' . $i . ']';
+                $bodyData['filemeta'] .= $this->mediaManager->getChunk($metaChunk, $metaArr);
+                $i++;
+            }
+        }
+        $bodyData['meta_startname'] = 'meta[' . $i . ']';
+
         return [
             'body'   => $this->mediaManager->getChunk('files/popup/' . $template, $bodyData),
             'footer' => $this->mediaManager->getChunk('files/popup/buttons/' . $template, $footerData)
@@ -848,13 +868,15 @@ class MediaManagerFilesHelper
             preg_match_all("/\[[^\]]*\]/", $row['name'], $matches);
 
             if(sizeof($matches[0])){
-
                 $metaArrayKey = filter_var($matches[0][0], FILTER_SANITIZE_NUMBER_INT);
                 if (strpos($row['name'], 'metakey') !== false) {
                     $metaArray[$metaArrayKey]['key'] = $row['value'];
                 }
-                else {
+                elseif (strpos($row['name'], 'metavalue') !== false) {
                     $metaArray[$metaArrayKey]['value'] = $row['value'];
+                }
+                elseif (strpos($row['name'], 'metaid') !== false) {
+                    $metaArray[$metaArrayKey]['id'] = $row['value'];
                 }
             }
         }
@@ -2007,7 +2029,13 @@ class MediaManagerFilesHelper
         if($data && is_array($data)){
             foreach($data as $meta){
                 if(!empty($meta['key']) && !empty($meta['value'])){
-                    $metaObj = $this->mediaManager->modx->newObject('MediamanagerFilesMeta');
+
+                    if(isset($meta['id']) && $meta['id'] > 0) {
+                        $metaObj = $this->mediaManager->modx->getObject('MediamanagerFilesMeta', array('id' => $meta['id']));
+                    }
+                    else {
+                        $metaObj = $this->mediaManager->modx->newObject('MediamanagerFilesMeta');
+                    }
 
                     $metaObj->set('mediamanager_files_id',      $fileId);
                     $metaObj->set('meta_key',                   trim($meta['key']));
@@ -2017,6 +2045,39 @@ class MediaManagerFilesHelper
                 }
             }
         }
+    }
+
+    /**
+     * Revert to a specified version of a file.
+     *
+     * @param int $metaId Id of meta row.
+     *
+     * @return array $response
+     */
+    public function removeFileMeta($metaId)
+    {
+        $response = [
+            'status' => self::STATUS_SUCCESS,
+            'message' => ''
+        ];
+
+        if(isset($metaId) && $metaId > 0){
+            $metaObj = $this->mediaManager->modx->getObject('MediamanagerFilesMeta', array('id' => $metaId));
+
+            if ($metaObj->remove() == false) {
+                $response['status']     = self::STATUS_ERROR;
+                $message                = $this->mediaManager->modx->lexicon('mediamanager.files.error.meta_not_removed', array('metaid'  => $metaId));
+                $response['message']    = $this->alertMessageHtml($message, 'danger');
+            }
+
+        }
+        else {
+            $response['status']     = self::STATUS_ERROR;
+            $message                = $this->mediaManager->modx->lexicon('mediamanager.files.error.meta_not_found', array('metaid'  => $metaId));
+            $response['message']    = $this->alertMessageHtml($message, 'danger');
+        }
+
+        return $response;
     }
 
     /**
