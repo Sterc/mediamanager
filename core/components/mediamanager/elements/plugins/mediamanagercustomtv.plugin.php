@@ -7,7 +7,7 @@ switch ($modx->event->name) {
     case 'OnTVInputRenderList':
         $modx->event->output($corePath.'elements/tv/input/');
         break;
-    case 'OnDocFormRender':
+    case 'OnDocFormPrerender':
         $mediamanager->includeScriptAssets();
         break;
     case 'OnDocFormSave':

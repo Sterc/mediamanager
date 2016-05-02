@@ -162,4 +162,4 @@ $_lang['mediamanager.files.save_image'] = 'Save image';
 $_lang['mediamanager.files.copy_categories_and_tags'] = 'Use categories and tags above for all files';
 $_lang['mediamanager.files.source_tags'] = 'Source tags';
 
-$_lang['mediamanager_input_image'] = 'Media Manager Image';
+$_lang['mm_input_image'] = 'Media Manager Image'; // custom tv input type
