@@ -28,13 +28,15 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
         $fileRemoveButton        : 'button[data-dz-remove]',
         $fileErrorMessage        : 'span[data-dz-errormessage]',
 
+        $fileHistoryTable        : 'div[data-history-table]',
+        $fileHistoryButton       : 'button[data-file-history-button]',
+
         $filePopup               : 'div[data-file-popup]',
         $filePopupBody           : 'div[data-file-popup-body]',
         $filePopupFooter         : 'div[data-file-popup-footer]',
         $filePopupButton         : 'button[data-file-popup-button]',
         $filePopupFeedback       : 'div[data-file-popup-feedback]',
         $fileRelations           : 'td[data-file-relations]',
-        $fileHistoryButton       : 'button[data-file-history-button]',
         $fileActionButton        : 'button[data-file-action-button]',
         $fileMoveButton          : 'button[data-file-move-button]',
         $fileArchiveButton       : 'button[data-file-archive-button]',
@@ -43,6 +45,7 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
         $fileDeleteButton        : 'button[data-file-delete-button]',
         $fileCopyButton          : 'button[data-file-copy-button]',
         $fileEditSaveButton      : 'button[data-file-edit-save]',
+        $fileRevertButton        : 'button[data-revert-button]',
         $fileCrop                : 'img.crop',
         $filePreviewLink         : 'a[data-preview-link]',
 
@@ -250,6 +253,13 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                 previewTemplate: $(self.$dropzoneFileTemplate).html()
             });
         },
+        /*
+         * Open or close history form.
+         */
+        historyToggle: function() {
+            var self = this;
+            $(self.$fileHistoryTable).slideToggle(400);
+        },
 
         /**
          * Open or close dropzone form.
@@ -352,6 +362,25 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                     return false;
                 });
             }
+        },
+
+        fileRevert: function(e) {
+            var self = this;
+            var version = e.target.dataset.versionId;
+
+            $.ajax({
+                url: self.$connectorUrl,
+                method: 'post',
+                data: {
+                    action        : 'mgr/files',
+                    method        : 'revert',
+                    HTTP_MODAUTH  : self.$httpModAuth,
+                    version       : version
+                }
+            }).success(function(data) {
+                self.filePopup();
+            });
+
         },
 
         /**
@@ -1668,6 +1697,14 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
     $(document).on({
         click : $.proxy(MediaManagerFiles, 'dropzoneOpen')
     }, MediaManagerFiles.$uploadMedia);
+
+    $(document).on({
+        click : $.proxy(MediaManagerFiles, 'historyToggle')
+    }, MediaManagerFiles.$fileHistoryButton);
+
+    $(document).on({
+        click : $.proxy(MediaManagerFiles, 'fileRevert')
+    }, MediaManagerFiles.$fileRevertButton);
 
     $(document).on({
         click : $.proxy(MediaManagerFiles, 'dropzoneProcessQueue')

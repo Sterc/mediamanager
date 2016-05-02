@@ -105,6 +105,7 @@
         <field key="action" dbtype="varchar" precision="32" phptype="string" null="false" default="" index="index" />
         <field key="replaced_file_id" dbtype="int" precision="10" phptype="integer" null="false" default="" index="index" />
         <field key="created" dbtype="timestamp" phptype="timestamp" null="false" default="CURRENT_TIMESTAMP" index="index" />
+        <field key="created_by" dbtype="int" precision="11" phptype="integer" null="false" default="" />
 
         <aggregate alias="Files" class="MediamanagerFiles" local="mediamanager_files_id" foreign="id" cardinality="one" owner="foreign" />
     </object>

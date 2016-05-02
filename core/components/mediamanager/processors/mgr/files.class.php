@@ -88,6 +88,9 @@ class MediaManagerFilesProcessor extends modProcessor
                 $data = $this->removeTag();
 
                 break;
+            case 'revert':
+                $data = $this->revertFile();
+                break;
         }
 
         return $data;
@@ -262,6 +265,18 @@ class MediaManagerFilesProcessor extends modProcessor
                 (int) $this->getProperty('tagId')
             )
         );
+    }
+
+    private function revertFile()
+    {
+        $response = $this->mediaManager->files->revertFile(
+            (int) $this->getProperty('version')
+        );
+        if ($response['status'] === 'error') {
+            header('HTTP/1.1 400 Bad Request');
+        }
+
+        return $this->toJSON($response);
     }
 
 }

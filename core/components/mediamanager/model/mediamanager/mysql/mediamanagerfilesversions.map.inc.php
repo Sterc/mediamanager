@@ -16,6 +16,7 @@ $xpdo_meta_map['MediamanagerFilesVersions']= array (
     'action' => '',
     'replaced_file_id' => 0,
     'created' => 'CURRENT_TIMESTAMP',
+    'created_by' => 0,
   ),
   'fieldMeta' => 
   array (
@@ -106,6 +107,14 @@ $xpdo_meta_map['MediamanagerFilesVersions']= array (
       'null' => false,
       'default' => 'CURRENT_TIMESTAMP',
       'index' => 'index',
+    ),
+    'created_by' => 
+    array (
+      'dbtype' => 'int',
+      'precision' => '11',
+      'phptype' => 'integer',
+      'null' => false,
+      'default' => 0,
     ),
   ),
   'aggregates' => 

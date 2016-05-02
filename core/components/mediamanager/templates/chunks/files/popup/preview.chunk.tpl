@@ -74,19 +74,29 @@
     </div>
 
     <div class="col-md-12">
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>[[%mediamanager.files.file_name]]</th>
-                    <th>[[%mediamanager.files.file_dimension]]</th>
-                    <th>[[%mediamanager.files.file_size_available]]</th>
-                    <th>[[%mediamanager.files.file_size]]</th>
-                </tr>
-           </thead>
-            <tbody>
-                [[+history]]
-            </tbody>
-        </table>
+        <div style="display:none;" data-history-table>
+            <br/>
+            <h3>File history</h3>
+
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>[[%mediamanager.files.version]]</th>
+                        <th>[[%mediamanager.files.file_name]]</th>
+                        <th>[[%mediamanager.files.action]]</th>
+                        <th>[[%mediamanager.files.type]]</th>
+                        <th>[[%mediamanager.files.file_size]]</th>
+                        <th>[[%mediamanager.files.file_dimension]]</th>
+                        <th>[[%mediamanager.files.file_uploaded_by]]</th>
+                        <th>[[%mediamanager.files.file_upload_date]]</th>
+                        <th></th>
+                    </tr>
+               </thead>
+                <tbody>
+                    [[+history]]
+                </tbody>
+            </table>
+        </div>
     </div>
 
 </div>
