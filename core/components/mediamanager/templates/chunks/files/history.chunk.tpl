@@ -4,7 +4,7 @@
     <td>[[+action]]</td>
     <td>[[+type]]</td>
     <td>[[+file_size]]</td>
-    <td>[[+file_dimensions]]</td>
+    [[+is_image:eq=`1`:then=`<td>[[+file_dimensions]]</td>`]]
     <td>[[+created_by]]</td>
     <td>[[+created]]</td>
     <td>

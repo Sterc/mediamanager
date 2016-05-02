@@ -202,7 +202,7 @@ class MediaManagerFilesHelper
 
         // Set file type
         if ($this->isImage($file['file_type'])) {
-            $bodyData['preview'] = '<img src="/connectors/system/phpthumb.php?src=' . $file['path'] . '&w=230&h=180&md5s=' . $file['file_hash'] . '" />';
+            $bodyData['preview'] = '<img src="/connectors/system/phpthumb.php?src=' . $file['path'] . '&w=230&h=180" />';
             $bodyData['is_image'] = 1;
         } elseif($file['file_type'] === 'pdf' && extension_loaded('Imagick')) {
             $bodyData['preview'] = '<img src="' . str_replace('.pdf', '_thumb.jpg', $file['path']) . '" />';
@@ -468,7 +468,7 @@ class MediaManagerFilesHelper
 
             if ($viewMode === 'grid') {
                 if ($this->isImage($file['file_type'])) {
-                    $file['preview_path'] = '/connectors/system/phpthumb.php?src=' . $file['path'] . '&w=230&h=180&md5s=' . $file['file_hash'] . '';
+                    $file['preview_path'] = '/connectors/system/phpthumb.php?src=' . $file['path'] . '&w=230&h=180';
                     $file['preview'] = $this->mediaManager->getChunk('files/file_preview_img', $file);
                 } elseif($file['file_type'] === 'pdf' && extension_loaded('Imagick')) {
                     $file['preview_path'] = str_replace('.pdf', '_thumb.jpg', $file['path']);
@@ -1869,7 +1869,7 @@ class MediaManagerFilesHelper
 
         // Upload paths
         $this->uploadUrl            = $uploadDirectory . $year . DIRECTORY_SEPARATOR . $month . DIRECTORY_SEPARATOR;
-        $this->uploadDirectory      = $this->addTrailingSlash(MODX_BASE_PATH) . $uploadDirectory . DIRECTORY_SEPARATOR;
+        $this->uploadDirectory      = $this->addTrailingSlash(MODX_BASE_PATH) . $this->removeSlashes($uploadDirectory) . DIRECTORY_SEPARATOR;
         $this->uploadDirectoryYear  = $this->uploadDirectory . $year . DIRECTORY_SEPARATOR;
         $this->uploadDirectoryMonth = $this->uploadDirectoryYear . $month . DIRECTORY_SEPARATOR;
 
@@ -1962,9 +1962,6 @@ class MediaManagerFilesHelper
 
         $uploadedFile = $file['upload_dir'] . $file['unique_name'];
         $this->mediaManager->modx->log(xPDO::LOG_LEVEL_ERROR,'UPLOADED: ' . $uploadedFile);
-//        var_dump($path);
-//        var_dump($uploadedFile);
-//        var_dump($target);
         if(is_file($uploadedFile)) {
             $uploadFile = copy($uploadedFile, $target);
             $this->mediaManager->modx->log(xPDO::LOG_LEVEL_ERROR, $target);
