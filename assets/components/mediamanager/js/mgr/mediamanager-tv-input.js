@@ -33,7 +33,8 @@ $(document).ready(function() {
             setTimeout(function(){
                 $(modalWrapper+' iframe').contents().find('.tv-tiny-use').on('click', function(event) {
                     var selectedValue = $(this).parent('.file-preview').find('img').attr('data-path');
-                    $('#tv-image-preview-'+tvId).find('img').attr('src',selectedValue);
+                    var phpThumbBaseUrl = $('#tv-image-preview-'+tvId).attr('data-base-phpthumb-url');
+                    $('#tv-image-preview-'+tvId).find('img').attr('src',phpThumbBaseUrl+selectedValue);
                     $('input#tv'+tvId).attr('value',selectedValue);
                     $(modalWrapper).dialog('close');
                 });

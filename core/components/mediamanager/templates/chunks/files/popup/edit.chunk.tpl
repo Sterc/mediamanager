@@ -5,14 +5,17 @@
     </div>
 
     <h3>[[%mediamanager.files.add_meta_title]]</h3>
+
+    [[+filemeta]]
+
     <div class="form-group">
         <label class="col-md-5 control-label">[[%mediamanager.files.meta.key]]</label>
         <label class="col-md-7 control-label">[[%mediamanager.files.meta.value]]</label>
         <div class="col-md-5">
-            <input type="text" class="form-control" name="meta[0].metakey" placeholder="[[%mediamanager.files.meta.key]]" />
+            <input type="text" class="form-control" name="[[+meta_startname]].metakey" placeholder="[[%mediamanager.files.meta.key]]" />
         </div>
         <div class="col-md-6">
-            <input type="text" class="form-control" name="meta[0].metavalue" placeholder="[[%mediamanager.files.meta.value]]" />
+            <input type="text" class="form-control" name="[[+meta_startname]].metavalue" placeholder="[[%mediamanager.files.meta.value]]" />
         </div>
         <div class="col-md-1">
             <button type="button" class="btn btn-default addButton"><i class="fa fa-plus"></i></button>

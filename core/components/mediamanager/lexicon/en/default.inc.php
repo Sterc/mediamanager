@@ -79,7 +79,7 @@ $_lang['mediamanager.categories.minimum_categories_message'] = 'A file needs at 
 $_lang['mediamanager.files.upload_media'] = 'Upload Media';
 $_lang['mediamanager.files.upload_selected_files'] = 'Upload Selected Files';
 $_lang['mediamanager.files.add_meta_title'] = 'Add file information';
-$_lang['mediamanager.files.meta.key'] = 'Key';
+$_lang['mediamanager.files.meta.key'] = 'Name';
 $_lang['mediamanager.files.meta.value'] = 'Value';
 $_lang['mediamanager.files.search'] = 'Search';
 $_lang['mediamanager.files.advanced_search'] = 'Advanced Search';
@@ -101,6 +101,8 @@ $_lang['mediamanager.files.filter.all_dates'] = 'All dates';
 $_lang['mediamanager.files.filter.date_recent'] = 'Recent';
 $_lang['mediamanager.files.filter.date_custom'] = 'Till from date';
 $_lang['mediamanager.files.error.no_files_found'] = 'No files found.';
+$_lang['mediamanager.files.error.meta_not_found'] = 'Could not find any metadata to delete from database with meta id [[+metaid]].';
+$_lang['mediamanager.files.error.meta_not_removed'] = 'Could not remove data from database with meta id [[+metaid]].';
 $_lang['mediamanager.files.error.create_directory'] = 'Could not create upload directory.';
 $_lang['mediamanager.files.error.create_zip'] = 'Could not create zip file.';
 $_lang['mediamanager.files.error.version_not_found'] = 'Version [[+version]] could not be found.';
@@ -160,4 +162,6 @@ $_lang['mediamanager.files.save_image'] = 'Save image';
 $_lang['mediamanager.files.copy_categories_and_tags'] = 'Use categories and tags above for all files';
 $_lang['mediamanager.files.source_tags'] = 'Source tags';
 
-$_lang['mediamanager_input_image'] = 'Media Manager Image';
+$_lang['mm_input_image'] = 'Media Manager Image'; // custom tv input type
+
+$_lang['mediamanager.permissions.admin'] = 'Media Manager administrator permission';

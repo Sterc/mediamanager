@@ -1713,11 +1713,35 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
          * Remove meta fields from file edit screen.
          */
         removeMetaFields: function(e) {
-            var $row  = $(e.target).parents('.form-group'),
+            var self = this,
+                $row  = $(e.target).parents('.form-group'),
                 index = $row.attr('data-meta-index');
 
-            // Remove element containing the fields
-            $row.remove();
+            //If has meta id, then remove from database.
+            if($($row).find('input[data-meta-id]').length != 0) {
+                $.ajax({
+                    type: 'POST',
+                    url: self.$connectorUrl,
+                    data: {
+                        action       : 'mgr/files',
+                        method       : 'removeMeta',
+                        HTTP_MODAUTH : self.$httpModAuth,
+                        metaId       : $($row).find('input[data-meta-id]').val()
+                    },
+                    success: function(data) {
+                        if(data.status == 'success'){
+                            // Remove element containing the fields
+                            $row.remove();
+                        }
+                        else {
+                            alert(data.message);
+                        }
+                    }
+                });
+            }else {
+                // Remove element containing the fields
+                $row.remove();
+            }
         }
     }
 
