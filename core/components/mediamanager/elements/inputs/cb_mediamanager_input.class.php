@@ -1,17 +1,17 @@
 <?php
 
 class cbMediaManagerInput extends cbBaseInput {
-    public $defaultIcon = 'image';
-    public $defaultTpl = '[[!mmRenderImage? &value=`[[+value]]`]]';
+    public $defaultIcon = 'attachment';
+    public $defaultTpl = '[[!mmRenderFile? &id=`[[+file_id]]`]]';
 
     public function getName()
     {
-        return 'Media Manager - Image';
+        return 'Media Manager - File';
     }
 
     public function getDescription()
     {
-        return 'Image input for the new Media Manager.';
+        return 'File input for the new Media Manager.';
     }
 
     /**
