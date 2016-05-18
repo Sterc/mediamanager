@@ -70,13 +70,9 @@ $_lang['mediamanager.categories.cancel'] = 'Cancel';
 $_lang['mediamanager.categories.delete_success'] = 'Category is deleted.';
 $_lang['mediamanager.categories.delete_confirm_title'] = 'Delete';
 $_lang['mediamanager.categories.delete_confirm_message'] = 'Are you sure you want to delete the category `[[+name]]` and all the sub categories.<br /><br /> Move all files to category:';
-<<<<<<< HEAD
-
-=======
 $_lang['mediamanager.categories.edit_confirm_title'] = 'Edit';
 $_lang['mediamanager.categories.edit_confirm_message'] = '';
 $_lang['mediamanager.categories.minimum_categories_message'] = 'A file needs at least one category.';
->>>>>>> cb9568be106b245f03341d68031da70b113bbfdd
 
 /* Files */
 $_lang['mediamanager.files.upload_media'] = 'Upload Media';
