@@ -1,12 +1,14 @@
 <?php
 $modx->regClientStartupHTMLBlock("
     <script>
-        Ext.override(TinyMCERTE.Tiny, {
-            loadBrowser : function(){
-                mmLoadBrowser();
-                return false;
-            }
-        });
+        if(typeof TinyMCERTE != 'undefined') {
+            Ext.override(TinyMCERTE.Tiny, {
+                loadBrowser : function(){
+                    mmLoadBrowser();
+                    return false;
+                }
+            });
+        }
         
         function mmLoadBrowser() {
             

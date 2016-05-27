@@ -1,7 +1,7 @@
 $(document).ready(function() {
 
     var selectedValue = '';
-    var modal = '<div id="modal-wrapper"><iframe class="mediamanager-iframe" id="mediamanager" src="/manager/?a=home&namespace=mediamanager&tv_frame=1"></iframe></div>';
+    var modal = '<div id="modal-wrapper"><iframe class="mediamanager-iframe" id="mediamanager" src="?a=home&namespace=mediamanager&tv_frame=1"></iframe></div>';
     $('body').append(modal);
 
     var modalWidth = $(window).width() * 0.94;

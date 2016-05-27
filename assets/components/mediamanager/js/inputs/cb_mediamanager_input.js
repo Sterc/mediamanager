@@ -11,7 +11,7 @@
         // Do something when the input is being loaded
         input.init = function() {
             if(!$('#cb-modal-wrapper').length) {
-                var modal = '<div id="cb-modal-wrapper"><iframe class="mediamanager-iframe" id="cb_mediamanager" src="/manager/?a=home&namespace=mediamanager&tv_frame=1"></iframe></div>';
+                var modal = '<div id="cb-modal-wrapper"><iframe class="mediamanager-iframe" id="cb_mediamanager" src="?a=home&namespace=mediamanager&tv_frame=1"></iframe></div>';
                 $('body').append(modal);
 
                 var modalWidth = $(window).width() * 0.94;
