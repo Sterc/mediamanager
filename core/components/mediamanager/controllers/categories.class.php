@@ -35,7 +35,7 @@ class MediaManagerCategoriesManagerController extends MediaManagerManagerControl
 
     public function loadCustomCssJs()
     {
-        $this->addJavascript($this->mediaManager->config['assets_path'] . 'libs/jquery-nested-sortable/2.0.0/js/jquery.nestedSortable.js');
+        $this->addJavascript($this->mediaManager->config['assets_url'] . 'libs/jquery-nested-sortable/2.0.0/js/jquery.nestedSortable.js');
         $this->addJavascript($this->mediaManager->config['js_url'] . 'mgr/mediamanager-categories.js');
     }
 

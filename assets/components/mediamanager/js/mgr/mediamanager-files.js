@@ -83,6 +83,8 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
 
         $filterCategoriesOptions : null,
         $filterTagsOptions       : null,
+        $filesSourceTags        : [],
+
         $categoriesSelectOptions : null,
 
         $viewMode                : 'i[data-view-mode]',
@@ -113,11 +115,14 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
 
         $filesCategories         : [],
         $filesTags               : [],
+        $filesSourceTags        : [],
 
         $filesCropper            : null,
 
         $breadcrumbsContainer    : 'ol.breadcrumb',
         $breadcrumbs             : [],
+
+        $options                 : null,
 
         /**
          * Init
@@ -129,6 +134,9 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
             self.$httpModAuth = $('input[name="HTTP_MODAUTH"]', self.$dropzoneForm).val();
 
             self.$filesCropper = MediaManagerFilesCropper;
+            self.$options      = mediaManagerOptions;
+
+            self.setSource();
 
             self.metaFieldsIndex = 0;
 
@@ -168,10 +176,20 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
 
                         self.$filesCategories.push($(self.$fileCategories, $filePreview).select2(self.$filterCategoriesOptions)
                             .on('select2:select select2:unselect', self.checkCategoriesAndTags)
+                            .val(self.$currentCategory)
+                            .trigger('change')
                         );
+
                         self.$filesTags.push($(self.$fileTags, $filePreview).select2(self.$filterTagsOptions)
                             .on('select2:select select2:unselect', self.checkCategoriesAndTags)
                         );
+
+                        var $sourceTags = $(self.$fileSourceTags, $filePreview).select2(self.$filterSourceTagsOptions);
+                        self.$filesSourceTags.push($sourceTags);
+
+                        $($filePreview).on('keyup', self.$fileContextTags + ' + span.select2 .select2-search__field', function(e) {
+                            self.addNewTag(e, this.value, $contextTags);
+                        });
 
                         // Disable upload media button
                         $(self.$uploadMedia).prop('disabled', true);
@@ -185,11 +203,11 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
 
                         // Images have lower max filesize, so check if type is image and check filesize
                         if (self.$dropzoneImageTypes.indexOf(file.type) != -1) {
-                            var max = mediaManagerOptions.dropzone.maxFileSizeImages * 1000000;
+                            var max = self.$options.dropzone.maxFileSizeImages * 1000000;
                             if (file.size > max) {
                                 $('<div/>', {
                                     class: 'alert alert-danger',
-                                    text: mediaManagerOptions.message.maxFileSize
+                                    text: self.$options.message.maxFileSize
                                 }).appendTo(feedback).delay(3000).fadeOut(300);
                                 self.$dropzone.removeFile(file);
                             }
@@ -216,15 +234,18 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                         var $file       = $(file.previewElement),
                             $categories = $(self.$fileCategories, $file),
                             $tags       = $(self.$fileTags, $file),
+                            $sourceTags = $(self.$fileSourceTags, $file),
                             $button     = $(self.$fileRemoveButton, $file);
 
                         // Set correct categories and tags for file
                         formData.append('categories', $categories.val());
                         formData.append('tags', $tags.val());
+                        formData.append('context_tags', $sourceTags.val());
 
                         // Disable input fields and buttons while file is being uploaded
                         $categories.prop('disabled', true);
                         $tags.prop('disabled', true);
+                        $sourceTags.prop('disabled', true);
                         $button.prop('disabled', true);
                     });
 
@@ -238,7 +259,7 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
 
                         // If file is too big to upload, show error
                         if (file.xhr.status === 413) {
-                            response = self.alert(mediaManagerOptions.message.maxFileSize, 'danger');
+                            response = self.alert(self.$options.message.maxFileSize, 'danger');
                         } else {
                             response = JSON.parse(file.xhr.response);
                             response = response.message;
@@ -304,8 +325,11 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                 }
             });
 
+            /**
+             * By commenting this, we remove the requirement for adding tags
+             */
             /*$(self.$fileTags, $(self.$dropzonePreviews)).each(function() {
-                if (this.selectedOptions.length < 3) {
+                if (this.selectedOptions.length === 0) {
                     tagsFilled = false;
                     return false;
                 }
@@ -331,15 +355,23 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
 
             $.each(self.$filesCategories, function(i, file) {
                 if (i === 0) {
-                    options = file.html();
-                    values  = file.val();
+                    values = file.val();
                     return true;
                 }
 
-                file.html(options).val(values).trigger('change');
+                file.val(values).trigger('change');
             });
 
             $.each(self.$filesTags, function(i, file) {
+                if (i === 0) {
+                    values = file.val();
+                    return true;
+                }
+
+                file.val(values).trigger('change');
+            });
+
+            $.each(self.$filesSourceTags, function(i, file) {
                 if (i === 0) {
                     options = file.html();
                     values  = file.val();
@@ -444,6 +476,11 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                     cache: true
                 },
                 minimumInputLength: 1,
+                theme: 'default select2-container--tags'
+            };
+
+            self.$filterSourceTagsOptions = {
+                data: self.$options.sourceTags,
                 theme: 'default select2-container--tags'
             };
 
@@ -841,13 +878,13 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
 
             // Select file to replace
             if (self.$archiveReplaceFileId !== '') {
-                var $dialog = $('<div />').html(mediaManagerOptions.message.replaceConfirm).dialog({
+                var $dialog = $('<div />').html(self.$options.message.replaceConfirm).dialog({
                     draggable: false,
                     resizable: false,
                     modal: true,
-                    title: mediaManagerOptions.message.replaceButton,
+                    title: self.$options.message.replaceButton,
                     buttons : [{
-                        text: mediaManagerOptions.message.replaceButton,
+                        text: self.$options.message.replaceButton,
                         class: 'btn btn-primary',
                         click: function() {
                             $.ajax ({
@@ -871,7 +908,7 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                             });
                         }
                     }, {
-                        text: mediaManagerOptions.cancel,
+                        text: self.$options.cancel,
                         class: 'btn btn-default',
                         click: function () {
                             $(this).dialog('close');
@@ -1443,17 +1480,7 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                         var $categories  = $(self.$fileCategories, $body).select2(self.$filterCategoriesOptions);
                         var $tags        = $(self.$fileTags, $body).select2(self.$filterTagsOptions);
 
-                        var sourceTagsOptions = self.$filterTagsOptions;
-                        sourceTagsOptions.ajax.data = function (params) {
-                            return {
-                                action       : 'mgr/tags',
-                                method       : 'getTagsByName',
-                                HTTP_MODAUTH : self.$httpModAuth,
-                                search       : params.term,
-                                isSourceTag  : 1
-                            };
-                        };
-                        var $sourceTags = $(self.$fileSourceTags, $body).select2(sourceTagsOptions);
+                        var $sourceTags = $(self.$fileSourceTags, $body).select2($filterSourceTagsOptions);
 
                         // Add category to file
                         $categories.on('select2:select', function(e) {
@@ -1478,7 +1505,7 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                                 $categories.select2("close");
                                 $('<div/>', {
                                     class: 'alert alert-danger',
-                                    text: mediaManagerOptions.message.minCategory
+                                    text: self.$options.message.minCategory
                                 }).appendTo(feedback).delay(3000).fadeOut(300);
 
                                 return false;
@@ -1566,7 +1593,9 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                             });
                         });
 
-                        self.addNewTag($body, $sourceTags);
+                        $($body).on('keyup', self.$fileSourceTags + ' + span.select2 .select2-search__field', function(e) {
+                            self.addNewTag(e, this.value, $sourceTags);
+                        });
                     }
 
                     if (template === 'edit') {

@@ -49,7 +49,8 @@
                 ContentBlocks.fireChange();
             });
 
-            dom.find('.contentblocks-field-file-choose').on('click', $.proxy(function() {
+            dom.find('.contentblocks-field-file-choose').on('click', $.proxy(function(event) {
+                event.preventDefault();
                 this.chooseImage();
             }, this));
         };
@@ -68,6 +69,7 @@
             $(modalWrapper).dialog('open');
 
             setTimeout(function(){
+                // $(modalWrapper+' iframe').contents().find('.mediamanager-browser .view-mode-grid .file .file-options .btn-success').on('click', function(event) {
                 $(modalWrapper+' iframe').contents().find('.tv-tiny-use').on('click', function(event) {
                     dom.find('.file_id').val($(this).parents('[data-id]').attr('data-id'));
                     dom.find('.file_name').val($(this).parents('[data-id]').find('.file-name').text());

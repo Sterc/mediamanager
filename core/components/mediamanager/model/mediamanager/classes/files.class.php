@@ -2005,11 +2005,11 @@ class MediaManagerFilesHelper
         }
 
         $uploadedFile = $file['upload_dir'] . $file['unique_name'];
-        $this->mediaManager->modx->log(xPDO::LOG_LEVEL_ERROR,'UPLOADED: ' . $uploadedFile);
+//        $this->mediaManager->modx->log(xPDO::LOG_LEVEL_ERROR,'UPLOADED: ' . $uploadedFile);
         if(is_file($uploadedFile)) {
             $uploadFile = copy($uploadedFile, $target);
-            $this->mediaManager->modx->log(xPDO::LOG_LEVEL_ERROR, $target);
-            $this->mediaManager->modx->log(xPDO::LOG_LEVEL_ERROR,'target: ' . $target);
+//            $this->mediaManager->modx->log(xPDO::LOG_LEVEL_ERROR, $target);
+//            $this->mediaManager->modx->log(xPDO::LOG_LEVEL_ERROR,'target: ' . $target);
             if ($uploadFile) {
                 return true;
             }

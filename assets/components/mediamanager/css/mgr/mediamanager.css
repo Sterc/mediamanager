@@ -338,6 +338,12 @@ ol.sortable li div {
     overflow-y: auto;
 }
 
+#modx-leftbar,
+#modx-leftbar-tabs-xsplit,
+#modx-leftbar-tabs-xcollapsed {
+    display: none !important;
+}
+
 .breadcrumb {
     margin: 0;
     padding: 0;

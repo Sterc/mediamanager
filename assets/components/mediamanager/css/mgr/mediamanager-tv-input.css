@@ -2,6 +2,7 @@
     background: #f2f2f2;
     display: none;
 }
+
 #modal-wrapper .selected-value {
     position: absolute;
     bottom: 0;
@@ -10,6 +11,7 @@
     height: 50px;
     background: #000;
 }
+
 .mediamanager-iframe {
  	display: block;
     background: #f2f2f2;
@@ -21,9 +23,13 @@
 }
 
 .mediamanager-input-wrapper {
-    width: 449px;
-    margin-top: 5px;
+    width: 499px;
 }
+
 .mediamanager-input-wrapper input {
-    width: 90%;
+    width: 91%;
+}
+
+.ui-dialog {
+    z-index: 9999 !important;
 }
