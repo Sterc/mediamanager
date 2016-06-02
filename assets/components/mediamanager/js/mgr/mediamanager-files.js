@@ -187,8 +187,8 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                         var $sourceTags = $(self.$fileSourceTags, $filePreview).select2(self.$filterSourceTagsOptions);
                         self.$filesSourceTags.push($sourceTags);
 
-                        $($filePreview).on('keyup', self.$fileContextTags + ' + span.select2 .select2-search__field', function(e) {
-                            self.addNewTag(e, this.value, $contextTags);
+                        $($filePreview).on('keyup', self.$fileSourceTags + ' + span.select2 .select2-search__field', function(e) {
+                            self.addNewTag(e, this.value, $sourceTags);
                         });
 
                         // Disable upload media button
@@ -240,7 +240,7 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                         // Set correct categories and tags for file
                         formData.append('categories', $categories.val());
                         formData.append('tags', $tags.val());
-                        formData.append('context_tags', $sourceTags.val());
+                        formData.append('source_tags', $sourceTags.val());
 
                         // Disable input fields and buttons while file is being uploaded
                         $categories.prop('disabled', true);
@@ -1628,7 +1628,7 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
         /**
          * Add source specific tag.
          *
-         * @param $contextTags
+         * @param $sourceTags
          */
         addNewTag: function($body, $sourceTags) {
             var self = this;

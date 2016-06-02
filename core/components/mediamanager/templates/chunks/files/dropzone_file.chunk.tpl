@@ -15,9 +15,9 @@
                 <div class="tags">
                     <select name="t[]" class="form-control" multiple="multiple" data-placeholder="[[%mediamanager.global.tags]]" data-file-tags></select>
                 </div>
-                <!--<div class="source-tags">
+                <div class="source-tags">
                     <select name="ct[]" class="form-control" multiple="multiple" data-placeholder="[[%mediamanager.files.source_tags]]" data-file-source-tags></select>
-                </div>-->
+                </div>
                 <button type="button" class="btn btn-primary btn-copy">[[%mediamanager.files.copy_categories_and_tags]]</button>
             </div>
             <div class="col-sm-2">

@@ -110,16 +110,6 @@ class MediaManagerSourcesHelper
     }
 
     /**
-     * Get default context.
-     *
-     * @return int
-     */
-    public function getDefaultContext()
-    {
-        return $this->defaultSource;
-    }
-
-    /**
      * Get default media source.
      *
      * @return int
@@ -155,12 +145,12 @@ class MediaManagerSourcesHelper
      */
     public function getList()
     {
-        $q = $this->mediaManager->modx->newQuery('MediamanagerContexts');
+        $q = $this->mediaManager->modx->newQuery('MediamanagerSources');
         $q->where(array(
               'is_deleted' => 0
           ));
 
-        return $this->mediaManager->modx->getIterator('MediamanagerContexts', $q);
+        return $this->mediaManager->modx->getIterator('MediamanagerSources', $q);
     }
 
     /**

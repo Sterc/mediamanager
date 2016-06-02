@@ -21,7 +21,7 @@ class MediaManagerPhpThumbProcessor extends modProcessor {
             'source' => 1,
         ));
         $this->modx->getService('fileHandler','modFileHandler','',array(
-            'context' => $this->getProperty('wctx')
+            'source' => $this->getProperty('wctx')
         ));
         error_reporting(E_ALL);
         return true;

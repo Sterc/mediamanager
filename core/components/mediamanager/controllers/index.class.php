@@ -10,10 +10,15 @@ abstract class MediaManagerManagerController extends modExtraManagerController
     {
         $this->mediaManager = new MediaManager($this->modx);
 
-        $mediaSource = $this->mediaManager->modx->getObject('modMediaSource', $this->mediaManager->modx->getOption('mediamanager.media_source'));
-        $mediaSource = json_decode(json_encode($mediaSource->getProperties()));
+        $mediaSource = $this->mediaManager->sources->getSource($this->mediaManager->sources->getCurrentSource());
+        if (!$mediaSource) {
+            return false;
+        }
 
-        $categoriesAndTags = $this->mediaManager->getAllCategoriesAndTags();
+        $acceptedFiles = '';
+        if (!empty($mediaSource['allowedFileTypes'])) {
+            $acceptedFiles = '.' . str_replace(',', ',.', $mediaSource['allowedFileTypes']);
+        }
 
         /**
          * Add the CSS.
@@ -44,17 +49,14 @@ abstract class MediaManagerManagerController extends modExtraManagerController
                 dropzone : {
                     maxFileSize       : ' . MediaManagerFilesHelper::MAX_FILE_SIZE . ',
                     maxFileSizeImages : ' . MediaManagerFilesHelper::MAX_FILE_SIZE_IMAGES . ',
-                    acceptedFiles     : ".' . str_replace(',', ',.', $mediaSource->allowedFileTypes->value) . '"
+                    acceptedFiles     : "' . $acceptedFiles . '"
                 },
                 message : {
                     maxFileSize    : "' . $this->modx->lexicon('mediamanager.files.error.filetoobig') . '",
                     minCategory    : "' . $this->modx->lexicon('mediamanager.categories.minimum_categories_message') . '",
                     replaceButton  : "' . $this->modx->lexicon('mediamanager.files.archive_and_replace') . '",
                     replaceConfirm : "' . $this->modx->lexicon('mediamanager.files.archive_and_replace_select_confirm') . '"
-                },
-                categories  : ' . json_encode($categoriesAndTags['categories']) . ',
-                tags        : ' . json_encode($categoriesAndTags['tags']) . ',
-                contextTags : ' . json_encode($categoriesAndTags['contextTags']) . '
+                }
             }
 
             Ext.onReady(function() {
@@ -64,16 +66,14 @@ abstract class MediaManagerManagerController extends modExtraManagerController
 
         if(isset($_REQUEST['tv_frame']) && $_REQUEST['tv_frame'] == '1') {
             $this->addHtml('<style type="text/css">
-                #modx-header,
-                #modx-leftbar,
-                #modx-leftbar-tabs-xsplit,
-                #modx-leftbar-tabs-xcollapsed {
-                    display: none !important;
+                #modx-leftbar-tabs-xcollapsed,
+                #modx-header {
+                    display: none;
                 }
                 #modx-content {
                     top: 0;
                 }
-                .mediamanager-browser .view-mode-grid .file:hover .file-options .btn-success {
+                .file-preview:hover .tv-tiny-use {
                     display: block;
                 }
             </style>');
