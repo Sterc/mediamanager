@@ -157,4 +157,18 @@ class MediaManager
 
         return $children;
     }
+
+    /**
+     * Get all categories, tags and source tags.
+     *
+     * @return array
+     */
+    public function getAllCategoriesAndTags()
+    {
+        return [
+            'categories'  => $this->categories->getAllCategories(),
+            'tags'        => $this->tags->getAllTags(),
+            'sourceTags' => $this->tags->getAllTags(true)
+        ];
+    }
 }

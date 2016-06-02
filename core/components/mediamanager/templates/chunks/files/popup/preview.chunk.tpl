@@ -33,6 +33,10 @@
             </colgroup>
             <tbody>
                 <tr>
+                    <td>[[%mediamanager.files.file_id]]</td>
+                    <td>[[+file.id]]</td>
+                </tr>
+                <tr>
                     <td>[[%mediamanager.files.file_name]]</td>
                     <td>[[+file.name]]</td>
                 </tr>

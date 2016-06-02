@@ -270,11 +270,21 @@ class MediaManagerCategoriesHelper
         return $this->mediaManager->modx->getCollection('MediamanagerCategories', $q);
     }
 
+    public function getMediaSources($includeAll = false, $includeMain = false)
+    {
+        $q = $this->mediaManager->modx->newQuery('MediamanagerSources');
+        $q->where(['is_all' => (int)$includeAll]);
+        $q->where(['is_main' => (int)$includeMain]);
+        $q->sortby('name', 'ASC');
+
+        return $this->mediaManager->modx->getCollection('MediamanagerSources', $q);
+    }
+
     public function getMediaSourcesCheckboxes()
     {
         $checkboxes = '';
 
-        $mediaSources = $this->mediaManager->sources->getList();
+        $mediaSources = $this->getMediaSources();
         foreach ($mediaSources as $mediaSource) {
             $checkboxes .= $this->mediaManager->getChunk('categories/checkbox', $mediaSource);
         }
@@ -361,6 +371,26 @@ class MediaManagerCategoriesHelper
         $categories = $this->mediaManager->modx->getIterator('MediamanagerCategories', [
             'name:LIKE' => '%' . $search . '%'
         ]);
+
+        $result = array();
+        foreach ($categories as $category) {
+            $result[] = array(
+                'id' => $category->get('id'),
+                'text' => $category->get('name')
+            );
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get all categories.
+     *
+     * @return array
+     */
+    public function getAllCategories()
+    {
+        $categories = $this->mediaManager->modx->getIterator('MediamanagerCategories');
 
         $result = array();
         foreach ($categories as $category) {

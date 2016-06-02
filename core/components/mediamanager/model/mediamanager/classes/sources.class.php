@@ -70,7 +70,8 @@ class MediaManagerSourcesHelper
 
         if ($sourceId) {
             $source = $this->mediaManager->modx->getObject('modMediaSource', [
-                'id' => $sourceId
+                'id' => $sourceId,
+                'is_deleted' => 0
             ]);
 
             if ($source) {
@@ -109,6 +110,16 @@ class MediaManagerSourcesHelper
     }
 
     /**
+     * Get default context.
+     *
+     * @return int
+     */
+    public function getDefaultContext()
+    {
+        return $this->defaultSource;
+    }
+
+    /**
      * Get default media source.
      *
      * @return int
@@ -140,34 +151,16 @@ class MediaManagerSourcesHelper
 
     /**
      * Get media sources.
-     *
-     * @param bool $includeAll
-     * @param bool $includeMain
-     *
      * @return array
      */
-    public function getList($includeAll = true, $includeMain = true)
+    public function getList()
     {
-        $mediaSources = $this->mediaManager->modx->getIterator('modMediaSource');
+        $q = $this->mediaManager->modx->newQuery('MediamanagerContexts');
+        $q->where(array(
+              'is_deleted' => 0
+          ));
 
-        $sources = [];
-        foreach ($mediaSources as $source) {
-            $properties = $source->get('properties');
-            if ($properties['mediamanagerSource']['value']) {
-                $rank = (float) ($properties['rank']['value'] ?: 1) . '.' . $source->get('id');
-                $sources[$rank] = [
-                    'id'               => $source->get('id'),
-                    'name'             => $source->get('name'),
-                    'basePath'         => $properties['basePath']['value'] ?: '',
-                    'baseUrl'          => $properties['baseUrl']['value'] ?: '',
-                    'allowedFileTypes' => $properties['allowedFileTypes']['value'] ?: '',
-                ];
-            }
-        }
-
-        ksort($sources);
-
-        return $sources;
+        return $this->mediaManager->modx->getIterator('MediamanagerContexts', $q);
     }
 
     /**
@@ -181,6 +174,8 @@ class MediaManagerSourcesHelper
         $sources = $this->getList();
 
         foreach ($sources as $source) {
+            $source = $source->toArray();
+
             if (
                 !$this->mediaManager->permissions->isAdmin()
                 && $source['id'] !== $this->getUserSource()

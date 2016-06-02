@@ -39,6 +39,23 @@ $xpdo_meta_map['MediamanagerCategories']= array (
       'null' => false,
       'default' => 0,
     ),
+    'icon' => 
+    array (
+      'dbtype' => 'varchar',
+      'precision' => '3',
+      'phptype' => 'string',
+      'null' => false,
+      'default' => '',
+    ),
+    'is_deleted' => 
+    array (
+      'dbtype' => 'tinyint',
+      'precision' => '1',
+      'attributes' => 'unsigned',
+      'phptype' => 'boolean',
+      'null' => false,
+      'default' => 0,
+    ),
   ),
   'composites' => 
   array (

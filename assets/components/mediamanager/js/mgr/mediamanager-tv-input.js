@@ -24,7 +24,6 @@ $(document).ready(function() {
             }
         });
 
-        $(modalTrigger).on('click',function(e){
             e.preventDefault();
             var tvId = $(this).parent().attr('data-tvid');
             $(modalWrapper).dialog('open');

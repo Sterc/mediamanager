@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <model package="mediamanager" baseClass="xPDOObject" platform="mysql" defaultEngine="InnoDB" phpdoc-package="mediamanager">
+    <object class="MediamanagerSources" table="mediamanager_sources" extends="xPDOSimpleObject">
+        <field key="name" dbtype="varchar" precision="50" phptype="string" null="false" default="" />
+        <field key="is_deleted" dbtype="tinyint" precision="1" attributes="unsigned" phptype="boolean" null="false" default="0" index="index" />
+        <field key="is_all" dbtype="tinyint" precision="1" attributes="unsigned" phptype="boolean" null="false" default="0" index="index" />
+        <field key="is_main" dbtype="tinyint" precision="1" attributes="unsigned" phptype="boolean" null="false" default="0" index="index" />
+
+        <composite alias="CategoriesExcludes" class="MediamanagerCategoriesExcludes" local="id" foreign="mediamanager_sources_id" cardinality="many" owner="local" />
+    </object>
+
     <object class="MediamanagerCategories" table="mediamanager_categories" extends="xPDOSimpleObject">
         <field key="parent_id" dbtype="int" precision="10" attributes="unsigned" phptype="integer" null="false" default="0" index="index" />
         <field key="name" dbtype="varchar" precision="50" phptype="string" null="false" default="" />

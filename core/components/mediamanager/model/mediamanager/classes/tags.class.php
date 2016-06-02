@@ -164,4 +164,33 @@ class MediaManagerTagsHelper
 
         return $result;
     }
+
+    /**
+     * Get all tags.
+     *
+     * @param bool $isSourceTag
+     * @return array
+     */
+    public function getAllTags($isSourceTag = false)
+    {
+        $sourceId = 0;
+        if ($isSourceTag) {
+            $sourceId = $this->mediaManager->sources->getUserSource();
+        }
+
+        $tags = $this->mediaManager->modx->getIterator('MediamanagerTags', [
+            'is_deleted' => 0,
+            'mediamanager_sources_id' => $sourceId
+        ]);
+
+        $result = array();
+        foreach ($tags as $tag) {
+            $result[] = array(
+                'id' => $tag->get('id'),
+                'text' => $tag->get('name')
+            );
+        }
+
+        return $result;
+    }
 }

@@ -8,6 +8,7 @@
         [[+name]]
     </div>
     <div class="file-options">
+        <!--<button type="button" class="btn btn-success" data-file-use-button>[[%mediamanager.global.use]]</button>-->
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="div[data-file-popup]" data-file-popup-button>[[%mediamanager.global.preview]]</button>
     </div>
 
