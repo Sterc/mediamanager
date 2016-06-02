@@ -1625,6 +1625,11 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
             });
         },
 
+        /**
+         * Add source specific tag.
+         *
+         * @param $contextTags
+         */
         addNewTag: function($body, $sourceTags) {
             var self = this;
 
