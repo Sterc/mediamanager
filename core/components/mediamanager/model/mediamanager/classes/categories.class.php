@@ -160,8 +160,6 @@ class MediaManagerCategoriesHelper
                 $category->save();
 
                 ++$i;
-            } else {
-                var_dump('asdasd');
             }
         }
 
