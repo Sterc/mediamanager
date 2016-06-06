@@ -70,8 +70,7 @@ class MediaManagerSourcesHelper
 
         if ($sourceId) {
             $source = $this->mediaManager->modx->getObject('modMediaSource', [
-                'id' => $sourceId,
-                'is_deleted' => 0
+                'id' => $sourceId
             ]);
 
             if ($source) {
@@ -141,16 +140,34 @@ class MediaManagerSourcesHelper
 
     /**
      * Get media sources.
+     *
+     * @param bool $includeAll
+     * @param bool $includeMain
+     *
      * @return array
      */
-    public function getList()
+    public function getList($includeAll = true, $includeMain = true)
     {
-        $q = $this->mediaManager->modx->newQuery('MediamanagerSources');
-        $q->where(array(
-              'is_deleted' => 0
-          ));
+        $mediaSources = $this->mediaManager->modx->getIterator('modMediaSource');
 
-        return $this->mediaManager->modx->getIterator('MediamanagerSources', $q);
+        $sources = [];
+        foreach ($mediaSources as $source) {
+            $properties = $source->get('properties');
+            if ($properties['mediamanagerSource']['value']) {
+                $rank = (float) ($properties['rank']['value'] ?: 1) . '.' . $source->get('id');
+                $sources[$rank] = [
+                    'id'               => $source->get('id'),
+                    'name'             => $source->get('name'),
+                    'basePath'         => $properties['basePath']['value'] ?: '',
+                    'baseUrl'          => $properties['baseUrl']['value'] ?: '',
+                    'allowedFileTypes' => $properties['allowedFileTypes']['value'] ?: '',
+                ];
+            }
+        }
+
+        ksort($sources);
+
+        return $sources;
     }
 
     /**
@@ -164,8 +181,6 @@ class MediaManagerSourcesHelper
         $sources = $this->getList();
 
         foreach ($sources as $source) {
-            $source = $source->toArray();
-
             if (
                 !$this->mediaManager->permissions->isAdmin()
                 && $source['id'] !== $this->getUserSource()

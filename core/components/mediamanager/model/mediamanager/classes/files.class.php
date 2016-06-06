@@ -1766,8 +1766,12 @@ class MediaManagerFilesHelper
      */
     public function addTag($fileId, $tagId, $name = false)
     {
+        // Create new tag
         if ($tagId === 0 && $name !== false) {
-            $tag = $this->mediaManager->modx->getObject('MediamanagerTags', array('name:=' => $name));
+            $tag = $this->mediaManager->modx->getObject('MediamanagerTags', [
+                'name:='                   => $name,
+                'media_sources_id' => $this->mediaManager->sources->getUserSource()
+            ]);
             if (!$tag) {
                 $newTag = $this->mediaManager->modx->newObject('MediamanagerTags');
                 $newTag->set('media_sources_id', $this->mediaManager->sources->getUserSource());
@@ -1784,6 +1788,7 @@ class MediaManagerFilesHelper
             ];
         }
 
+        // Add tag to file
         $tag = $this->mediaManager->modx->newObject('MediamanagerFilesTags');
         $tag->set('mediamanager_files_id', $fileId);
         $tag->set('mediamanager_tags_id', $tagId);
@@ -1791,7 +1796,7 @@ class MediaManagerFilesHelper
 
         return [
             'status' => self::STATUS_SUCCESS,
-            'html'   => '<option value="' . $tagId . '">' . $newTag->get('name') . '</option>',
+            'html'   => '<option value="' . $tagId . '">' . $name . '</option>',
             'tagId'  => $tagId
         ];
     }
@@ -1924,7 +1929,7 @@ class MediaManagerFilesHelper
 
         // Version paths
         $this->versionUrl           = $uploadDirectory . self::VERSION_DIRECTORY . DIRECTORY_SEPARATOR;
-        $this->versionDirectory     = $this->uploadDirectory . self::UPLOAD_DIRECTORY . DIRECTORY_SEPARATOR . self::VERSION_DIRECTORY . DIRECTORY_SEPARATOR;
+        $this->versionDirectory     = $this->uploadDirectory . self::VERSION_DIRECTORY . DIRECTORY_SEPARATOR;
 
         if (!file_exists($this->uploadDirectory)) {
             if (!$this->createDirectory($this->uploadDirectory)) return false;

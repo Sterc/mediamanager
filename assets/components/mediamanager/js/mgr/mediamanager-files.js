@@ -83,7 +83,7 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
 
         $filterCategoriesOptions : null,
         $filterTagsOptions       : null,
-        $filesSourceTags        : [],
+        $filterSourceTagsOptions : null,
 
         $categoriesSelectOptions : null,
 
@@ -115,7 +115,7 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
 
         $filesCategories         : [],
         $filesTags               : [],
-        $filesSourceTags        : [],
+        $filesSourceTags         : [],
 
         $filesCropper            : null,
 
@@ -130,14 +130,10 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
         init: function() {
             var self = this;
 
-            self.$connectorUrl = $(self.$dropzoneForm).attr('action');
-            self.$httpModAuth = $('input[name="HTTP_MODAUTH"]', self.$dropzoneForm).val();
-
-            self.$filesCropper = MediaManagerFilesCropper;
-            self.$options      = mediaManagerOptions;
-
-            self.setSource();
-
+            self.$connectorUrl   = $(self.$dropzoneForm).attr('action');
+            self.$httpModAuth    = $('input[name="HTTP_MODAUTH"]', self.$dropzoneForm).val();
+            self.$filesCropper   = MediaManagerFilesCropper;
+            self.$options        = mediaManagerOptions;
             self.metaFieldsIndex = 0;
 
             self.setSource();
@@ -429,58 +425,17 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
             var self = this;
 
             self.$filterCategoriesOptions = {
-                ajax: {
-                    url: self.$connectorUrl,
-                    dataType: 'json',
-                    method: 'post',
-                    delay: 250,
-                    data: function (params) {
-                        return {
-                            action       : 'mgr/categories',
-                            method       : 'getCategoriesByName',
-                            HTTP_MODAUTH : self.$httpModAuth,
-                            search       : params.term
-                        };
-                    },
-                    processResults: function (data, params) {
-                        return {
-                            results: data.results
-                        };
-                    },
-                    cache: true
-                },
-                minimumInputLength: 1,
+                data: self.$options.categories,
                 theme: 'default select2-container--categories'
             };
 
             self.$filterTagsOptions = {
-                ajax: {
-                    url: self.$connectorUrl,
-                    dataType: 'json',
-                    method: 'post',
-                    delay: 250,
-                    data: function (params) {
-                        return {
-                            action       : 'mgr/tags',
-                            method       : 'getTagsByName',
-                            HTTP_MODAUTH : self.$httpModAuth,
-                            search       : params.term,
-                            isSourceTag  : 0
-                        };
-                    },
-                    processResults: function (data, params) {
-                        return {
-                            results: data.results
-                        };
-                    },
-                    cache: true
-                },
-                minimumInputLength: 1,
+                data: self.$options.tags,
                 theme: 'default select2-container--tags'
             };
 
-            self.$filterSourceTagsOptions = {
-                data: self.$options.sourceTags,
+            self.$filterContextTagsOptions = {
+                data: self.$options.contextTags,
                 theme: 'default select2-container--tags'
             };
 
@@ -1479,8 +1434,7 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
 
                         var $categories  = $(self.$fileCategories, $body).select2(self.$filterCategoriesOptions);
                         var $tags        = $(self.$fileTags, $body).select2(self.$filterTagsOptions);
-
-                        var $sourceTags = $(self.$fileSourceTags, $body).select2($filterSourceTagsOptions);
+                        var $sourceTags  = $(self.$fileSourceTags, $body).select2(self.$filterSourceTagsOptions);
 
                         // Add category to file
                         $categories.on('select2:select', function(e) {
@@ -1628,39 +1582,38 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
         /**
          * Add source specific tag.
          *
+         * @param e
+         * @param value
          * @param $sourceTags
          */
-        addNewTag: function($body, $sourceTags) {
+        addNewTag: function(e, value, $sourceTags) {
             var self = this;
 
-            // Add source specific tag
-            $(self.$fileSourceTags + ' + span.select2 .select2-search__field', $body).on('keyup', function(e) {
-                if (e.keyCode === 13) {
-                    $.ajax({
-                        type: 'POST',
-                        url: self.$connectorUrl,
-                        data: {
-                            action       : 'mgr/files',
-                            method       : 'addTag',
-                            HTTP_MODAUTH : self.$httpModAuth,
-                            fileId       : self.$currentFile,
-                            tagId        : 0,
-                            name         : this.value
-                        },
-                        success: function(data) {
-                            if (data.results.status === 'success') {
-                                var html   = $sourceTags.html(),
-                                    values = $sourceTags.val();
+            if (e.keyCode === 13) {
+                $.ajax({
+                    type: 'POST',
+                    url: self.$connectorUrl,
+                    data: {
+                        action       : 'mgr/files',
+                        method       : 'addTag',
+                        HTTP_MODAUTH : self.$httpModAuth,
+                        fileId       : self.$currentFile,
+                        tagId        : 0,
+                        name         : value
+                    },
+                    success: function(data) {
+                        if (data.results.status === 'success') {
+                            var html   = $sourceTags.html(),
+                                values = $sourceTags.val() || [];
 
-                                html += data.results.html;
-                                values.push(data.results.tagId);
+                            html += data.results.html;
+                            values.push(data.results.tagId);
 
-                                $sourceTags.html(html).val(values).trigger('change');
-                            }
+                            $sourceTags.html(html).val(values).trigger('change');
                         }
-                    });
-                }
-            });
+                    }
+                });
+            }
         },
 
          /**
@@ -1910,7 +1863,5 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
     $(document).on({
         click : $.proxy(MediaManagerFiles, 'removeMetaFields')
     }, MediaManagerFiles.$removeMetaFieldsButton);
-
-
 
 }(jQuery);

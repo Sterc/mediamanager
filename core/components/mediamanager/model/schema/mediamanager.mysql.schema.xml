@@ -6,7 +6,7 @@
         <field key="is_all" dbtype="tinyint" precision="1" attributes="unsigned" phptype="boolean" null="false" default="0" index="index" />
         <field key="is_main" dbtype="tinyint" precision="1" attributes="unsigned" phptype="boolean" null="false" default="0" index="index" />
 
-        <composite alias="CategoriesExcludes" class="MediamanagerCategoriesExcludes" local="id" foreign="mediamanager_sources_id" cardinality="many" owner="local" />
+        <composite alias="CategoriesExcludes" class="MediamanagerCategoriesExcludes" local="id" foreign="media_sources_id" cardinality="many" owner="local" />
     </object>
 
     <object class="MediamanagerCategories" table="mediamanager_categories" extends="xPDOSimpleObject">

@@ -149,6 +149,7 @@ $_lang['mediamanager.files.bulk.download_message'] = 'Press the `Download` butto
 $_lang['mediamanager.files.version'] = 'Version';
 $_lang['mediamanager.files.action'] = 'Action';
 $_lang['mediamanager.files.type'] = 'Type';
+$_lang['mediamanager.files.file_id'] = 'ID';
 $_lang['mediamanager.files.file_dimension'] = 'Dimensions';
 $_lang['mediamanager.files.file_size_available'] = 'Available sizes';
 $_lang['mediamanager.files.file_upload_date'] = 'Upload date';
@@ -162,6 +163,10 @@ $_lang['mediamanager.files.save_image'] = 'Save image';
 $_lang['mediamanager.files.copy_categories_and_tags'] = 'Use categories and tags above for all files';
 $_lang['mediamanager.files.source_tags'] = 'Source tags';
 
-$_lang['mm_input_image'] = 'Media Manager Image'; // custom tv input type
-
+/* Permissions */
 $_lang['mediamanager.permissions.admin'] = 'Media Manager administrator permission';
+
+/* Custom input/output filter */
+$_lang['mm_input_image'] = 'Media Manager Image';
+$_lang['mm_output_image'] = 'Media Manager Image';
+$_lang['mm_input_file'] = 'Media Manager File';

@@ -11,7 +11,7 @@
         // Do something when the input is being loaded
         input.init = function() {
             if(!$('#cb-modal-wrapper').length) {
-                var modal = '<div id="cb-modal-wrapper"><iframe class="mediamanager-iframe" id="cb_mediamanager" src="?a=home&namespace=mediamanager&tv_frame=1"></iframe></div>';
+                var modal = '<div id="cb-modal-wrapper"><iframe class="mediamanager-iframe" id="cb_mediamanager" src="/manager/?a=home&namespace=mediamanager&tv_frame=1"></iframe></div>';
                 $('body').append(modal);
 
                 var modalWidth = $(window).width() * 0.94;
@@ -69,8 +69,7 @@
             $(modalWrapper).dialog('open');
 
             setTimeout(function(){
-                // $(modalWrapper+' iframe').contents().find('.mediamanager-browser .view-mode-grid .file .file-options .btn-success').on('click', function(event) {
-                $(modalWrapper+' iframe').contents().find('.tv-tiny-use').on('click', function(event) {
+                $(modalWrapper+' iframe').contents().find('.mediamanager-browser .view-mode-grid .file .file-options .btn-success').on('click', function(event) {
                     dom.find('.file_id').val($(this).parents('[data-id]').attr('data-id'));
                     dom.find('.file_name').val($(this).parents('[data-id]').find('.file-name').text());
                     dom.find('.contentblocks-field-file-preview').html($.trim($(this).parents('[data-id]').find('.file-name').text()));

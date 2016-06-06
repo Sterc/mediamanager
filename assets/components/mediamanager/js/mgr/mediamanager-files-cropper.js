@@ -27,22 +27,15 @@ var MediaManagerFilesCropper = {
 
         self.$image             = element;
         self.$mediaManagerFiles = MediaManagerFiles;
-        self.$dataX             = $(self.$dataX);
-        self.$dataY             = $(self.$dataY);
-        self.$dataWidth         = $(self.$dataWidth);
-        self.$dataHeight        = $(self.$dataHeight);
-        self.$dataRotate        = $(self.$dataRotate);
-        self.$dataScaleX        = $(self.$dataScaleX);
-        self.$dataScaleY        = $(self.$dataScaleY);
 
         self.$options.crop = function(e) {
-            self.$dataX.val(Math.round(e.x));
-            self.$dataY.val(Math.round(e.y));
-            self.$dataHeight.val(Math.round(e.height));
-            self.$dataWidth.val(Math.round(e.width));
-            self.$dataRotate.val(e.rotate);
-            self.$dataScaleX.val(e.scaleX);
-            self.$dataScaleY.val(e.scaleY);
+            $(self.$dataX).val(Math.round(e.x));
+            $(self.$dataY).val(Math.round(e.y));
+            $(self.$dataHeight).val(Math.round(e.height));
+            $(self.$dataWidth).val(Math.round(e.width));
+            $(self.$dataRotate).val(e.rotate);
+            $(self.$dataScaleX).val(e.scaleX);
+            $(self.$dataScaleY).val(e.scaleY);
         };
 
         $(self.$tooltip).tooltip();
@@ -111,8 +104,14 @@ var MediaManagerFilesCropper = {
                         }).success(function(data) {
                             if (data.results.status === 'success') {
                                 self.removeEventListeners();
+
+                                if (data.results.id) {
+                                    self.$mediaManagerFiles.$currentFile = data.results.id;
+                                }
+
                                 self.$mediaManagerFiles.filePopup();
                                 self.$mediaManagerFiles.getList();
+
                                 return false;
                             }
 
@@ -145,6 +144,30 @@ var MediaManagerFilesCropper = {
         $(self.$mediaManagerFiles.$filePopupFooter).on('click', '[data-method]', function(event) {
             self.buttons(event);
         });
+
+        $(self.$mediaManagerFiles.$filePopupFooter).on('click', 'button[data-file-action-button]', function(event) {
+            MediaManagerFilesCropper.removeEventListeners();
+        });
+
+        $(document).on('keyup', self.$dataX, function(e) {
+            self.setData(e, 'x');
+        });
+
+        $(document).on('keyup', self.$dataY, function(e) {
+            self.setData(e, 'y');
+        });
+
+        $(document).on('keyup', self.$dataWidth, function(e) {
+            self.setData(e, 'width');
+        });
+
+        $(document).on('keyup', self.$dataHeight, function(e) {
+            self.setData(e, 'height');
+        });
+
+        $(document).on('keyup', self.$dataRotate, function(e) {
+            self.setData(e, 'rotate');
+        });
     },
 
     removeEventListeners: function() {
@@ -153,6 +176,19 @@ var MediaManagerFilesCropper = {
         $(self.$buttons).off('click');
         $(self.$mediaManagerFiles.$filePopupFooter).off('click');
         self.$image.cropper('destroy');
+    },
+
+    setData : function(e, option) {
+        var self    = this,
+            options = {};
+
+        if (e.keyCode === 37 || e.keyCode === 39) {
+            return false;
+        }
+
+        options[option] = parseInt(e.target.value);
+
+        self.$image.cropper('setData', options);
     }
 
 }

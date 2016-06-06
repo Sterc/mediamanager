@@ -180,7 +180,7 @@ class MediaManagerTagsHelper
 
         $tags = $this->mediaManager->modx->getIterator('MediamanagerTags', [
             'is_deleted' => 0,
-            'mediamanager_sources_id' => $sourceId
+            'media_sources_id' => $sourceId
         ]);
 
         $result = array();

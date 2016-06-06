@@ -159,8 +159,18 @@
 .mediamanager-browser .view-mode-grid .file .file-options {
     position: absolute;
     top: 10px;
-    right: 26px;
+    width: 91%;
+    padding: 0 10px;
     display: none;
+}
+
+.mediamanager-browser .view-mode-grid .file .file-options .btn-primary {
+    float: right;
+}
+
+.mediamanager-browser .view-mode-grid .file .file-options .btn-success {
+    display: none;
+    float: left;
 }
 
 .mediamanager-browser .view-mode-grid .file:hover .file-options {

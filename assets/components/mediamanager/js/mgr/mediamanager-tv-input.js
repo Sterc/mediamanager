@@ -1,52 +1,78 @@
 $(document).ready(function() {
 
-    var selectedValue = '';
-    var modal = '<div id="modal-wrapper"><iframe class="mediamanager-iframe" id="mediamanager" src="?a=home&namespace=mediamanager&tv_frame=1"></iframe></div>';
-    $('body').append(modal);
+    var url          = '/manager/?a=home&namespace=mediamanager&tv_frame=1',
+        modalWidth   = $(window).width() * 0.94,
+        modalHeight  = $(window).height() * 0.94,
+        modalWrapper = '#modal-wrapper',
+        modalIframe  = modalWrapper + ' iframe',
+        modalTrigger = '.mediamanager-input',
+        useButton    = '.mediamanager-browser .view-mode-grid .file .file-options .btn-success',
+        tvId         = null;
 
-    var modalWidth = $(window).width() * 0.94;
-    var modalHeight = $(window).height() * 0.94;
-    var modalWrapper = '#modal-wrapper';
-    var modalTrigger = '.mediamanager-input';
+    $('body').append('<div id="modal-wrapper"><iframe class="mediamanager-iframe" id="mediamanager" src="' + url + '"></iframe></div>');
 
-    if(modalWrapper && $(modalWrapper).length > 0) {
-
+    if ($(modalWrapper).length > 0) {
         $(modalWrapper).dialog({
-            title: 'Media Manager',
-            autoOpen: false,
-            width: modalWidth,
-            height: modalHeight,
-            modal: true,
-            resizable: false,
-            close: function(event,ui) {
-                // reload the iframe contents
-                $(modalWrapper+' > iframe').attr('src',$(modalWrapper+' > iframe').attr('src'));
+            title     : 'Media Manager',
+            autoOpen  : false,
+            width     : modalWidth,
+            height    : modalHeight,
+            modal     : true,
+            resizable : false,
+            close     : function(event, ui) {
+                // Reload the iframe contents
+                $(modalWrapper + ' iframe').attr('src', url);
+                tvId = null;
             }
         });
 
-            e.preventDefault();
-            var tvId = $(this).parent().attr('data-tvid');
-            $(modalWrapper).dialog('open');
+        $(modalIframe).on('load', function() {
+            if (tvId === null) {
+                return false;
+            }
 
-            // using settimeout for correctly setting selected value when first initializing modal :S
-            setTimeout(function(){
-                $(modalWrapper+' iframe').contents().find('.tv-tiny-use').on('click', function(event) {
-                    var selectedValue = $(this).parent('.file-preview').find('img').attr('data-path');
-                    var phpThumbBaseUrl = $('#tv-image-preview-'+tvId).attr('data-base-phpthumb-url');
-                    $('#tv-image-preview-'+tvId).find('img').attr('src',phpThumbBaseUrl+selectedValue);
-                    $('input#tv'+tvId).attr('value',selectedValue);
-                    $(modalWrapper).dialog('close');
-                });
-            }, 200);
-
+            setTimeout(function() {
+                selectFile($(modalIframe).contents(), tvId);
+            }, 1000);
         });
 
-        // $('.mce-combobox button').on('click',function(){
-        //     console.log('osidf');
-        //     e.preventDefault();
-        //     return false;
-        // });
+        $(document).on('click', modalTrigger, function(e) {
+            tvId = $(this).parent().attr('data-tvid');
 
+            e.preventDefault();
+
+            setTimeout(function() {
+                selectFile($(modalIframe).contents(), tvId);
+            }, 1000);
+
+            $(modalWrapper).dialog('open');
+        });
+    }
+
+    function selectFile($iframe, tvId) {
+        $iframe.on('click', useButton, function(e) {
+            var $file           = $(this).parents('.file'),
+                filePreview     = $file.find('.file-preview img').data('path'),
+                fileId          = $file.data('id'),
+                $imageContainer = $('#tv-image-preview-' + tvId),
+                $imagePreview   = $imageContainer.find('img');
+
+            e.preventDefault();
+
+            if (!$imagePreview.length) {
+                $imagePreview = $('<img />').appendTo($imageContainer);
+            }
+
+            // If image-preview div does not exist, assume this is mm_file_input type
+            if (!$imageContainer.length) {
+                // for file input types, use the raw value
+                $('input#tv' + tvId).attr('value', filePreview);
+            } else {
+                $imagePreview.css('max-width', 400).css('max-height', 300).attr('src', filePreview);
+                $('input#tv' + tvId).attr('value', fileId);
+            }
+            $(modalWrapper).dialog('close');
+        });
     }
 
 });

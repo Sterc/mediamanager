@@ -58,7 +58,7 @@ $xpdo_meta_map['MediamanagerSources']= array (
                 array (
                     'class' => 'MediamanagerCategoriesExcludes',
                     'local' => 'id',
-                    'foreign' => 'mediamanager_sources_id',
+                    'foreign' => 'media_sources_id',
                     'cardinality' => 'many',
                     'owner' => 'local',
                 ),
