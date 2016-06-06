@@ -165,8 +165,8 @@ class MediaManager
     public function getAllCategoriesAndTags()
     {
         return [
-            'categories'  => $this->categories->getAllCategories(),
-            'tags'        => $this->tags->getAllTags(),
+            'categories' => $this->categories->getAllCategories(),
+            'tags'       => $this->tags->getAllTags(),
             'sourceTags' => $this->tags->getAllTags(true)
         ];
     }
