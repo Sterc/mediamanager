@@ -919,42 +919,42 @@ class MediaManagerFilesHelper
      * @return bool
      */
     public function saveFileVersion($fileId, $file, $action = '', $replacedId = 0) {
-        if(!isset($fileId) || empty($fileId) || $fileId === 0){
+        if (!isset($fileId) || empty($fileId) || $fileId === 0) {
             return false;
         }
 
-        if(!$this->versionDirectory) {
+        if (!$this->versionDirectory) {
             $this->createUploadDirectory();
         }
 
         $version = $this->mediaManager->modx->newObject('MediamanagerFilesVersions');
 
-        $file['file_id']        = $fileId;
-        $file['version_path']   = $this->versionDirectory . $file['file_id'];
+        $file['file_id']      = $fileId;
+        $file['version_path'] = $this->versionDirectory . $file['file_id'];
 
         // Add unique id to file name if needed
         $fileInformation = pathinfo($file['unique_name']);
         $versionFileName = $this->sanitizeFileName($fileInformation['filename']) . '-v' . $file['version'] . '.' . $fileInformation['extension'];
 
-        if(!$file['extension']) {
+        if (!$file['extension']) {
             $file['extension'] = $fileInformation['extension'];
         }
 
-        $file['version_name']   = $versionFileName;
+        $file['version_name'] = $versionFileName;
 
-        if($this->uploadVersionFile($file) === false) {
+        if ($this->uploadVersionFile($file) === false) {
             return false;
         }
 
         $path = $this->versionUrl . $file['file_id'] . DIRECTORY_SEPARATOR . $versionFileName;
 
-        $version->set('mediamanager_files_id',  $fileId);
-        $version->set('version',                $file['version']);
-        $version->set('path',                   $path);
-        $version->set('file_name',              $file['name']);
-        $version->set('file_size',              !empty($file['size']) ? $file['size'] : $file['file_size']);
-        $version->set('created_by',             $this->mediaManager->modx->getUser()->get('id'));
-        $version->set('action',                 $action);
+        $version->set('mediamanager_files_id', $fileId);
+        $version->set('version',               $file['version']);
+        $version->set('path',                  $path);
+        $version->set('file_name',             $file['name']);
+        $version->set('file_size',             !empty($file['size']) ? $file['size'] : $file['file_size']);
+        $version->set('created_by',            $this->mediaManager->modx->getUser()->get('id'));
+        $version->set('action',                $action);
 
         if($replacedId != 0){
             $version->set('replaced_file_id', $replacedId);
@@ -968,9 +968,9 @@ class MediaManagerFilesHelper
             }
         }
 
-        $version->set('file_hash',              !empty($file['hash']) ? $file['hash'] : $file['file_hash']);
+        $version->set('file_hash', !empty($file['hash']) ? $file['hash'] : $file['file_hash']);
 
-        if($version->save()){
+        if ($version->save()) {
             return true;
         }
     }
@@ -982,53 +982,52 @@ class MediaManagerFilesHelper
      *
      * @return array $response
      */
-    public function revertFile($versionId){
+    public function revertFile($versionId)
+    {
         $response = [
             'status'  => self::STATUS_SUCCESS,
             'message' => ''
         ];
 
         $version = $this->mediaManager->modx->getObject('MediamanagerFilesVersions', $versionId);
-        if($version){
-            $file    = $this->mediaManager->modx->getObject('MediamanagerFiles', $version->get('mediamanager_files_id'));
+        if ($version) {
+            $file = $this->mediaManager->modx->getObject('MediamanagerFiles', $version->get('mediamanager_files_id'));
 
-            if(!$file) {
-                $response['status']     = self::STATUS_ERROR;
-                $message                = $this->mediaManager->modx->lexicon('mediamanager.files.error.file_not_found');
-                $response['message']    = $this->alertMessageHtml($message, 'danger');
+            if (!$file) {
+                $response['status']  = self::STATUS_ERROR;
+                $message             = $this->mediaManager->modx->lexicon('mediamanager.files.error.file_not_found');
+                $response['message'] = $this->alertMessageHtml($message, 'danger');
             }
-        }
-        else {
-            $response['status']     = self::STATUS_ERROR;
-            $message                = $this->mediaManager->modx->lexicon('mediamanager.files.error.version_not_found', array('version' => $versionId));
-            $response['message']    = $this->alertMessageHtml($message, 'danger');
+        } else {
+            $response['status']  = self::STATUS_ERROR;
+            $message             = $this->mediaManager->modx->lexicon('mediamanager.files.error.version_not_found', array('version' => $versionId));
+            $response['message'] = $this->alertMessageHtml($message, 'danger');
         }
 
-        if($version && $file) {
-            $file->set('name',               $version->get('file_name'));
-            $file->set('file_size',          $version->get('file_size'));
-            $file->set('file_dimensions',    $version->get('file_dimensions'));
-            $file->set('file_hash',          $version->get('file_hash'));
-            $file->set('version',            $version->get('version'));
-            $file->set('edited_on',          time());
-            $file->set('edited_by',          $this->mediaManager->modx->getUser()->get('id'));
+        if ($version && $file) {
+            $file->set('name',            $version->get('file_name'));
+            $file->set('file_size',       $version->get('file_size'));
+            $file->set('file_dimensions', $version->get('file_dimensions'));
+            $file->set('file_hash',       $version->get('file_hash'));
+            $file->set('version',         $version->get('version'));
+            $file->set('edited_on',       time());
+            $file->set('edited_by',       $this->mediaManager->modx->getUser()->get('id'));
 
             //Get old file and replace current file
             $versionFile = $this->addTrailingSlash(MODX_BASE_PATH) . $this->removeSlashes($version->get('path'));
             $currentFile = $this->addTrailingSlash(MODX_BASE_PATH) . $this->removeSlashes($file->get('path'));
 
             $replacedFile = copy($versionFile, $currentFile);
-            if($replacedFile){
-                if(!$file->save()) {
-                    $response['status']     = self::STATUS_ERROR;
-                    $message                = $this->mediaManager->modx->lexicon('mediamanager.files.error.revert_failed', array('file' => $file->get('name')));
-                    $response['message']    = $this->alertMessageHtml($message, 'danger');
+            if ($replacedFile) {
+                if (!$file->save()) {
+                    $response['status']  = self::STATUS_ERROR;
+                    $message             = $this->mediaManager->modx->lexicon('mediamanager.files.error.revert_failed', array('file' => $file->get('name')));
+                    $response['message'] = $this->alertMessageHtml($message, 'danger');
                 }
-            }
-            else {
-                $response['status']     = self::STATUS_ERROR;
-                $message                = $this->mediaManager->modx->lexicon('mediamanager.files.error.revertfile_failed', array('file' => $file->get('name')));
-                $response['message']    = $this->alertMessageHtml($message, 'danger');
+            } else {
+                $response['status']  = self::STATUS_ERROR;
+                $message             = $this->mediaManager->modx->lexicon('mediamanager.files.error.revertfile_failed', array('file' => $file->get('name')));
+                $response['message'] = $this->alertMessageHtml($message, 'danger');
             }
         }
 
@@ -1042,14 +1041,15 @@ class MediaManagerFilesHelper
      *
      * @return int $versionNumber
      */
-    private function createVersionNumber($fileId = 0) {
+    private function createVersionNumber($fileId = 0)
+    {
         $versionNumber = 1;
-        if($fileId != 0){
+        if ($fileId != 0) {
             $sql = "SELECT MAX(version) as highestVersionNumber FROM " . $this->mediaManager->modx->getTableName('MediamanagerFilesVersions') . " WHERE mediamanager_files_id = '$fileId'";
             $query = $this->mediaManager->modx->query($sql);
-            if($query){
+            if ($query) {
                 while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
-                    if($row['highestVersionNumber']){
+                    if ($row['highestVersionNumber']) {
                         $versionNumber = ++$row['highestVersionNumber'];
                     }
                 }
@@ -1265,13 +1265,13 @@ class MediaManagerFilesHelper
         }
 
         //save File version
-        $data                   = $newFile->toArray();
-        $version                = $this->createVersionNumber($newFileId);
-        $data['version']        = $version;
-        $fileInformation        = pathinfo($data['path']);
-        $data['upload_dir']     = $this->addTrailingSlash(MODX_BASE_PATH) . ltrim($this->addTrailingSlash($fileInformation['dirname']), '/');
-        $data['unique_name']    = $fileInformation['filename'] . '.' . $fileInformation['extension'];
-        $data['size']           = $data['file_size'];
+        $data                = $newFile->toArray();
+        $version             = $this->createVersionNumber($newFileId);
+        $data['version']     = $version;
+        $fileInformation     = pathinfo($data['path']);
+        $data['upload_dir']  = $this->addTrailingSlash(MODX_BASE_PATH) . ltrim($this->addTrailingSlash($fileInformation['dirname']), '/');
+        $data['unique_name'] = $fileInformation['filename'] . '.' . $fileInformation['extension'];
+        $data['size']        = $data['file_size'];
 
         $this->saveFileVersion($newFileId, $data, 'replace', $fileId);
 
@@ -1352,10 +1352,7 @@ class MediaManagerFilesHelper
             $file = $this->mediaManager->modx->getObject('MediamanagerFiles', $id);
 
             $old = $this->addTrailingSlash(MODX_BASE_PATH) . $this->removeSlashes($file->get('archive_path'));
-            // $new = $this->uploadDirectoryMonth . $file->get('archive_path');
             $new = $this->addTrailingSlash(MODX_BASE_PATH) . $this->removeSlashes($file->get('path'));
-
-            // echo $new;
 
             if (!$this->renameFile($old, $new)) {
                 $response['status'] = self::STATUS_ERROR;
@@ -1517,10 +1514,10 @@ class MediaManagerFilesHelper
                 return $response;
             }
 
-            $hash           = $this->getFileHashByPath($filePath);
-            $image          = getimagesize($filePath);
-            $size           = filesize($filePath);
-            $versionNumber  = $this->createVersionNumber($file->get('id'));
+            $hash          = $this->getFileHashByPath($filePath);
+            $image         = getimagesize($filePath);
+            $size          = filesize($filePath);
+            $versionNumber = $this->createVersionNumber($file->get('id'));
 
             $file->set('file_dimensions', $image[0] . 'x' . $image[1]);
             $file->set('file_hash', $hash);
@@ -1528,11 +1525,11 @@ class MediaManagerFilesHelper
             $file->set('version', $versionNumber);
             $file->save();
 
-            $data                   = $file->toArray();
-            $fileInformation        = pathinfo($data['path']);
-            $data['version']        = $versionNumber;
-            $data['upload_dir']     = $this->addTrailingSlash(MODX_BASE_PATH) . ltrim($this->addTrailingSlash($fileInformation['dirname']), '/');
-            $data['unique_name']    = $fileInformation['filename'] . '.' . $fileInformation['extension'];
+            $data                = $file->toArray();
+            $fileInformation     = pathinfo($data['path']);
+            $data['version']     = $versionNumber;
+            $data['upload_dir']  = $this->addTrailingSlash(MODX_BASE_PATH) . ltrim($this->addTrailingSlash($fileInformation['dirname']), '/');
+            $data['unique_name'] = $fileInformation['filename'] . '.' . $fileInformation['extension'];
 
             // Save file version.
             $this->saveFileVersion($file->get('id'), $data, 'crop');
@@ -1596,8 +1593,8 @@ class MediaManagerFilesHelper
             $data['tags'][] = $tag->get('mediamanager_tags_id');
         }
 
-        $file['version']        = $this->createVersionNumber();
-        $file['upload_dir']     = $this->uploadDirectoryMonth;
+        $file['version']    = $this->createVersionNumber();
+        $file['upload_dir'] = $this->uploadDirectoryMonth;
         // Add file to database
         $fileId = $this->insertFile($file, $data);
         $versionCreated = $this->saveFileVersion($fileId, $file, 'create');
@@ -1925,10 +1922,9 @@ class MediaManagerFilesHelper
         $this->downloadUrl          = $uploadDirectory . self::DOWNLOAD_DIRECTORY . DIRECTORY_SEPARATOR;
         $this->downloadDirectory    = $this->uploadDirectory . self::DOWNLOAD_DIRECTORY . DIRECTORY_SEPARATOR;
 
-
         // Version paths
-        $this->versionUrl           = $this->addSlashes(self::UPLOAD_DIRECTORY) . self::VERSION_DIRECTORY . DIRECTORY_SEPARATOR;
-        $this->versionDirectory     = $this->addTrailingSlash(MODX_BASE_PATH) . self::UPLOAD_DIRECTORY . DIRECTORY_SEPARATOR . self::VERSION_DIRECTORY . DIRECTORY_SEPARATOR;
+        $this->versionUrl           = $uploadDirectory . self::VERSION_DIRECTORY . DIRECTORY_SEPARATOR;
+        $this->versionDirectory     = $this->uploadDirectory . self::UPLOAD_DIRECTORY . DIRECTORY_SEPARATOR . self::VERSION_DIRECTORY . DIRECTORY_SEPARATOR;
 
         if (!file_exists($this->uploadDirectory)) {
             if (!$this->createDirectory($this->uploadDirectory)) return false;
@@ -2005,11 +2001,9 @@ class MediaManagerFilesHelper
         }
 
         $uploadedFile = $file['upload_dir'] . $file['unique_name'];
-//        $this->mediaManager->modx->log(xPDO::LOG_LEVEL_ERROR,'UPLOADED: ' . $uploadedFile);
-        if(is_file($uploadedFile)) {
+
+        if (is_file($uploadedFile)) {
             $uploadFile = copy($uploadedFile, $target);
-//            $this->mediaManager->modx->log(xPDO::LOG_LEVEL_ERROR, $target);
-//            $this->mediaManager->modx->log(xPDO::LOG_LEVEL_ERROR,'target: ' . $target);
             if ($uploadFile) {
                 return true;
             }
@@ -2024,23 +2018,21 @@ class MediaManagerFilesHelper
      * @param int $fileId
      * @param array $data   Contains the meta keys and values.
      */
-    private function saveMetaFields($fileId, $data) {
+    private function saveMetaFields($fileId, $data)
+    {
+        if ($data && is_array($data)) {
+            foreach($data as $meta) {
+                if (!empty($meta['key']) && !empty($meta['value'])) {
 
-        if($data && is_array($data)){
-            foreach($data as $meta){
-                if(!empty($meta['key']) && !empty($meta['value'])){
-
-                    if(isset($meta['id']) && $meta['id'] > 0) {
+                    if (isset($meta['id']) && $meta['id'] > 0) {
                         $metaObj = $this->mediaManager->modx->getObject('MediamanagerFilesMeta', array('id' => $meta['id']));
-                    }
-                    else {
+                    } else {
                         $metaObj = $this->mediaManager->modx->newObject('MediamanagerFilesMeta');
                     }
 
-                    $metaObj->set('mediamanager_files_id',      $fileId);
-                    $metaObj->set('meta_key',                   trim($meta['key']));
-                    $metaObj->set('meta_value',                 trim($meta['value']));
-
+                    $metaObj->set('mediamanager_files_id', $fileId);
+                    $metaObj->set('meta_key',              trim($meta['key']));
+                    $metaObj->set('meta_value',            trim($meta['value']));
                     $metaObj->save();
                 }
             }
@@ -2057,24 +2049,23 @@ class MediaManagerFilesHelper
     public function removeFileMeta($metaId)
     {
         $response = [
-            'status' => self::STATUS_SUCCESS,
+            'status'  => self::STATUS_SUCCESS,
             'message' => ''
         ];
 
-        if(isset($metaId) && $metaId > 0){
+        if (isset($metaId) && $metaId > 0) {
             $metaObj = $this->mediaManager->modx->getObject('MediamanagerFilesMeta', array('id' => $metaId));
 
-            if ($metaObj->remove() == false) {
-                $response['status']     = self::STATUS_ERROR;
-                $message                = $this->mediaManager->modx->lexicon('mediamanager.files.error.meta_not_removed', array('metaid'  => $metaId));
-                $response['message']    = $this->alertMessageHtml($message, 'danger');
+            if ($metaObj->remove() === false) {
+                $response['status']  = self::STATUS_ERROR;
+                $message             = $this->mediaManager->modx->lexicon('mediamanager.files.error.meta_not_removed', array('metaid' => $metaId));
+                $response['message'] = $this->alertMessageHtml($message, 'danger');
             }
 
-        }
-        else {
-            $response['status']     = self::STATUS_ERROR;
-            $message                = $this->mediaManager->modx->lexicon('mediamanager.files.error.meta_not_found', array('metaid'  => $metaId));
-            $response['message']    = $this->alertMessageHtml($message, 'danger');
+        } else {
+            $response['status']  = self::STATUS_ERROR;
+            $message             = $this->mediaManager->modx->lexicon('mediamanager.files.error.meta_not_found', array('metaid' => $metaId));
+            $response['message'] = $this->alertMessageHtml($message, 'danger');
         }
 
         return $response;
