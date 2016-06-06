@@ -121,6 +121,7 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
 
         $breadcrumbsContainer    : 'ol.breadcrumb',
         $breadcrumbs             : [],
+        $breadcrumbsFlag         : true,
 
         $options                 : null,
 
@@ -1616,44 +1617,57 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
             }
         },
 
-         /**
+        /**
          * Build the breadcrumbs html.
          */
         buildBreadcrumbs: function() {
-
             var self = this;
-            self.$breadcrumbs = [];
-            var lastBreadcrumb = [];
-            var selectedNodes = $(self.$categoryTree).treeview('getSelected');
-            var selectedNodeId = 0;
-            $.each(selectedNodes,function(index,value){
-                $(self.$categoryTree).treeview('revealNode', [ value.nodeId, { silent: true } ]);
-                if(value.categoryId > 0) {
-                    lastBreadcrumb.push({'text':value.text,'categoryId':value.categoryId});
+
+            if (self.$breadcrumbsFlag) {
+                self.$breadcrumbsFlag = false;
+
+                setTimeout(function() {
+                    self.buildBreadcrumbs()
+                }, 500);
+
+                return false;
+            }
+
+            var lastBreadcrumb    = [],
+                selectedNodes     = $(self.$categoryTree).treeview('getSelected'),
+                selectedNodeId    = 0;
+                self.$breadcrumbs = [];
+
+            $.each(selectedNodes, function(index, value) {
+                $(self.$categoryTree).treeview('revealNode', [value.nodeId, {silent: true}]);
+                if (value.categoryId > 0) {
+                    lastBreadcrumb.push({'text': value.text, 'categoryId': value.categoryId});
                 }
                 selectedNodeId = value.nodeId;
             });
-            var expandedNodes = $(self.$categoryTree).treeview('getExpanded',selectedNodeId);
-            $.each(expandedNodes,function(index,value){
-                self.$breadcrumbs.push({'text':value.text,'categoryId':value.categoryId});
+
+            var expandedNodes = $(self.$categoryTree).treeview('getExpanded', selectedNodeId);
+
+            $.each(expandedNodes, function(index, value) {
+                self.$breadcrumbs.push({'text': value.text, 'categoryId': value.categoryId});
             });
 
-            if(lastBreadcrumb.length > 0) {
+            if (lastBreadcrumb.length > 0) {
                 self.$breadcrumbs = self.$breadcrumbs.concat(lastBreadcrumb);
             }
 
+            var currentUrl      = window.location.href;
+            var baseUrl         = self.updateQueryStringParameter(currentUrl, 'category', 0);
+            var breadcrumbsHtml = '<li><a href="' + baseUrl + '">Root</a></li>';
 
-            var currentUrl = window.location.href;
-            var baseUrl = self.updateQueryStringParameter(currentUrl,'category',0);
-            var breadcrumbsHtml = '<li><a href="'+baseUrl+'">Root</a></li>';
-            if(self.$breadcrumbs && self.$breadcrumbs.length > 0) {
-                $.each(self.$breadcrumbs,function(index,value){
-                    var categoryUrl = self.updateQueryStringParameter(currentUrl,'category',value.categoryId);
-                    breadcrumbsHtml += '<li><a href="'+categoryUrl+'">'+value.text+'</a></li>';
+            if (self.$breadcrumbs && self.$breadcrumbs.length > 0) {
+                $.each(self.$breadcrumbs, function(index, value){
+                    var categoryUrl = self.updateQueryStringParameter(currentUrl, 'category', value.categoryId);
+                    breadcrumbsHtml += '<li><a href="' + categoryUrl + '">' + value.text + '</a></li>';
                 });
             }
-            $(self.$breadcrumbsContainer).html(breadcrumbsHtml);
 
+            $(self.$breadcrumbsContainer).html(breadcrumbsHtml);
         },
 
         alert: function(message, type) {
