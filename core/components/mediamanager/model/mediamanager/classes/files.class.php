@@ -202,7 +202,7 @@ class MediaManagerFilesHelper
 
         // Set file type
         if ($this->isImage($file['file_type'])) {
-            $bodyData['preview'] = '<img src="' . MODX_CONNECTORS_URL . '/system/phpthumb.php?src=' . $file['path'] . '&w=230&h=180" />';
+            $bodyData['preview'] = '<img src="' . MODX_CONNECTORS_URL . '/system/phpthumb.php?src=' . $file['path'] . '&w=230&h=180&q=100&new=' . $file['file_hash'] . '" />';
             $bodyData['is_image'] = 1;
         } elseif($file['file_type'] === 'pdf' && extension_loaded('Imagick')) {
             $bodyData['preview'] = '<img src="' . str_replace('.pdf', '_thumb.jpg', $file['path']) . '" />';
@@ -488,7 +488,7 @@ class MediaManagerFilesHelper
 
             if ($viewMode === 'grid') {
                 if ($this->isImage($file['file_type'])) {
-                    $file['preview_path'] = MODX_CONNECTORS_URL . '/system/phpthumb.php?src=' . $file['path'] . '&w=230&h=180';
+                    $file['preview_path'] = MODX_CONNECTORS_URL . '/system/phpthumb.php?src=' . $file['path'] . '&w=230&h=180&q=100&new=' . $file['file_hash'];
                     $file['preview'] = $this->mediaManager->getChunk('files/file_preview_img', $file);
                 } elseif($file['file_type'] === 'pdf' && extension_loaded('Imagick')) {
                     $file['preview_path'] = str_replace('.pdf', '_thumb.jpg', $file['path']);

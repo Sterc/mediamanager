@@ -155,11 +155,13 @@ class MediaManagerCategoriesHelper
             $category = $this->mediaManager->modx->getObject('MediamanagerCategories', $key);
 
             if ($category) {
-                $category->set('parent_id', $value);
+                $category->set('parent_id', (int) $value);
                 $category->set('rank', $i);
                 $category->save();
 
                 ++$i;
+            } else {
+                var_dump('asdasd');
             }
         }
 

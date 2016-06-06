@@ -172,14 +172,11 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                         var $filePreview = $(file.previewElement);
 
                         self.$filesCategories.push($(self.$fileCategories, $filePreview).select2(self.$filterCategoriesOptions)
-                            .on('select2:select select2:unselect', self.checkCategoriesAndTags)
                             .val(self.$currentCategory)
                             .trigger('change')
                         );
 
-                        self.$filesTags.push($(self.$fileTags, $filePreview).select2(self.$filterTagsOptions)
-                            .on('select2:select select2:unselect', self.checkCategoriesAndTags)
-                        );
+                        self.$filesTags.push($(self.$fileTags, $filePreview).select2(self.$filterTagsOptions));
 
                         var $sourceTags = $(self.$fileSourceTags, $filePreview).select2(self.$filterSourceTagsOptions);
                         self.$filesSourceTags.push($sourceTags);
@@ -193,7 +190,6 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
 
                         // Show upload selected files button
                         $(self.$dropzoneActions).show();
-                        $(self.$uploadSelectedFiles).prop('disabled', true);
 
                         // Show copy categories and tags button if more than one file
                         self.showCopyButton(this.files.length);
@@ -219,7 +215,6 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                             $(self.$uploadMedia).prop('disabled', false);
 
                             // Disable and hide upload selected files button
-                            $(self.$uploadSelectedFiles).prop('disabled', true);
                             $(self.$dropzoneActions).hide();
                         }
 
@@ -270,7 +265,6 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                         self.$filesTags = [];
 
                         $(self.$uploadMedia).prop('disabled', false);
-                        $(self.$uploadSelectedFiles).prop('disabled', true);
                         $(self.$dropzoneActions).hide();
                         self.getList();
                     });
@@ -302,44 +296,6 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
         dropzoneProcessQueue: function() {
             var self = this;
             self.$dropzone.processQueue();
-        },
-
-        /**
-         * Check if categories and tags are filled.
-         * Enable or disable upload selected files button.
-         *
-         * @returns {boolean}
-         */
-        checkCategoriesAndTags: function() {
-            var self             = MediaManagerFiles,
-                tagsFilled       = true,
-                categoriesFilled = true;
-
-            $(self.$fileCategories, $(self.$dropzonePreviews)).each(function() {
-                if (this.selectedOptions.length === 0) {
-                    categoriesFilled = false;
-                    return false;
-                }
-            });
-
-            /**
-             * By commenting this, we remove the requirement for adding tags
-             */
-            /*$(self.$fileTags, $(self.$dropzonePreviews)).each(function() {
-                if (this.selectedOptions.length === 0) {
-                    tagsFilled = false;
-                    return false;
-                }
-            });*/
-
-            if (categoriesFilled === false || tagsFilled === false) {
-                $(self.$uploadSelectedFiles).prop('disabled', true);
-                return false;
-            }
-
-            // Enable upload selected files button
-            $(self.$uploadSelectedFiles).prop('disabled', false);
-            return true;
         },
 
         /**
