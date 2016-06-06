@@ -1416,7 +1416,7 @@ class MediaManagerFilesHelper
         $zip         = new ZipArchive();
         $zipName     = $this->createUniqueFile($this->downloadDirectory, sha1(time()), 'zip', uniqid('-'));
         $zipLocation = $this->downloadDirectory . $zipName;
-        $zipUrl      = $this->downloadUrl . $zipName;
+        $zipUrl      = $this->addTrailingSlash($this->downloadUrl) . $zipName;
 
         $zipFile = $zip->open($zipLocation, ZipArchive::CREATE);
         if ($zipFile !== true) {

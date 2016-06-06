@@ -42,11 +42,11 @@
             </div>
             <div class="input-group input-group-sm">
                 <label class="input-group-addon">ScaleX</label>
-                <input type="text" class="form-control" data-crop-scale-x placeholder="scaleX">
+                <input type="text" class="form-control" readonly data-crop-scale-x placeholder="scaleX">
             </div>
             <div class="input-group input-group-sm">
                 <label class="input-group-addon">ScaleY</label>
-                <input type="text" class="form-control" data-crop-scale-y placeholder="scaleY">
+                <input type="text" class="form-control" readonly data-crop-scale-y placeholder="scaleY">
             </div>
         </div>
 

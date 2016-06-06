@@ -1,29 +1,30 @@
 <?php
 $modx->regClientStartupHTMLBlock("
     <script>
-        if(typeof TinyMCERTE != 'undefined') {
-            Ext.override(TinyMCERTE.Tiny, {
-                loadBrowser : function(){
-                    mmLoadBrowser();
-                    return false;
-                }
-            });
-        }
-        
+        Ext.override(TinyMCERTE.Tiny, {
+            loadBrowser : function(){
+                mmLoadBrowser();
+                return false;
+            }
+        });
+
         function mmLoadBrowser() {
-            
-            $('#mce-modal-block').hide();
-            $('.mce-window').css('z-index','1');
-            
             var modalWrapper = '#modal-wrapper';
+
+            $('#mce-modal-block').hide();
+            $('.mce-window').css('z-index', '1');
+
             $(modalWrapper).dialog('open');
-            setTimeout(function(){
-                $(modalWrapper+' iframe').contents().find('.tv-tiny-use').on('click', function(event) {
-                    var selectedValue = $(this).parent('.file-preview').find('img').attr('data-path');
-                    $('.mce-window').find('.mce-textbox.mce-placeholder').attr('value',selectedValue);
+
+            setTimeout(function() {
+                $(modalWrapper + ' iframe').contents().find('.mediamanager-browser .view-mode-grid .file .file-options .btn-success').on('click', function(event) {
+                    var filePath = $(this).parents('.file').find('.file-preview img').data('path');
+
+                    $('.mce-window').find('.mce-textbox.mce-placeholder').attr('value', filePath);
+
                     $(modalWrapper).dialog('close');
                 });
-            }, 200);
+            }, 1000);
         }
     </script>
 ");
