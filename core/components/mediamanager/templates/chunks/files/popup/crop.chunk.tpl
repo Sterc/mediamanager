@@ -4,7 +4,7 @@
 
     <div class="col-md-8">
 
-        <img src="/[[+file.path]]" class="crop" />
+        <img src="[[+file.path]]" class="crop" />
 
     </div>
 
