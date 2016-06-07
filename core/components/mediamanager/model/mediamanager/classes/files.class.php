@@ -843,7 +843,7 @@ class MediaManagerFilesHelper
         }
 
         foreach ($tags as $tagId) {
-            if (!is_numeric($categoryId)) {
+            if (!is_numeric($tagId)) {
                 continue;
             }
             $tag = $this->mediaManager->modx->newObject('MediamanagerFilesTags');
