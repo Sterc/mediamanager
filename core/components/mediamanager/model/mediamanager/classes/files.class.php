@@ -827,6 +827,9 @@ class MediaManagerFilesHelper
         }
 
         foreach ($categories as $categoryId) {
+            if (!is_numeric($categoryId)) {
+                continue;
+            }
             $category = $this->mediaManager->modx->newObject('MediamanagerFilesCategories');
             $category->set('mediamanager_files_id', $fileId);
             $category->set('mediamanager_categories_id', $categoryId);
@@ -840,6 +843,9 @@ class MediaManagerFilesHelper
         }
 
         foreach ($tags as $tagId) {
+            if (!is_numeric($categoryId)) {
+                continue;
+            }
             $tag = $this->mediaManager->modx->newObject('MediamanagerFilesTags');
             $tag->set('mediamanager_files_id', $fileId);
             $tag->set('mediamanager_tags_id', $tagId);

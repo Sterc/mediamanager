@@ -178,13 +178,6 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
 
                         self.$filesTags.push($(self.$fileTags, $filePreview).select2(self.$filterTagsOptions));
 
-                        var $sourceTags = $(self.$fileSourceTags, $filePreview).select2(self.$filterSourceTagsOptions);
-                        self.$filesSourceTags.push($sourceTags);
-
-                        $($filePreview).on('keyup', self.$fileSourceTags + ' + span.select2 .select2-search__field', function(e) {
-                            self.addNewTag(e, this.value, $sourceTags);
-                        });
-
                         // Disable upload media button
                         $(self.$uploadMedia).prop('disabled', true);
 
@@ -226,18 +219,15 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                         var $file       = $(file.previewElement),
                             $categories = $(self.$fileCategories, $file),
                             $tags       = $(self.$fileTags, $file),
-                            $sourceTags = $(self.$fileSourceTags, $file),
                             $button     = $(self.$fileRemoveButton, $file);
 
                         // Set correct categories and tags for file
                         formData.append('categories', $categories.val());
                         formData.append('tags', $tags.val());
-                        formData.append('source_tags', $sourceTags.val());
 
                         // Disable input fields and buttons while file is being uploaded
                         $categories.prop('disabled', true);
                         $tags.prop('disabled', true);
-                        $sourceTags.prop('disabled', true);
                         $button.prop('disabled', true);
                     });
 
@@ -303,7 +293,6 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
          */
         copyCategoriesAndTags: function() {
             var self    = this,
-                options = null,
                 values  = null;
 
             $.each(self.$filesCategories, function(i, file) {
@@ -323,18 +312,6 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
 
                 file.val(values).trigger('change');
             });
-
-            $.each(self.$filesSourceTags, function(i, file) {
-                if (i === 0) {
-                    options = file.html();
-                    values  = file.val();
-                    return true;
-                }
-
-                file.html(options).val(values).trigger('change');
-            });
-
-            self.checkCategoriesAndTags();
         },
 
         /**
@@ -388,11 +365,6 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
 
             self.$filterTagsOptions = {
                 data: self.$options.tags,
-                theme: 'default select2-container--tags'
-            };
-
-            self.$filterContextTagsOptions = {
-                data: self.$options.contextTags,
                 theme: 'default select2-container--tags'
             };
 
@@ -1391,7 +1363,6 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
 
                         var $categories  = $(self.$fileCategories, $body).select2(self.$filterCategoriesOptions);
                         var $tags        = $(self.$fileTags, $body).select2(self.$filterTagsOptions);
-                        var $sourceTags  = $(self.$fileSourceTags, $body).select2(self.$filterSourceTagsOptions);
 
                         // Add category to file
                         $categories.on('select2:select', function(e) {
@@ -1406,21 +1377,6 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                                     categoryId   : e.params.data.id
                                 }
                             });
-                        });
-
-                        // Before removing category from file
-                        $categories.on('select2:unselecting', function(e) {
-                            // We shouldn't get to 0 categories
-                            if(this.selectedOptions.length === 1){
-                                var feedback = $(self.$filePopupFeedback);
-                                $categories.select2("close");
-                                $('<div/>', {
-                                    class: 'alert alert-danger',
-                                    text: self.$options.message.minCategory
-                                }).appendTo(feedback).delay(3000).fadeOut(300);
-
-                                return false;
-                            }
                         });
 
                         // Remove category from file
@@ -1467,46 +1423,6 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                                 }
                             });
                         });
-
-                        // Add source tag to file
-                        $sourceTags.on('select2:select', function(e) {
-                            $.ajax({
-                                type: 'POST',
-                                url: self.$connectorUrl,
-                                data: {
-                                    action       : 'mgr/files',
-                                    method       : 'addTag',
-                                    HTTP_MODAUTH : self.$httpModAuth,
-                                    fileId       : self.$currentFile,
-                                    tagId        : e.params.data.id
-                                },
-                                success: function(data) {
-                                    self.addNewTag($body, $sourceTags);
-                                }
-                            });
-                        });
-
-                        // Remove source tag from file
-                        $sourceTags.on('select2:unselect', function(e) {
-                            $.ajax({
-                                type: 'POST',
-                                url: self.$connectorUrl,
-                                data: {
-                                    action       : 'mgr/files',
-                                    method       : 'removeTag',
-                                    HTTP_MODAUTH : self.$httpModAuth,
-                                    fileId       : self.$currentFile,
-                                    tagId        : e.params.data.id
-                                },
-                                success: function(data) {
-                                    self.addNewTag($body, $sourceTags);
-                                }
-                            });
-                        });
-
-                        $($body).on('keyup', self.$fileSourceTags + ' + span.select2 .select2-search__field', function(e) {
-                            self.addNewTag(e, this.value, $sourceTags);
-                        });
                     }
 
                     if (template === 'edit') {
@@ -1534,43 +1450,6 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                     }
                 }
             });
-        },
-
-        /**
-         * Add source specific tag.
-         *
-         * @param e
-         * @param value
-         * @param $sourceTags
-         */
-        addNewTag: function(e, value, $sourceTags) {
-            var self = this;
-
-            if (e.keyCode === 13) {
-                $.ajax({
-                    type: 'POST',
-                    url: self.$connectorUrl,
-                    data: {
-                        action       : 'mgr/files',
-                        method       : 'addTag',
-                        HTTP_MODAUTH : self.$httpModAuth,
-                        fileId       : self.$currentFile,
-                        tagId        : 0,
-                        name         : value
-                    },
-                    success: function(data) {
-                        if (data.results.status === 'success') {
-                            var html   = $sourceTags.html(),
-                                values = $sourceTags.val() || [];
-
-                            html += data.results.html;
-                            values.push(data.results.tagId);
-
-                            $sourceTags.html(html).val(values).trigger('change');
-                        }
-                    }
-                });
-            }
         },
 
         /**
