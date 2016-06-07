@@ -1,0 +1,37 @@
+<?php
+/**
+ * Resolve creating db tables
+ *
+ * THIS RESOLVER IS AUTOMATICALLY GENERATED, NO CHANGES WILL APPLY
+ *
+ * @package mediamanager
+ * @subpackage build
+ */
+
+if ($object->xpdo) {
+    $modx =& $object->xpdo;
+    switch ($options[xPDOTransport::PACKAGE_ACTION]) {
+        case xPDOTransport::ACTION_INSTALL:
+        case xPDOTransport::ACTION_UPGRADE:
+            $modelPath = $modx->getOption('mediamanager.core_path', null, $modx->getOption('core_path') . 'components/mediamanager/') . 'model/';
+            $modx->addPackage('mediamanager', $modelPath, 'modx_');
+
+            $manager = $modx->getManager();
+
+            $manager->createObjectContainer('MediamanagerCategories');
+            $manager->createObjectContainer('MediamanagerTags');
+            $manager->createObjectContainer('MediamanagerFiles');
+            $manager->createObjectContainer('MediamanagerDownloads');
+            $manager->createObjectContainer('MediamanagerCategoriesExcludes');
+            $manager->createObjectContainer('MediamanagerFilesCategories');
+            $manager->createObjectContainer('MediamanagerFilesTags');
+            $manager->createObjectContainer('MediamanagerFilesContent');
+            $manager->createObjectContainer('MediamanagerFilesRelations');
+            $manager->createObjectContainer('MediamanagerFilesVersions');
+            $manager->createObjectContainer('MediamanagerFilesMeta');
+
+            break;
+    }
+}
+
+return true;
