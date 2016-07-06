@@ -29,8 +29,6 @@ class cbMediaManagerGalleryInput extends cbBaseInput {
         $assetsUrl = $this->modx->getOption('mediamanager.assets_url', null, MODX_ASSETS_URL . 'components/mediamanager/');
 
         return array(
-            $assetsUrl . 'libs/jquery-ui/1.11.4/js/jquery-ui.min.js',
-            $assetsUrl . 'js/mgr/mediamanager-modal.js',
             $assetsUrl . 'js/inputs/cb_mediamanager_gallery_input.js',
         );
 
@@ -164,7 +162,7 @@ class cbMediaManagerGalleryInput extends cbBaseInput {
             $img['idx'] = $idx;
             if(isset($img['link']) && !empty($img['link'])) {
                 $img['link_raw'] = $img['link'];
-                
+
                 if($img['linkType'] === 'email') {
                     $img['link'] = 'mailto:' . $img['link'];
                 }
