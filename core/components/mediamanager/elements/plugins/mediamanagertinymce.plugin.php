@@ -5,12 +5,14 @@ switch ($modx->event->name) {
 
         $modx->regClientStartupHTMLBlock("
             <script>
-                Ext.override(TinyMCERTE.Tiny, {
-                    loadBrowser : function(field_name, url, type, win){
-                        mmLoadBrowser(field_name, url, type, win);
-                        return false;
-                    }
-                });
+                if(typeof TinyMCERTE !== 'undefined'){
+                    Ext.override(TinyMCERTE.Tiny, {
+                        loadBrowser : function(field_name, url, type, win){
+                            mmLoadBrowser(field_name, url, type, win);
+                            return false;
+                        }
+                    });
+                }
                 
                 function mmLoadBrowser(field_name, url, type, win) {
                     $('.mce-window').css('z-index', '1');

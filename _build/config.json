@@ -3,7 +3,7 @@
     "lowCaseName": "mediamanager",
     "description": "Media Manager for MODX.",
     "author": "Sterc",
-    "version": "0.1.2",
+    "version": "0.1.3",
     "package":{
         "menus": [{
             "text": "mediamanager",
@@ -16,13 +16,13 @@
             "description": "mediamanager.categories.desc",
             "action": "categories",
             "parent": "media",
-            "permissions": "media_manager_admin"
+            "permissions": "file_manager"
         },{
             "text": "mediamanager.tags",
             "description": "mediamanager.tags.desc",
             "action": "tags",
             "parent": "media",
-            "permissions": "media_manager_admin"
+            "permissions": "file_manager"
         }],
         "elements": {
             "plugins": [{
@@ -34,11 +34,30 @@
                 "file": "mediamanagertinymce.plugin.php",
                 "events": ["OnDocFormPrerender"]
             },{
+                "name": "mediaManagerModal",
+                "file": "mediamanagermodal.plugin.php",
+                "events": ["OnBeforeManagerPageInit","OnDocFormRender","OnManagerPageBeforeRender","OnManagerPageInit"]
+            },{
                 "name": "mediaManagerContentBlocks",
                 "file": "mediamanagercontentblocks.plugin.php",
                 "events": ["ContentBlocks_RegisterInputs"]
+            
+            },{
+                "name": "mediaManagerCbGalleryInput",
+                "file": "mediamanagercbgalleryinput.plugin.php",
+                "events": ["ContentBlocks_RegisterInputs"]
             }]
-        }
+        },
+        "systemSettings": [{
+            "key": "cleanup_max_age",
+            "value": "365"
+        },{
+            "key": "cleanup_time",
+            "value": "0"
+        },{
+            "key": "default_media_source",
+            "value": "1"
+        }]
     },
     "database": {
         "tables": [

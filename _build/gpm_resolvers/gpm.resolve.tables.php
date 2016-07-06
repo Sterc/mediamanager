@@ -14,7 +14,9 @@ if ($object->xpdo) {
         case xPDOTransport::ACTION_INSTALL:
         case xPDOTransport::ACTION_UPGRADE:
             $modelPath = $modx->getOption('mediamanager.core_path', null, $modx->getOption('core_path') . 'components/mediamanager/') . 'model/';
-            $modx->addPackage('mediamanager', $modelPath, 'modx_');
+            
+            $modx->addPackage('mediamanager', $modelPath, null);
+
 
             $manager = $modx->getManager();
 
