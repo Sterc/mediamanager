@@ -30,6 +30,8 @@ $_lang['mediamanager.global.preview'] = 'Vorschau';
 $_lang['mediamanager.global.save'] = 'Speichern';
 $_lang['mediamanager.global.use'] = 'Benutzen';
 
+$_lang['mediamanager.global.error.mediasource'] = 'Ihr default mediasource (ID [[+ mediasource_id]]) ist nicht mit dem Media Manager konfiguriert. Bitte fügen Sie eine Property \'mediamanagerSource \' mit dem Wert \'1 \' zu diesem mediasource und alle anderen mediasources Sie mit dem Media Manager verwenden möchten.';
+
 /* Tags */
 $_lang['mediamanager.tags'] = 'Medien-Tags';
 $_lang['mediamanager.tags.desc'] = 'Medien-Tags verwalten';
@@ -165,3 +167,8 @@ $_lang['mediamanager.files.source_tags'] = 'Source Tags';
 $_lang['mm_input_image'] = 'Bild aus Medien-Manager'; // custom tv input type
 
 $_lang['mediamanager.permissions.admin'] = 'Medien-Manager Administrationsrechte';
+
+/* Custom input/output filter */
+$_lang['mm_input_image'] = 'Media Manager Image';
+$_lang['mm_output_image'] = 'Media Manager Image';
+$_lang['mm_input_file'] = 'Media Manager File';

@@ -30,6 +30,8 @@ $_lang['mediamanager.global.preview'] = 'Preview';
 $_lang['mediamanager.global.save'] = 'Save';
 $_lang['mediamanager.global.use'] = 'Use';
 
+$_lang['mediamanager.global.error.mediasource'] = 'Your default mediasource (ID [[+mediasource_id]]) is not configured to use with the Media Manager. Please add a property \'mediamanagerSource\' with value \'1\' to this mediasource and all other mediasources you want to use with the Media Manager.';
+
 /* Tags */
 $_lang['mediamanager.tags'] = 'Media Tags';
 $_lang['mediamanager.tags.desc'] = 'Manage media tags';

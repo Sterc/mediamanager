@@ -5,6 +5,8 @@ require_once __DIR__ . '/index.class.php';
 class MediaManagerHomeManagerController extends MediaManagerManagerController
 {
 
+    private $templateFile = 'home.tpl';
+
     public function process(array $scriptProperties = array())
     {
         $uploadMediaButton = '';
@@ -36,6 +38,11 @@ class MediaManagerHomeManagerController extends MediaManagerManagerController
         $filters = $this->mediaManager->getChunk('files/filters', $placeholders);
         $placeholders['filters'] = $filters;
 
+        if ($this->mediaManagerError) {
+            $placeholders['message'] = $this->mediaManagerError;
+            $this->templateFile = 'error.tpl';
+        }
+
         $this->setPlaceholders(array_merge($placeholders, $this->mediaManager->config));
     }
 
@@ -46,7 +53,7 @@ class MediaManagerHomeManagerController extends MediaManagerManagerController
 
     public function getTemplateFile()
     {
-        return $this->mediaManager->config['templatesPath'] . 'home.tpl';
+        return $this->mediaManager->config['templatesPath'] . $this->templateFile;
     }
 
     public function loadCustomCssJs()
@@ -54,5 +61,4 @@ class MediaManagerHomeManagerController extends MediaManagerManagerController
         $this->addJavascript($this->mediaManager->config['js_url'] . 'mgr/mediamanager-files-cropper.js');
         $this->addJavascript($this->mediaManager->config['js_url'] . 'mgr/mediamanager-files.js');
     }
-
 }

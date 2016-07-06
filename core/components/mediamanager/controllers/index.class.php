@@ -3,24 +3,12 @@ require_once __DIR__ . '/../model/mediamanager/mediamanager.class.php';
 
 abstract class MediaManagerManagerController extends modExtraManagerController
 {
-
     protected $mediaManager = null;
+    public $mediaManagerError = null;
 
     public function initialize()
     {
         $this->mediaManager = new MediaManager($this->modx);
-
-        $mediaSource = $this->mediaManager->sources->getSource($this->mediaManager->sources->getCurrentSource());
-        if (!$mediaSource) {
-            return false;
-        }
-
-        $acceptedFiles = '';
-        if (!empty($mediaSource['allowedFileTypes'])) {
-            $acceptedFiles = '.' . str_replace(',', ',.', $mediaSource['allowedFileTypes']);
-        }
-
-        $categoriesAndTags = $this->mediaManager->getAllCategoriesAndTags();
 
         /**
          * Add the CSS.
@@ -45,6 +33,24 @@ abstract class MediaManagerManagerController extends modExtraManagerController
         $this->addJavascript($this->mediaManager->config['assets_url'] . 'libs/select2/4.0.2/js/select2.min.js');
         $this->addJavascript($this->mediaManager->config['assets_url'] . 'libs/dropzone/4.3.0/js/dropzone.min.js');
 
+
+        $acceptedFiles = '';
+        $categoriesAndTags = '';
+        /**
+         * Get the current/default mediasource
+         */
+        $mediaSource = $this->mediaManager->sources->getSource($this->mediaManager->sources->getCurrentSource());
+        if ($mediaSource) {
+            $acceptedFiles = '';
+            if (!empty($mediaSource['allowedFileTypes'])) {
+                $acceptedFiles = '.' . str_replace(',', ',.', $mediaSource['allowedFileTypes']);
+            }
+
+            $categoriesAndTags = $this->mediaManager->getAllCategoriesAndTags();
+        } else {
+            $this->mediaManagerError = $this->modx->lexicon('mediamanager.global.error.mediasource', array('mediasource_id' => $this->mediaManager->sources->getCurrentSource()));
+        }
+
         $this->addHtml('<script type="text/javascript">
             var mediaManagerOptions = {
                 cancel : "' . $this->modx->lexicon('mediamanager.global.cancel') . '",
@@ -59,9 +65,9 @@ abstract class MediaManagerManagerController extends modExtraManagerController
                     replaceButton  : "' . $this->modx->lexicon('mediamanager.files.archive_and_replace') . '",
                     replaceConfirm : "' . $this->modx->lexicon('mediamanager.files.archive_and_replace_select_confirm') . '"
                 },
-                categories  : ' . json_encode($categoriesAndTags['categories']) . ',
-                tags        : ' . json_encode($categoriesAndTags['tags']) . ',
-                contextTags : ' . json_encode($categoriesAndTags['contextTags']) . '
+                categories  : ' . (isset($categoriesAndTags['categories']) ? json_encode($categoriesAndTags['categories']) : '""') . ',
+                tags        : ' . (isset($categoriesAndTags['tags']) ? json_encode($categoriesAndTags['tags']) : '""'). ',
+                contextTags : ' . (isset($categoriesAndTags['contextTags']) ? json_encode($categoriesAndTags['contextTags']) : '""') . '
             }
 
             Ext.onReady(function() {
@@ -69,7 +75,7 @@ abstract class MediaManagerManagerController extends modExtraManagerController
             });
         </script>');
 
-        if(isset($_REQUEST['tv_frame']) && $_REQUEST['tv_frame'] == '1') {
+        if (isset($_REQUEST['tv_frame']) && $_REQUEST['tv_frame'] == '1') {
             $this->addHtml('<style type="text/css">
                 #modx-header,
                 #modx-leftbar,
@@ -98,5 +104,4 @@ abstract class MediaManagerManagerController extends modExtraManagerController
     {
         return true;
     }
-
 }
