@@ -22,6 +22,8 @@ class cbMediaManagerInput extends cbBaseInput {
         $assetsUrl = $this->modx->getOption('mediamanager.assets_url', null, MODX_ASSETS_URL . 'components/mediamanager/');
 
         return array(
+            $assetsUrl . 'libs/jquery-ui/1.11.4/js/jquery-ui.min.js',
+            $assetsUrl . 'js/mgr/mediamanager-modal.js',
             $assetsUrl . 'js/inputs/cb_mediamanager_input.js',
         );
     }

@@ -5,33 +5,11 @@
     // and the data variable contains field information, properties etc.
     ContentBlocks.fieldTypes.cb_mediamanager_input = function(dom, data) {
         var input = {
-            // Some optional variables can be defined here
+
         };
 
         // Do something when the input is being loaded
         input.init = function() {
-            if(!$('#cb-modal-wrapper').length) {
-                var modal = '<div id="cb-modal-wrapper"><iframe class="mediamanager-iframe" id="cb_mediamanager" src="/manager/?a=home&namespace=mediamanager&tv_frame=1"></iframe></div>';
-                $('body').append(modal);
-
-                var modalWidth = $(window).width() * 0.94;
-                var modalHeight = $(window).height() * 0.94;
-                var modalWrapper = '#cb-modal-wrapper';
-
-                $(modalWrapper).dialog({
-                    title: 'Media Manager',
-                    autoOpen: false,
-                    width: modalWidth,
-                    height: modalHeight,
-                    modal: true,
-                    resizable: false,
-                    close: function(event,ui) {
-                        // reload the iframe contents
-                        $(modalWrapper+' > iframe').attr('src',$(modalWrapper+' > iframe').attr('src'));
-                    }
-                });
-            }
-
             if (data.file_id && data.file_id.length) {
                 dom.find('.file_id').val(data.file_id);
                 dom.find('.file_name').val(data.file_name);
@@ -64,19 +42,15 @@
         };
 
         input.chooseImage = function() {
-            var modalWrapper = '#cb-modal-wrapper';
+            var mediaManager = new $.MediaManagerModal({
+                onSelect: function(file) {
+                    dom.find('.file_id').val(file.id);
+                    dom.find('.file_name').val(file.name);
+                    dom.find('.contentblocks-field-file-preview').html(file.name);
+                }
+            });
 
-            $(modalWrapper).dialog('open');
-
-            setTimeout(function(){
-                $(modalWrapper+' iframe').contents().find('.mediamanager-browser .view-mode-grid .file .file-options .btn-success').on('click', function(event) {
-                    dom.find('.file_id').val($(this).parents('[data-id]').attr('data-id'));
-                    dom.find('.file_name').val($(this).parents('[data-id]').find('.file-name').text());
-                    dom.find('.contentblocks-field-file-preview').html($.trim($(this).parents('[data-id]').find('.file-name').text()));
-
-                    $(modalWrapper).dialog('close');
-                });
-            }, 1000);
+            mediaManager.open();
         };
 
         // Always return the input variable.

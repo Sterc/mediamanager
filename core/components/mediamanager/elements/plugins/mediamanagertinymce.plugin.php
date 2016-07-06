@@ -1,30 +1,32 @@
 <?php
-$modx->regClientStartupHTMLBlock("
-    <script>
-        Ext.override(TinyMCERTE.Tiny, {
-            loadBrowser : function(){
-                mmLoadBrowser();
-                return false;
-            }
-        });
+switch ($modx->event->name) {
 
-        function mmLoadBrowser() {
-            var modalWrapper = '#modal-wrapper';
+    case 'OnDocFormPrerender':
 
-            $('#mce-modal-block').hide();
-            $('.mce-window').css('z-index', '1');
-
-            $(modalWrapper).dialog('open');
-
-            setTimeout(function() {
-                $(modalWrapper + ' iframe').contents().find('.mediamanager-browser .view-mode-grid .file .file-options .btn-success').on('click', function(event) {
-                    var filePath = $(this).parents('.file').find('.file-preview img').data('path');
-
-                    $('.mce-window').find('.mce-textbox.mce-placeholder').attr('value', filePath);
-
-                    $(modalWrapper).dialog('close');
+        $modx->regClientStartupHTMLBlock("
+            <script>
+                Ext.override(TinyMCERTE.Tiny, {
+                    loadBrowser : function(field_name, url, type, win){
+                        mmLoadBrowser(field_name, url, type, win);
+                        return false;
+                    }
                 });
-            }, 1000);
-        }
-    </script>
-");
+                
+                function mmLoadBrowser(field_name, url, type, win) {
+                    $('.mce-window').css('z-index', '1');
+                    $('#mce-modal-block').hide();
+                    
+                    var mediaManager = new $.MediaManagerModal({
+                        onSelect: function(file) {
+                            win.document.getElementById(field_name).value = file.path;
+                        }
+                    });
+                    
+                    mediaManager.open();
+                }
+            </script>
+        ");
+
+        break;
+
+}

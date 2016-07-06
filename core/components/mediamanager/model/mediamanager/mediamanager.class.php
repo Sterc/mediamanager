@@ -1,4 +1,5 @@
 <?php
+
 require_once __DIR__ . '/classes/categories.class.php';
 require_once __DIR__ . '/classes/sources.class.php';
 require_once __DIR__ . '/classes/files.class.php';
@@ -30,7 +31,7 @@ class MediaManager
     public $chunks = array();
 
     public $categories = null;
-    public $sources = null;
+    public $contexts = null;
     public $files = null;
     public $permissions = null;
     public $tags = null;
@@ -52,27 +53,27 @@ class MediaManager
         $assetsPath = $this->modx->getOption('mediamanager.assets_path', $config, $this->modx->getOption('assets_path') . 'components/mediamanager/');
 
         $this->config = array_merge(array(
-            'base_path'       => $basePath,
-            'core_path'       => $basePath,
-            'model_path'      => $basePath . 'model/',
-            'processors_path' => $basePath . 'processors/',
-            'elements_path'   => $basePath . 'elements/',
-            'templates_path'  => $basePath . 'templates/',
-            'assets_path'     => $assetsPath,
-            'js_url'          => $assetsUrl . 'js/',
-            'css_url'         => $assetsUrl . 'css/',
-            'assets_url'      => $assetsUrl,
-            'connector_url'   => $assetsUrl . 'connector.php',
-            'chunks_path'     => $basePath . 'templates/chunks/',
-            'chunk_suffix'    => '.chunk.tpl',
-        ), $config);
+                                        'base_path'       => $basePath,
+                                        'core_path'       => $basePath,
+                                        'model_path'      => $basePath . 'model/',
+                                        'processors_path' => $basePath . 'processors/',
+                                        'elements_path'   => $basePath . 'elements/',
+                                        'templates_path'  => $basePath . 'templates/',
+                                        'assets_path'     => $assetsPath,
+                                        'js_url'          => $assetsUrl . 'js/',
+                                        'css_url'         => $assetsUrl . 'css/',
+                                        'assets_url'      => $assetsUrl,
+                                        'connector_url'   => $assetsUrl . 'connector.php',
+                                        'chunks_path'     => $basePath . 'templates/chunks/',
+                                        'chunk_suffix'    => '.chunk.tpl',
+                                    ), $config);
 
         $this->modx->addPackage('mediamanager', $this->config['model_path']);
         $this->modx->lexicon->load('mediamanager:default');
 
         $this->permissions  = new MediaManagerPermissionsHelper($this);
         $this->categories   = new MediaManagerCategoriesHelper($this);
-        $this->sources      = new MediaManagerSourcesHelper($this);
+        $this->sources     = new MediaManagerSourcesHelper($this);
         $this->files        = new MediaManagerFilesHelper($this);
         $this->tags         = new MediaManagerTagsHelper($this);
     }
@@ -133,13 +134,9 @@ class MediaManager
      */
     public function includeScriptAssets()
     {
-        $this->modx->regClientCSS($this->config['assets_url'] . 'libs/jquery-ui/1.11.4/css/jquery-ui.min.css');
-        $this->modx->regClientCSS($this->config['assets_url'] . 'libs/jquery-ui/1.11.4/css/jquery-ui.structure.min.css');
-        $this->modx->regClientCSS($this->config['assets_url'] . 'libs/jquery-ui/1.11.4/css/jquery-ui.theme.min.css');
         $this->modx->regClientCSS($this->config['assets_url'] . 'css/mgr/mediamanager-tv-input.css');
-        $this->modx->regClientStartupScript($this->config['assets_url'] . 'libs/jquery/1.12.1/js/jquery.min.js');
-        $this->modx->regClientStartupScript($this->config['assets_url'] . 'libs/jquery-ui/1.11.4/js/jquery-ui.min.js');
         $this->modx->regClientStartupScript($this->config['assets_url'] . 'js/mgr/mediamanager-tv-input.js');
+        $this->modx->regClientStartupScript($this->config['assets_url'] . 'js/inputs/mediamanager_cmp.js');
     }
 
     public function getCategoryChildIds(array $categories, $parent = 0)
@@ -158,16 +155,40 @@ class MediaManager
     }
 
     /**
-     * Get all categories, tags and source tags.
+     * Get all categories, tags and context tags.
      *
      * @return array
      */
     public function getAllCategoriesAndTags()
     {
         return [
-            'categories' => $this->categories->getAllCategories(),
-            'tags'       => $this->tags->getAllTags(),
-            'sourceTags' => $this->tags->getAllTags(true)
+            'categories'  => $this->categories->getAllCategories(),
+            'tags'        => $this->tags->getAllTags(),
+            'contextTags' => $this->tags->getAllTags(true)
         ];
+    }
+
+    /**
+     * Get a local configuration option or a namespaced system setting by key.
+     *
+     * @param string $key The option key to search for.
+     * @param array $options An array of options that override local options.
+     * @param mixed $default The default value returned if the option is not found locally or as a
+     * namespaced system setting; by default this value is null.
+     * @return mixed The option value or the default value specified.
+     */
+    public function getOption($key, $options = array(), $default = null)
+    {
+        $option = $default;
+        if (!empty($key) && is_string($key)) {
+            if ($options != null && array_key_exists($key, $options)) {
+                $option = $options[$key];
+            } elseif (array_key_exists($key, $this->config)) {
+                $option = $this->config[$key];
+            } elseif (array_key_exists("{$this->namespace}.{$key}", $this->modx->config)) {
+                $option = $this->modx->getOption("{$this->namespace}.{$key}");
+            }
+        }
+        return $option;
     }
 }
