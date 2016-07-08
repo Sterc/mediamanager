@@ -11,15 +11,17 @@ if (!is_numeric($input)) {
 $path = '';
 $file = $modx->getObject('MediamanagerFiles', $input);
 if ($file) {
-    $media_sources_url = $modx->getObject('sources.modFileMediaSource', ['id' => $file->get('media_sources_id')]);
-    $base_url = $media_sources_url->get('baseUrl');
-    $path = $file->get('path');
+    $mediaSourceId = $file->get('media_sources_id');
+    $mediaSource = $modx->getObject('sources.modFileMediaSource', ['id' => $mediaSourceId]);
+    $basePath = $mediaSource->getProperties()['basePath']['value'];
+    $isRelative = $mediaSource->getProperties()['baseUrlRelative']['value'];
 
-    if($media_sources_url->get('baseUrlRelative')){
-        $path = $modx->getOption('site_url') . '/' .$base_url . '/' . $path;
+    if($isRelative){
+        $path = MODX_BASE_PATH . $basePath . $file->get('path');
     }else{
-        $path = $base_url . '/' . $path;
+        $path = $basePath . $file->get('path');
     }
+
 }
 
 return $path;
