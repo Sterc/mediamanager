@@ -693,13 +693,19 @@ class MediaManagerFilesHelper
     /**
      * Add file.
      *
+     * @param array $data
+     * @param array $options Available options: skip_file_hash_check, skip_tinify
+     *
      * @return array
      */
-    public function addFile()
+    public function addFile($data = [], $options = [])
     {
         // Get file and data
         $file = $_FILES['file'];
-        $data = $_REQUEST;
+
+        if (empty($data)) {
+            $data = $_REQUEST;
+        }
 
         // Create upload directory
         if (!$this->createUploadDirectory()) {
@@ -712,16 +718,18 @@ class MediaManagerFilesHelper
         // Check if file hash exists
         $file['hash'] = $this->getFileHashByPath($file['tmp_name']);
 
-        $hashExists = $this->fileHashExists($file['hash']);
-        if ($hashExists) {
-            return [
-                'status'  => self::STATUS_ERROR,
-                'message' => $this->alertMessageHtml(
-                    $this->mediaManager->modx->lexicon('mediamanager.files.error.file_exists', array(
-                        'file' => $file['name'],
-                        'link' => '<a href="#" data-file-id="' . $hashExists . '" data-preview-link>Link</a>'
-                    )), 'danger')
-            ];
+        if (!isset($options['skip_file_hash_check'])) {
+            $hashExists = $this->fileHashExists($file['hash']);
+            if ($hashExists) {
+                return [
+                    'status' => self::STATUS_ERROR,
+                    'message' => $this->alertMessageHtml(
+                        $this->mediaManager->modx->lexicon('mediamanager.files.error.file_exists', array(
+                            'file' => $file['name'],
+                            'link' => '<a href="#" data-file-id="' . $hashExists . '" data-preview-link>Link</a>'
+                        )), 'danger')
+                ];
+            }
         }
 
         // Add unique id to file name if needed
@@ -740,9 +748,11 @@ class MediaManagerFilesHelper
         }
 
         // Tinify image
-        if ($file['extension'] === 'jpg' || $file['extension'] === 'png') {
-            if($this->tinify($this->uploadDirectoryMonth . $file['unique_name'])) {
-                $file['size'] = filesize($this->uploadDirectoryMonth . $file['unique_name']);
+        if (!isset($options['skip_tinify'])) {
+            if ($file['extension'] === 'jpg' || $file['extension'] === 'png') {
+                if ($this->tinify($this->uploadDirectoryMonth . $file['unique_name'])) {
+                    $file['size'] = filesize($this->uploadDirectoryMonth . $file['unique_name']);
+                }
             }
         }
 
@@ -778,7 +788,8 @@ class MediaManagerFilesHelper
 
         return [
             'status'  => self::STATUS_SUCCESS,
-            'message' => $this->alertMessageHtml($this->mediaManager->modx->lexicon('mediamanager.files.success.file_upload', array('file' => $file['unique_name'])), 'success')
+            'message' => $this->alertMessageHtml($this->mediaManager->modx->lexicon('mediamanager.files.success.file_upload', array('file' => $file['unique_name'])), 'success'),
+            'fileId'  => $fileId
         ];
     }
 
