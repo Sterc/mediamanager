@@ -1660,10 +1660,10 @@ class MediaManagerFilesHelper
 
         // Add unique id to file name if needed
         $fileName = explode('.', $file['name']);
-        $fileName = $this->createUniqueFile($this->uploadDirectoryMonth, $fileName[0], $file['file_type']);
+        $fileName = $this->createUniqueFile($this->uploadDirectory . $this->uploadDirectoryMonth, $fileName[0], $file['file_type']);
 
         // Create new file
-        $fileCreated = file_put_contents($this->uploadDirectoryMonth . $fileName, $imageData);
+        $fileCreated = file_put_contents($this->uploadDirectory . $this->uploadDirectoryMonth . $fileName, $imageData);
         if ($fileCreated === false) {
             return [
                 'status'  => self::STATUS_ERROR,
@@ -1671,8 +1671,8 @@ class MediaManagerFilesHelper
             ];
         }
 
-        $file['size']        = filesize($this->uploadDirectoryMonth . $fileName);
-        $file['hash']        = $this->getFileHashByPath($this->uploadDirectoryMonth . $fileName);
+        $file['size']        = filesize($this->uploadDirectory . $this->uploadDirectoryMonth . $fileName);
+        $file['hash']        = $this->getFileHashByPath($this->uploadDirectory . $this->uploadDirectoryMonth . $fileName);
         $file['extension']   = $file['file_type'];
         $file['unique_name'] = $fileName;
 
