@@ -1,0 +1,366 @@
+<?php return array (
+  'unique_key' => 'category',
+  'preserve_keys' => false,
+  'update_object' => true,
+  'related_objects' => 
+  array (
+    'Plugins' => 
+    array (
+      '7f5f2d74ccc82fb92e6959430ed0b4de' => 
+      array (
+        'unique_key' => 'name',
+        'preserve_keys' => false,
+        'update_object' => true,
+        'related_objects' => 
+        array (
+          'PluginEvents' => 
+          array (
+            '02ec864ed2f7ac82d75cc9659b79ebea' => 
+            array (
+              'class' => 'modPluginEvent',
+              'object' => '{"pluginid":0,"event":"OnDocFormPrerender","priority":0,"propertyset":0}',
+              'guid' => '742e6befa8157f50dc6d72569c80bb2b',
+              'native_key' => 
+              array (
+                0 => 0,
+                1 => 'OnDocFormPrerender',
+              ),
+              'signature' => '8149a005a4056dadadc30b4cfe443ef2',
+            ),
+            '02522a525a45ac0100c09cc4b13ff788' => 
+            array (
+              'class' => 'modPluginEvent',
+              'object' => '{"pluginid":0,"event":"OnDocFormSave","priority":0,"propertyset":0}',
+              'guid' => '44ba9cd93fe0c8ae1951699532e12f12',
+              'native_key' => 
+              array (
+                0 => 0,
+                1 => 'OnDocFormSave',
+              ),
+              'signature' => '3890380da14f8fa925f985db49533ee4',
+            ),
+            '084101c1f632721b151e27efe77e4a2e' => 
+            array (
+              'class' => 'modPluginEvent',
+              'object' => '{"pluginid":0,"event":"OnTVInputRenderList","priority":0,"propertyset":0}',
+              'guid' => '942b7f2f990d3d78f07c84f34abc5c2e',
+              'native_key' => 
+              array (
+                0 => 0,
+                1 => 'OnTVInputRenderList',
+              ),
+              'signature' => 'cf438e9a285fd2f32d5cc0ae617e22bc',
+            ),
+          ),
+        ),
+        'related_object_attributes' => 
+        array (
+          'PluginEvents' => 
+          array (
+            'preserve_keys' => true,
+            'update_object' => false,
+            'unique_key' => 
+            array (
+              0 => 'pluginid',
+              1 => 'event',
+            ),
+          ),
+        ),
+        'class' => 'modPlugin',
+        'object' => '{"id":null,"source":0,"property_preprocess":0,"name":"mediaManagerCustomTv","description":"","editor_type":0,"category":0,"cache_type":0,"plugincode":"$corePath     = $modx->getOption(\'mediamanager.core_path\', null, $modx->getOption(\'core_path\') . \'components\\/mediamanager\\/\');\\n$mediamanager = $modx->getService(\'mediamanager\', \'MediaManager\', $corePath . \'model\\/mediamanager\\/\', array(\\n    \'core_path\' => $corePath\\n));\\n\\nswitch ($modx->event->name) {\\n    case \'OnTVInputRenderList\':\\n        $modx->event->output($corePath.\'elements\\/tv\\/input\\/\');\\n        break;\\n    case \'OnTVOutputRenderList\':\\n        $modx->event->output($corePath.\'elements\\/tv\\/output\\/\');\\n        break;\\n    case \'OnDocFormPrerender\':\\n        $mediamanager->includeScriptAssets();\\n        break;\\n    case \'OnDocFormSave\':\\n        $template = $resource->get(\'template\');\\n        $tmplVars = $modx->getCollection(\'modTemplateVar\', array(\\n            \'type:IN\' => array(\\n                \'mm_input_image\',\\n                \'image\',\\n                \'file\'\\n            )\\n        ));\\n\\n        foreach ($tmplVars as $tv) {\\n            $tvTemplate = $modx->getObject(\'modTemplateVarTemplate\', array(\\n                \'tmplvarid\'  => $tv->get(\'id\'),\\n                \'templateid\' => $template\\n            ));\\n\\n            if (!$tvTemplate) {\\n                continue;\\n            }\\n\\n            $value = $modx->getObject(\'modTemplateVarResource\', array(\\n                \'tmplvarid\' => $tv->get(\'id\'),\\n                \'contentid\' => $resource->get(\'id\')\\n            ));\\n\\n            if (!$value || !is_numeric($value->get(\'value\'))) {\\n                continue;\\n            }\\n\\n            $file = $modx->getObject(\'MediamanagerFiles\', array(\\n                \'id\' => $value->get(\'value\')\\n            ));\\n\\n            if (!$file) {\\n                \\/\\/ @TODO: Remove tv value\\n                continue;\\n            }\\n\\n            $fileContent = $modx->getObject(\'MediamanagerFilesContent\', array(\\n                \'mediamanager_files_id\' => $file->get(\'id\'),\\n                \'site_content_id\'       => $resource->get(\'id\'),\\n                \'is_tmplvar\'            => 1\\n            ));\\n\\n            if (!$fileContent) {\\n                $fileContent = $modx->newObject(\'MediamanagerFilesContent\');\\n            }\\n\\n            $fileContent->set(\'mediamanager_files_id\', $file->get(\'id\'));\\n            $fileContent->set(\'site_content_id\',       $resource->get(\'id\'));\\n            $fileContent->set(\'site_tmplvars_id\',      $tv->get(\'id\'));\\n            $fileContent->set(\'is_tmplvar\',            1);\\n            $fileContent->save();\\n        }\\n\\n        \\/\\/ @TODO: Get image paths from resource content. Check and save them.\\n\\n        \\/\\/ $tv_values = $modx->getCollection(\'modTemplateVarResource\',array(\'contentid\' => $id));\\n        \\/\\/ foreach($tv_values as $value) {\\n        \\/\\/     $tv_template = $modx->getObject(\'modTemplateVarTemplate\',array(\'tmplvarid\' => $tv->get(\'tmplvarid\')));\\n        \\/\\/     if($tv_template) {\\n        \\/\\/         $mm_relation = $modx->getObject(\'MediamanagerFilesContent\',array(\'site_content_id\' => $id,\'mediamanager_files_id\'));\\n        \\/\\/     }\\n        \\/\\/ }\\n\\n        break;\\n}","locked":0,"properties":"a:0:{}","disabled":0,"moduleguid":"","static":0,"static_file":"","content":"$corePath     = $modx->getOption(\'mediamanager.core_path\', null, $modx->getOption(\'core_path\') . \'components\\/mediamanager\\/\');\\n$mediamanager = $modx->getService(\'mediamanager\', \'MediaManager\', $corePath . \'model\\/mediamanager\\/\', array(\\n    \'core_path\' => $corePath\\n));\\n\\nswitch ($modx->event->name) {\\n    case \'OnTVInputRenderList\':\\n        $modx->event->output($corePath.\'elements\\/tv\\/input\\/\');\\n        break;\\n    case \'OnTVOutputRenderList\':\\n        $modx->event->output($corePath.\'elements\\/tv\\/output\\/\');\\n        break;\\n    case \'OnDocFormPrerender\':\\n        $mediamanager->includeScriptAssets();\\n        break;\\n    case \'OnDocFormSave\':\\n        $template = $resource->get(\'template\');\\n        $tmplVars = $modx->getCollection(\'modTemplateVar\', array(\\n            \'type:IN\' => array(\\n                \'mm_input_image\',\\n                \'image\',\\n                \'file\'\\n            )\\n        ));\\n\\n        foreach ($tmplVars as $tv) {\\n            $tvTemplate = $modx->getObject(\'modTemplateVarTemplate\', array(\\n                \'tmplvarid\'  => $tv->get(\'id\'),\\n                \'templateid\' => $template\\n            ));\\n\\n            if (!$tvTemplate) {\\n                continue;\\n            }\\n\\n            $value = $modx->getObject(\'modTemplateVarResource\', array(\\n                \'tmplvarid\' => $tv->get(\'id\'),\\n                \'contentid\' => $resource->get(\'id\')\\n            ));\\n\\n            if (!$value || !is_numeric($value->get(\'value\'))) {\\n                continue;\\n            }\\n\\n            $file = $modx->getObject(\'MediamanagerFiles\', array(\\n                \'id\' => $value->get(\'value\')\\n            ));\\n\\n            if (!$file) {\\n                \\/\\/ @TODO: Remove tv value\\n                continue;\\n            }\\n\\n            $fileContent = $modx->getObject(\'MediamanagerFilesContent\', array(\\n                \'mediamanager_files_id\' => $file->get(\'id\'),\\n                \'site_content_id\'       => $resource->get(\'id\'),\\n                \'is_tmplvar\'            => 1\\n            ));\\n\\n            if (!$fileContent) {\\n                $fileContent = $modx->newObject(\'MediamanagerFilesContent\');\\n            }\\n\\n            $fileContent->set(\'mediamanager_files_id\', $file->get(\'id\'));\\n            $fileContent->set(\'site_content_id\',       $resource->get(\'id\'));\\n            $fileContent->set(\'site_tmplvars_id\',      $tv->get(\'id\'));\\n            $fileContent->set(\'is_tmplvar\',            1);\\n            $fileContent->save();\\n        }\\n\\n        \\/\\/ @TODO: Get image paths from resource content. Check and save them.\\n\\n        \\/\\/ $tv_values = $modx->getCollection(\'modTemplateVarResource\',array(\'contentid\' => $id));\\n        \\/\\/ foreach($tv_values as $value) {\\n        \\/\\/     $tv_template = $modx->getObject(\'modTemplateVarTemplate\',array(\'tmplvarid\' => $tv->get(\'tmplvarid\')));\\n        \\/\\/     if($tv_template) {\\n        \\/\\/         $mm_relation = $modx->getObject(\'MediamanagerFilesContent\',array(\'site_content_id\' => $id,\'mediamanager_files_id\'));\\n        \\/\\/     }\\n        \\/\\/ }\\n\\n        break;\\n}"}',
+        'guid' => '9feb658e1c99f104b558f17461418922',
+        'native_key' => NULL,
+        'signature' => '805154c60bb6cd6fd723f6dcad872494',
+      ),
+      '59041876e8c2f88552768b0485b55e88' => 
+      array (
+        'unique_key' => 'name',
+        'preserve_keys' => false,
+        'update_object' => true,
+        'related_objects' => 
+        array (
+          'PluginEvents' => 
+          array (
+            'd403b6b25bf341605de9deb82d552d34' => 
+            array (
+              'class' => 'modPluginEvent',
+              'object' => '{"pluginid":0,"event":"OnDocFormPrerender","priority":0,"propertyset":0}',
+              'guid' => '2ddff3d7d51a6de669de81bffebce344',
+              'native_key' => 
+              array (
+                0 => 0,
+                1 => 'OnDocFormPrerender',
+              ),
+              'signature' => '43e460f3f47a7876c695d752cc8e1e27',
+            ),
+          ),
+        ),
+        'related_object_attributes' => 
+        array (
+          'PluginEvents' => 
+          array (
+            'preserve_keys' => true,
+            'update_object' => false,
+            'unique_key' => 
+            array (
+              0 => 'pluginid',
+              1 => 'event',
+            ),
+          ),
+        ),
+        'class' => 'modPlugin',
+        'object' => '{"id":null,"source":0,"property_preprocess":0,"name":"mediaManagerTinyMce","description":"","editor_type":0,"category":0,"cache_type":0,"plugincode":"switch ($modx->event->name) {\\n\\n    case \'OnDocFormPrerender\':\\n\\n        $modx->regClientStartupHTMLBlock(\\"\\n            <script>\\n                if(typeof TinyMCERTE !== \'undefined\'){\\n                    Ext.override(TinyMCERTE.Tiny, {\\n                        loadBrowser : function(field_name, url, type, win){\\n                            mmLoadBrowser(field_name, url, type, win);\\n                            return false;\\n                        }\\n                    });\\n                }\\n                \\n                function mmLoadBrowser(field_name, url, type, win) {\\n                    $(\'.mce-window\').css(\'z-index\', \'1\');\\n                    $(\'#mce-modal-block\').hide();\\n                    \\n                    var mediaManager = new $.MediaManagerModal({\\n                        onSelect: function(file) {\\n                            win.document.getElementById(field_name).value = file.path;\\n                        }\\n                    });\\n                    \\n                    mediaManager.open();\\n                }\\n            <\\/script>\\n        \\");\\n\\n        break;\\n\\n}","locked":0,"properties":"a:0:{}","disabled":0,"moduleguid":"","static":0,"static_file":"","content":"switch ($modx->event->name) {\\n\\n    case \'OnDocFormPrerender\':\\n\\n        $modx->regClientStartupHTMLBlock(\\"\\n            <script>\\n                if(typeof TinyMCERTE !== \'undefined\'){\\n                    Ext.override(TinyMCERTE.Tiny, {\\n                        loadBrowser : function(field_name, url, type, win){\\n                            mmLoadBrowser(field_name, url, type, win);\\n                            return false;\\n                        }\\n                    });\\n                }\\n                \\n                function mmLoadBrowser(field_name, url, type, win) {\\n                    $(\'.mce-window\').css(\'z-index\', \'1\');\\n                    $(\'#mce-modal-block\').hide();\\n                    \\n                    var mediaManager = new $.MediaManagerModal({\\n                        onSelect: function(file) {\\n                            win.document.getElementById(field_name).value = file.path;\\n                        }\\n                    });\\n                    \\n                    mediaManager.open();\\n                }\\n            <\\/script>\\n        \\");\\n\\n        break;\\n\\n}"}',
+        'guid' => '356d69c73a2e1f4aa4bf56701fe91270',
+        'native_key' => NULL,
+        'signature' => 'e0c2e00d71ba847e4f75aef1800272e6',
+      ),
+      'b9c2af772b40c468b5e9b5fa3892c9cb' => 
+      array (
+        'unique_key' => 'name',
+        'preserve_keys' => false,
+        'update_object' => true,
+        'related_objects' => 
+        array (
+          'PluginEvents' => 
+          array (
+            '7eda285e5f580fc3d068dab17f8ea403' => 
+            array (
+              'class' => 'modPluginEvent',
+              'object' => '{"pluginid":0,"event":"OnBeforeManagerPageInit","priority":0,"propertyset":0}',
+              'guid' => '3d64602aee6acc67725ada353bd42829',
+              'native_key' => 
+              array (
+                0 => 0,
+                1 => 'OnBeforeManagerPageInit',
+              ),
+              'signature' => '851a055e1174e0eca7929357c48de8f9',
+            ),
+            '1494727c76744c31af8918f850647aa0' => 
+            array (
+              'class' => 'modPluginEvent',
+              'object' => '{"pluginid":0,"event":"OnDocFormRender","priority":0,"propertyset":0}',
+              'guid' => '20f9b688e84587cc6e737db796645288',
+              'native_key' => 
+              array (
+                0 => 0,
+                1 => 'OnDocFormRender',
+              ),
+              'signature' => 'a044876e3059c6ae58170289b40cfe3b',
+            ),
+            '6897804f2f12ea393ffb3ea9c1c430d0' => 
+            array (
+              'class' => 'modPluginEvent',
+              'object' => '{"pluginid":0,"event":"OnManagerPageBeforeRender","priority":0,"propertyset":0}',
+              'guid' => 'c3319cb80c937c2e2ae21b731c334cfb',
+              'native_key' => 
+              array (
+                0 => 0,
+                1 => 'OnManagerPageBeforeRender',
+              ),
+              'signature' => '74252bc213b360595e8c0525b042dff5',
+            ),
+            '498eea687618c9ec87ad9d52bbf90f6e' => 
+            array (
+              'class' => 'modPluginEvent',
+              'object' => '{"pluginid":0,"event":"OnManagerPageInit","priority":0,"propertyset":0}',
+              'guid' => '50ed05ddb155ed8ed57b12200f418c2e',
+              'native_key' => 
+              array (
+                0 => 0,
+                1 => 'OnManagerPageInit',
+              ),
+              'signature' => '26e881417e72b3cb3c35ee51ddb81e61',
+            ),
+          ),
+        ),
+        'related_object_attributes' => 
+        array (
+          'PluginEvents' => 
+          array (
+            'preserve_keys' => true,
+            'update_object' => false,
+            'unique_key' => 
+            array (
+              0 => 'pluginid',
+              1 => 'event',
+            ),
+          ),
+        ),
+        'class' => 'modPlugin',
+        'object' => '{"id":null,"source":0,"property_preprocess":0,"name":"mediaManagerModal","description":"","editor_type":0,"category":0,"cache_type":0,"plugincode":"$corePath     = $modx->getOption(\'mediamanager.core_path\', null, $modx->getOption(\'core_path\') . \'components\\/mediamanager\\/\');\\n$mediamanager = $modx->getService(\'mediamanager\', \'MediaManager\', $corePath . \'model\\/mediamanager\\/\', array(\\n    \'core_path\' => $corePath\\n));\\n\\nswitch ($modx->event->name) {\\n    case \'OnManagerPageBeforeRender\':\\n\\n        $modx->regClientCSS($mediamanager->config[\'assets_url\'] . \'libs\\/jquery-ui\\/1.11.4\\/css\\/jquery-ui.min.css\');\\n        $modx->regClientCSS($mediamanager->config[\'assets_url\'] . \'libs\\/jquery-ui\\/1.11.4\\/css\\/jquery-ui.structure.min.css\');\\n        $modx->regClientCSS($mediamanager->config[\'assets_url\'] . \'libs\\/jquery-ui\\/1.11.4\\/css\\/jquery-ui.theme.min.css\');\\n        $modx->regClientCSS($mediamanager->config[\'assets_url\'] . \'css\\/mgr\\/mediamanager-tv-input.css\');\\n        $modx->regClientStartupScript($mediamanager->config[\'assets_url\'] . \'libs\\/jquery\\/1.12.1\\/js\\/jquery.min.js\');\\n        $modx->regClientStartupScript($mediamanager->config[\'assets_url\'] . \'libs\\/jquery-ui\\/1.11.4\\/js\\/jquery-ui.min.js\');\\n        $modx->regClientStartupScript($mediamanager->config[\'assets_url\'] . \'js\\/mgr\\/mediamanager-modal.js\');\\n\\n        break;\\n}","locked":0,"properties":"a:0:{}","disabled":0,"moduleguid":"","static":0,"static_file":"","content":"$corePath     = $modx->getOption(\'mediamanager.core_path\', null, $modx->getOption(\'core_path\') . \'components\\/mediamanager\\/\');\\n$mediamanager = $modx->getService(\'mediamanager\', \'MediaManager\', $corePath . \'model\\/mediamanager\\/\', array(\\n    \'core_path\' => $corePath\\n));\\n\\nswitch ($modx->event->name) {\\n    case \'OnManagerPageBeforeRender\':\\n\\n        $modx->regClientCSS($mediamanager->config[\'assets_url\'] . \'libs\\/jquery-ui\\/1.11.4\\/css\\/jquery-ui.min.css\');\\n        $modx->regClientCSS($mediamanager->config[\'assets_url\'] . \'libs\\/jquery-ui\\/1.11.4\\/css\\/jquery-ui.structure.min.css\');\\n        $modx->regClientCSS($mediamanager->config[\'assets_url\'] . \'libs\\/jquery-ui\\/1.11.4\\/css\\/jquery-ui.theme.min.css\');\\n        $modx->regClientCSS($mediamanager->config[\'assets_url\'] . \'css\\/mgr\\/mediamanager-tv-input.css\');\\n        $modx->regClientStartupScript($mediamanager->config[\'assets_url\'] . \'libs\\/jquery\\/1.12.1\\/js\\/jquery.min.js\');\\n        $modx->regClientStartupScript($mediamanager->config[\'assets_url\'] . \'libs\\/jquery-ui\\/1.11.4\\/js\\/jquery-ui.min.js\');\\n        $modx->regClientStartupScript($mediamanager->config[\'assets_url\'] . \'js\\/mgr\\/mediamanager-modal.js\');\\n\\n        break;\\n}"}',
+        'guid' => '08a71de2ed61a9389fa7e0d20a095eaa',
+        'native_key' => NULL,
+        'signature' => 'a75f3e2733a1fc253c0b9b8c0d40968f',
+      ),
+      '1dfac3df7811029c4b3cb51da4fc3fd9' => 
+      array (
+        'unique_key' => 'name',
+        'preserve_keys' => false,
+        'update_object' => true,
+        'related_objects' => 
+        array (
+          'PluginEvents' => 
+          array (
+            '4730350bf1a425cb74215368ffd0c073' => 
+            array (
+              'class' => 'modPluginEvent',
+              'object' => '{"pluginid":0,"event":"ContentBlocks_RegisterInputs","priority":0,"propertyset":0}',
+              'guid' => '8fe359bf18565a151675909f888f0d94',
+              'native_key' => 
+              array (
+                0 => 0,
+                1 => 'ContentBlocks_RegisterInputs',
+              ),
+              'signature' => '18a6fb862f7fa652f873bc6624a2466f',
+            ),
+          ),
+        ),
+        'related_object_attributes' => 
+        array (
+          'PluginEvents' => 
+          array (
+            'preserve_keys' => true,
+            'update_object' => false,
+            'unique_key' => 
+            array (
+              0 => 'pluginid',
+              1 => 'event',
+            ),
+          ),
+        ),
+        'class' => 'modPlugin',
+        'object' => '{"id":null,"source":0,"property_preprocess":0,"name":"mediaManagerContentBlocks","description":"","editor_type":0,"category":0,"cache_type":0,"plugincode":"\\/**\\n * @var modX $modx\\n * @var ContentBlocks $contentBlocks\\n * @var array $scriptProperties\\n *\\/\\nif ($modx->event->name == \'ContentBlocks_RegisterInputs\') {\\n    \\/\\/ Load your own class. No need to require cbBaseInput, that\'s already loaded.\\n    $path = $modx->getOption(\'mediamanager.core_path\', null, MODX_CORE_PATH . \'components\\/mediamanager\\/\');\\n    \\n    require_once($path . \'elements\\/inputs\\/cb_mediamanager_input.class.php\');\\n    \\n    \\/\\/ Create an instance of your input type, passing the $contentBlocks var\\n    $instance = new cbMediaManagerInput($contentBlocks);\\n    \\n    \\/\\/ Pass back your input reference as key, and the instance as value\\n    $modx->event->output(array(\\n        \'cb_mediamanager_input\' => $instance\\n    ));\\n}","locked":0,"properties":"a:0:{}","disabled":0,"moduleguid":"","static":0,"static_file":"","content":"\\/**\\n * @var modX $modx\\n * @var ContentBlocks $contentBlocks\\n * @var array $scriptProperties\\n *\\/\\nif ($modx->event->name == \'ContentBlocks_RegisterInputs\') {\\n    \\/\\/ Load your own class. No need to require cbBaseInput, that\'s already loaded.\\n    $path = $modx->getOption(\'mediamanager.core_path\', null, MODX_CORE_PATH . \'components\\/mediamanager\\/\');\\n    \\n    require_once($path . \'elements\\/inputs\\/cb_mediamanager_input.class.php\');\\n    \\n    \\/\\/ Create an instance of your input type, passing the $contentBlocks var\\n    $instance = new cbMediaManagerInput($contentBlocks);\\n    \\n    \\/\\/ Pass back your input reference as key, and the instance as value\\n    $modx->event->output(array(\\n        \'cb_mediamanager_input\' => $instance\\n    ));\\n}"}',
+        'guid' => 'f3f1129c35a21ed0002ca2a12fab46d8',
+        'native_key' => NULL,
+        'signature' => '6fc172b90a1b0e2f98d0c4d297971de1',
+      ),
+      '86ab338063929172c05e8d412d494b32' => 
+      array (
+        'unique_key' => 'name',
+        'preserve_keys' => false,
+        'update_object' => true,
+        'related_objects' => 
+        array (
+          'PluginEvents' => 
+          array (
+            '9a632837cef3159d43c32d417925a2fe' => 
+            array (
+              'class' => 'modPluginEvent',
+              'object' => '{"pluginid":0,"event":"ContentBlocks_RegisterInputs","priority":0,"propertyset":0}',
+              'guid' => '8aa59b924417fa22ec94bc45f7e497ec',
+              'native_key' => 
+              array (
+                0 => 0,
+                1 => 'ContentBlocks_RegisterInputs',
+              ),
+              'signature' => 'ce1a41d32f257c43b5f752e1d1ff7288',
+            ),
+          ),
+        ),
+        'related_object_attributes' => 
+        array (
+          'PluginEvents' => 
+          array (
+            'preserve_keys' => true,
+            'update_object' => false,
+            'unique_key' => 
+            array (
+              0 => 'pluginid',
+              1 => 'event',
+            ),
+          ),
+        ),
+        'class' => 'modPlugin',
+        'object' => '{"id":null,"source":0,"property_preprocess":0,"name":"mediaManagerCbGalleryInput","description":"","editor_type":0,"category":0,"cache_type":0,"plugincode":"\\/**\\n * @var modX $modx\\n * @var ContentBlocks $contentBlocks\\n * @var array $scriptProperties\\n *\\/\\nif ($modx->event->name == \'ContentBlocks_RegisterInputs\') {\\n    \\/\\/ Load your own class. No need to require cbBaseInput, that\'s already loaded.\\n    $path = $modx->getOption(\'mediamanager.core_path\', null, MODX_CORE_PATH . \'components\\/mediamanager\\/\');\\n    require_once($path . \'elements\\/inputs\\/cb_mediamanager_gallery_input.class.php\');\\n    \\n    \\/\\/ Create an instance of your input type, passing the $contentBlocks var\\n    $instance = new cbMediaManagerGalleryInput($contentBlocks);\\n    \\n    \\/\\/ Pass back your input reference as key, and the instance as value\\n    $modx->event->output(array(\\n        \'cb_mediamanager_gallery_input\' => $instance\\n    ));\\n}","locked":0,"properties":"a:0:{}","disabled":0,"moduleguid":"","static":0,"static_file":"","content":"\\/**\\n * @var modX $modx\\n * @var ContentBlocks $contentBlocks\\n * @var array $scriptProperties\\n *\\/\\nif ($modx->event->name == \'ContentBlocks_RegisterInputs\') {\\n    \\/\\/ Load your own class. No need to require cbBaseInput, that\'s already loaded.\\n    $path = $modx->getOption(\'mediamanager.core_path\', null, MODX_CORE_PATH . \'components\\/mediamanager\\/\');\\n    require_once($path . \'elements\\/inputs\\/cb_mediamanager_gallery_input.class.php\');\\n    \\n    \\/\\/ Create an instance of your input type, passing the $contentBlocks var\\n    $instance = new cbMediaManagerGalleryInput($contentBlocks);\\n    \\n    \\/\\/ Pass back your input reference as key, and the instance as value\\n    $modx->event->output(array(\\n        \'cb_mediamanager_gallery_input\' => $instance\\n    ));\\n}"}',
+        'guid' => 'fc7215a72baa009448169d6158127555',
+        'native_key' => NULL,
+        'signature' => 'c0e33fa4b3d6482e5db95f04c63fbff0',
+      ),
+    ),
+  ),
+  'related_object_attributes' => 
+  array (
+    'Children' => 
+    array (
+      'preserve_keys' => false,
+      'update_object' => true,
+      'unique_key' => 
+      array (
+        0 => 'parent',
+        1 => 'category',
+      ),
+    ),
+    'Snippets' => 
+    array (
+      'preserve_keys' => false,
+      'update_object' => true,
+      'unique_key' => 'name',
+    ),
+    'Chunks' => 
+    array (
+      'preserve_keys' => false,
+      'update_object' => true,
+      'unique_key' => 'name',
+    ),
+    'Templates' => 
+    array (
+      'preserve_keys' => false,
+      'update_object' => true,
+      'unique_key' => 'templatename',
+    ),
+    'TemplateVars' => 
+    array (
+      'preserve_keys' => false,
+      'update_object' => true,
+      'unique_key' => 'name',
+    ),
+    'Plugins' => 
+    array (
+      'unique_key' => 'name',
+      'preserve_keys' => false,
+      'update_object' => true,
+      'related_objects' => true,
+      'related_object_attributes' => 
+      array (
+        'PluginEvents' => 
+        array (
+          'preserve_keys' => true,
+          'update_object' => false,
+          'unique_key' => 
+          array (
+            0 => 'pluginid',
+            1 => 'event',
+          ),
+        ),
+      ),
+    ),
+  ),
+  'namespace' => 'mediamanager',
+  'resolve' => 
+  array (
+    0 => 
+    array (
+      'type' => 'file',
+      'body' => '{"source":"mediamanager-0.1.4-pl\\/modCategory\\/3b8135c79f51f812975c8ee5028090d9\\/0\\/","target":"return MODX_ASSETS_PATH . \'components\\/\';","name":"mediamanager"}',
+    ),
+    1 => 
+    array (
+      'type' => 'file',
+      'body' => '{"source":"mediamanager-0.1.4-pl\\/modCategory\\/3b8135c79f51f812975c8ee5028090d9\\/1\\/","target":"return MODX_CORE_PATH . \'components\\/\';","name":"mediamanager"}',
+    ),
+    2 => 
+    array (
+      'type' => 'php',
+      'body' => '{"source":"mediamanager-0.1.4-pl\\/modCategory\\/3b8135c79f51f812975c8ee5028090d9.gpm.resolve.tables.resolver","type":"php","name":"gpm.resolve.tables"}',
+    ),
+  ),
+  'validate' => NULL,
+  'vehicle_package' => 'transport',
+  'vehicle_class' => 'xPDOObjectVehicle',
+  'guid' => 'a750580628f7c5dc73d144a3dc2a8828',
+  'package' => 'modx',
+  'class' => 'modCategory',
+  'signature' => '3b8135c79f51f812975c8ee5028090d9',
+  'native_key' => NULL,
+  'object' => '{"id":null,"parent":0,"category":"MediaManager","rank":0}',
+);

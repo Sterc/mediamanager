@@ -1,0 +1,16 @@
+<?php return array (
+  'unique_key' => 'key',
+  'preserve_keys' => true,
+  'update_object' => false,
+  'namespace' => 'mediamanager',
+  'resolve' => NULL,
+  'validate' => NULL,
+  'vehicle_package' => 'transport',
+  'vehicle_class' => 'xPDOObjectVehicle',
+  'guid' => 'c8160e1ee3700473f40c6a57eafad2cb',
+  'package' => 'modx',
+  'class' => 'modSystemSetting',
+  'signature' => '2176ae4e924aa2a300ef3c8194ff3d46',
+  'native_key' => 'mediamanager.cleanup_max_age',
+  'object' => '{"key":"mediamanager.cleanup_max_age","value":"365","xtype":"textfield","namespace":"mediamanager","area":"default","editedon":null}',
+);

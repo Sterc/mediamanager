@@ -1,0 +1,30 @@
+<?php return array (
+  'preserve_keys' => true,
+  'update_object' => true,
+  'unique_key' => 'text',
+  'related_objects' => true,
+  'related_object_attributes' => 
+  array (
+    'Action' => 
+    array (
+      'preserve_keys' => false,
+      'update_object' => true,
+      'unique_key' => 
+      array (
+        0 => 'namespace',
+        1 => 'controller',
+      ),
+    ),
+  ),
+  'namespace' => 'mediamanager',
+  'resolve' => NULL,
+  'validate' => NULL,
+  'vehicle_package' => 'transport',
+  'vehicle_class' => 'xPDOObjectVehicle',
+  'guid' => 'f97bb77f6367de68c806e5b40028ae10',
+  'package' => 'modx',
+  'class' => 'modMenu',
+  'signature' => '67e37c2cc6e726c5bc862e0bc36b7e6f',
+  'native_key' => 'mediamanager',
+  'object' => '{"text":"mediamanager","parent":"media","action":"home","description":"mediamanager.desc","icon":"","menuindex":0,"params":"","handler":"","permissions":"file_manager","namespace":"mediamanager"}',
+);
