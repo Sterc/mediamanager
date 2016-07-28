@@ -1521,7 +1521,7 @@ class MediaManagerFilesHelper
         }
 
         foreach ($files as $file) {
-            $zip->addFile($this->uploadDirectory . $this->removeSlashes($file->get('path')), $file->get('path'));
+            $zip->addFile($this->uploadDirectory . $file->get('path'), $file->get('path'));
         }
 
         $zip->close();
@@ -1550,7 +1550,7 @@ class MediaManagerFilesHelper
 
         // Return download link
         $response['message'] = $this->mediaManager->modx->lexicon('mediamanager.files.share_download', array(
-            'link' => '<pre>' . $this->removeSlashes($this->mediaManager->modx->getOption('site_url')) . $zipUrl . '</pre>',
+            'link' => '<pre>' . $zipUrl . '</pre>',
             'expiration' => self::DOWNLOAD_EXPIRATION
         ));
 
