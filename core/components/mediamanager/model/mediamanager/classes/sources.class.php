@@ -230,8 +230,10 @@ class MediaManagerSourcesHelper
             'id'               => $source->get('id'),
             'name'             => $source->get('name'),
             'basePath'         => $properties['basePath']['value'] ?: '',
+            'basePathRelative' => $properties['basePathRelative']['value'],
             'baseUrl'          => $properties['baseUrl']['value'] ?: '',
-            'allowedFileTypes' => $properties['allowedFileTypes']['value'] ?: '',
+            'baseUrlRelative'  => $properties['baseUrlRelative']['value'],
+            'allowedFileTypes' => $properties['allowedFileTypes']['value'] ?: ''
         ];
 
         return $source;

@@ -12,10 +12,9 @@ class MediaManagerFilesHelper
     const STATUS_SUCCESS = 'success';
     const STATUS_ERROR = 'error';
 
-    const UPLOAD_DIRECTORY = 'uploads';
     const ARCHIVE_DIRECTORY = 'archive';
     const DOWNLOAD_DIRECTORY = 'download';
-    const VERSION_DIRECTORY = 'versions';
+    const VERSION_DIRECTORY = 'version';
 
     const DOWNLOAD_EXPIRATION = 14;
     const MAX_FILE_SIZE = 50;
@@ -27,12 +26,19 @@ class MediaManagerFilesHelper
     private $mediaManager = null;
 
     /**
-     * Upload paths.
+     * Upload urls.
      */
     private $uploadUrl = null;
+    private $uploadUrlYear = null;
+    private $uploadUrlMonth = null;
+
+    /**
+     * Upload paths.
+     */
     private $uploadDirectory = null;
     private $uploadDirectoryYear = null;
     private $uploadDirectoryMonth = null;
+    private $uploadDirectoryNoBase = null;
 
     /**
      * Archive paths.
@@ -192,11 +198,12 @@ class MediaManagerFilesHelper
 
         $data                     = $this->getFile($fileId);
         $file                     = $data['file']->toArray();
+        $source                   = $this->mediaManager->sources->getSource($file['media_sources_id']);
 
         $file['file_size']        = $this->formatFileSize($file['file_size']);
         $file['uploaded_by_name'] = $data['user']->get('fullname');
         $file['is_archived']      = (int) $file['is_archived'];
-
+        $file['path']             = $this->fileUrl($file, $source);
         $bodyData['file']         = $file;
         $footerData['file']       = $file;
 
@@ -347,6 +354,52 @@ class MediaManagerFilesHelper
     }
 
     /**
+     * Get file path.
+     *
+     * @param array $file
+     * @param null|object $source
+     * @param string $type Can be path or archive_path
+     *
+     * @return string
+     */
+    public function filePath($file, $source = null, $type = 'path')
+    {
+        if (!$source) {
+            $source = $this->mediaManager->sources->getSource($file['media_sources_id']);
+        }
+
+        $filePath = $source['basePath'];
+        if ($source['basePathRelative'] !== false) {
+            $filePath = $this->addTrailingSlash(MODX_BASE_PATH) . $this->removeSlashes($source['basePath']) . DIRECTORY_SEPARATOR;
+        }
+
+        return $filePath . $file[$type];
+    }
+
+    /**
+     * Get file url.
+     *
+     * @param array $file
+     * @param null|object $source
+     * @param string $type Can be path or archive_path
+     *
+     * @return string
+     */
+    public function fileUrl($file, $source = null, $type = 'path')
+    {
+        if (!$source) {
+            $source = $this->mediaManager->sources->getSource($file['media_sources_id']);
+        }
+
+        $filePath = $source['baseUrl'];
+        if ($source['baseUrlRelative'] !== false) {
+            $filePath = $this->addTrailingSlash($this->mediaManager->modx->getOption('site_url')) . $this->removeSlashes($source['baseUrl']) . DIRECTORY_SEPARATOR;
+        }
+
+        return $filePath . $file[$type];
+    }
+
+    /**
      * Get files.
      *
      * @param string $search
@@ -481,6 +534,7 @@ class MediaManagerFilesHelper
             $file['categories'] = [];
             $file['selected']   = 0;
             $file['file_size']  = $this->formatFileSize($file['file_size']);
+            $file['path']       = $this->fileUrl($file);
 
             if (in_array($file['id'], $selectedFilesIds)) {
                 $file['selected'] = 1;
@@ -488,7 +542,7 @@ class MediaManagerFilesHelper
 
             if ($viewMode === 'grid') {
                 if ($this->isImage($file['file_type'])) {
-                    $file['preview_path'] = MODX_CONNECTORS_URL . '/system/phpthumb.php?src=' . ($isArchive ? $file['archive_path'] : $file['path']) . '&w=230&h=180&q=100&new=' . $file['file_hash'];
+                    $file['preview_path'] = MODX_CONNECTORS_URL . '/system/phpthumb.php?src=' . ($isArchive ? $this->fileUrl($file, null, 'archive_path') : $file['path']) . '&w=230&h=180&q=100&new=' . $file['file_hash'];
                     $file['preview'] = $this->mediaManager->getChunk('files/file_preview_img', $file);
                 } elseif($file['file_type'] === 'pdf' && extension_loaded('Imagick')) {
                     $file['preview_path'] = str_replace('.pdf', '_thumb.jpg', $file['path']);
@@ -707,8 +761,13 @@ class MediaManagerFilesHelper
             $data = $_REQUEST;
         }
 
+        $sourceId = 0;
+        if (isset($fileData['source'])) {
+            $sourceId = $fileData['source'];
+        }
+
         // Create upload directory
-        if (!$this->createUploadDirectory()) {
+        if (!$this->createUploadDirectory($sourceId)) {
             return [
                 'status'  => self::STATUS_ERROR,
                 'message' => $this->alertMessageHtml($this->mediaManager->modx->lexicon('mediamanager.files.error.create_directory'), 'danger')
@@ -807,7 +866,7 @@ class MediaManagerFilesHelper
 
         $file->set('name', $fileData['unique_name']);
         $file->set('version', $fileData['version']);
-        $file->set('path', $this->uploadUrl . $fileData['unique_name']);
+        $file->set('path', $this->uploadDirectoryNoBase . $fileData['unique_name']);
         $file->set('file_type', $fileData['extension']);
         $file->set('file_size', $fileData['size']);
         $file->set('file_hash', $fileData['hash']);
@@ -1916,38 +1975,58 @@ class MediaManagerFilesHelper
     /**
      * Create upload directory if not exists.
      *
+     * @param int $sourceId
      * @return bool
      */
-    private function createUploadDirectory()
+    private function createUploadDirectory($sourceId = 0)
     {
-        // Set upload directory, year and month
-        $year            = date('Y');
-        $month           = date('m');
-        $uploadDirectory = $this->addSlashes(self::UPLOAD_DIRECTORY);
+        // Set year and month
+        $year  = date('Y');
+        $month = date('m');
 
-        // Get media source
-        $mediaSource = $this->mediaManager->sources->getSource($this->mediaManager->sources->getCurrentSource());
-        if ($mediaSource) {
-            $uploadDirectory = $mediaSource['basePath'];
+        if (!$sourceId) {
+            $sourceId = $this->mediaManager->sources->getCurrentSource();
         }
 
-        // Upload paths
-        $this->uploadUrl            = $uploadDirectory . $year . DIRECTORY_SEPARATOR . $month . DIRECTORY_SEPARATOR;
-        $this->uploadDirectory      = $this->addTrailingSlash(MODX_BASE_PATH) . $this->removeSlashes($uploadDirectory) . DIRECTORY_SEPARATOR;
-        $this->uploadDirectoryYear  = $this->uploadDirectory . $year . DIRECTORY_SEPARATOR;
-        $this->uploadDirectoryMonth = $this->uploadDirectoryYear . $month . DIRECTORY_SEPARATOR;
+        // Get media source
+        $mediaSource = $this->mediaManager->sources->getSource($sourceId);
 
-        // Archive paths
-        $this->archiveUrl           = $uploadDirectory . self::ARCHIVE_DIRECTORY . DIRECTORY_SEPARATOR;
-        $this->archiveDirectory     = $this->uploadDirectory . self::ARCHIVE_DIRECTORY . DIRECTORY_SEPARATOR;
+        if (!$mediaSource) {
+            return false;
+        }
 
-        // Download paths
-        $this->downloadUrl          = $uploadDirectory . self::DOWNLOAD_DIRECTORY . DIRECTORY_SEPARATOR;
-        $this->downloadDirectory    = $this->uploadDirectory . self::DOWNLOAD_DIRECTORY . DIRECTORY_SEPARATOR;
+        // Upload urls
+        $this->uploadUrl             = $mediaSource['baseUrl'];
+        if ($mediaSource['baseUrlRelative'] !== false) {
+            $this->uploadUrl         = $this->addTrailingSlash($this->mediaManager->modx->getOption('site_url')) . $this->removeSlashes($mediaSource['baseUrl']) . DIRECTORY_SEPARATOR;
+        }
 
-        // Version paths
-        $this->versionUrl           = $uploadDirectory . self::VERSION_DIRECTORY . DIRECTORY_SEPARATOR;
-        $this->versionDirectory     = $this->uploadDirectory . self::VERSION_DIRECTORY . DIRECTORY_SEPARATOR;
+        $this->uploadUrlYear         = $this->uploadUrl . $year . DIRECTORY_SEPARATOR;
+        $this->uploadUrlMonth        = $this->uploadUrlYear . $month . DIRECTORY_SEPARATOR;
+
+        // Upload directories
+        $this->uploadDirectory       = $mediaSource['basePath'];
+        if ($mediaSource['basePathRelative'] !== false) {
+            $this->uploadDirectory   = $this->addTrailingSlash(MODX_BASE_PATH) . $this->removeSlashes($mediaSource['basePath']) . DIRECTORY_SEPARATOR;
+        }
+
+        $this->uploadDirectoryYear   = $this->uploadDirectory . $year . DIRECTORY_SEPARATOR;
+        $this->uploadDirectoryMonth  = $this->uploadDirectoryYear . $month . DIRECTORY_SEPARATOR;
+
+        // Upload directory without base path
+        $this->uploadDirectoryNoBase = $year . DIRECTORY_SEPARATOR . $month . DIRECTORY_SEPARATOR;
+
+        // Archive url and path
+        $this->archiveUrl            = $this->uploadUrl . self::ARCHIVE_DIRECTORY . DIRECTORY_SEPARATOR;
+        $this->archiveDirectory      = $this->uploadDirectory . self::ARCHIVE_DIRECTORY . DIRECTORY_SEPARATOR;
+
+        // Download url and path
+        $this->downloadUrl           = $this->uploadUrl . self::DOWNLOAD_DIRECTORY . DIRECTORY_SEPARATOR;
+        $this->downloadDirectory     = $this->uploadDirectory . self::DOWNLOAD_DIRECTORY . DIRECTORY_SEPARATOR;
+
+        // Version url and path
+        $this->versionUrl            = $this->uploadUrl . self::VERSION_DIRECTORY . DIRECTORY_SEPARATOR;
+        $this->versionDirectory      = $this->uploadDirectory . self::VERSION_DIRECTORY . DIRECTORY_SEPARATOR;
 
         if (!file_exists($this->uploadDirectory)) {
             if (!$this->createDirectory($this->uploadDirectory)) return false;
@@ -1984,9 +2063,9 @@ class MediaManagerFilesHelper
      *
      * @return bool
      */
-    private function createDirectory($directoryPath, $mode = 0755)
+    private function createDirectory($directoryPath, $mode = 0777)
     {
-        return mkdir($directoryPath, $mode);
+        return mkdir($directoryPath, $mode, true);
     }
 
     /**
