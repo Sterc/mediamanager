@@ -363,7 +363,7 @@ class MediaManagerFilesHelper
      * Get file path.
      *
      * @param array $file
-     * @param null|object $source
+     * @param null|array $source
      * @param string $type Can be path or archive_path
      *
      * @return string
@@ -799,7 +799,7 @@ class MediaManagerFilesHelper
 
         // Add unique id to file name if needed
         $fileInformation = pathinfo($file['name']);
-        $fileName = $this->createUniqueFile($this->uploadDirectoryMonth, $this->sanitizeFileName($fileInformation['filename']), $fileInformation['extension']);
+        $fileName = $this->createUniqueFile($this->uploadDirectory . $this->uploadDirectoryMonth, $this->sanitizeFileName($fileInformation['filename']), $fileInformation['extension']);
 
         $file['extension']   = strtolower($fileInformation['extension']);
         $file['unique_name'] = $fileName;
@@ -815,8 +815,8 @@ class MediaManagerFilesHelper
         // Tinify image
         if (!isset($options['skip_tinify'])) {
             if ($file['extension'] === 'jpg' || $file['extension'] === 'png') {
-                if ($this->tinify($this->uploadDirectoryMonth . $file['unique_name'])) {
-                    $file['size'] = filesize($this->uploadDirectoryMonth . $file['unique_name']);
+                if ($this->tinify($this->uploadDirectory . $this->uploadDirectoryMonth . $file['unique_name'])) {
+                    $file['size'] = filesize($this->uploadDirectory . $this->uploadDirectoryMonth . $file['unique_name']);
                 }
             }
         }
@@ -830,13 +830,13 @@ class MediaManagerFilesHelper
             $pdfPreview->readImageFile($pdfHandle);
             $pdfPreview->setIteratorIndex(0);
             $pdfPreview->setImageFormat('jpeg');
-            $pdfPreview->writeImage($this->uploadDirectoryMonth . $previewName);
+            $pdfPreview->writeImage($this->uploadDirectory . $this->uploadDirectoryMonth . $previewName);
             $pdfPreview->clear();
             $pdfPreview->destroy();
         }
 
         $file['version']    = $this->createVersionNumber();
-        $file['upload_dir'] = $this->uploadDirectoryMonth;
+        $file['upload_dir'] = $this->uploadDirectory . $this->uploadDirectoryMonth;
 
         // Add file to database
         $fileId         = $this->insertFile($file, $data);
@@ -872,7 +872,7 @@ class MediaManagerFilesHelper
 
         $file->set('name', $fileData['unique_name']);
         $file->set('version', $fileData['version']);
-        $file->set('path', $this->uploadDirectoryNoBase . $fileData['unique_name']);
+        $file->set('path', $this->uploadDirectoryMonth . $fileData['unique_name']);
         $file->set('file_type', $fileData['extension']);
         $file->set('file_size', $fileData['size']);
         $file->set('file_hash', $fileData['hash']);
@@ -887,7 +887,7 @@ class MediaManagerFilesHelper
 
         // If file type is image set dimensions
         if ($this->isImage($fileData['extension'])) {
-            $image = getimagesize($this->uploadDirectoryMonth . $fileData['unique_name']);
+            $image = getimagesize($this->uploadDirectory . $this->uploadDirectoryMonth . $fileData['unique_name']);
             if ($image) {
                 $file->set('file_dimensions', $image[0] . 'x' . $image[1]);
             }
@@ -965,6 +965,14 @@ class MediaManagerFilesHelper
 
         $file = $this->mediaManager->modx->getObject('MediamanagerFiles', array('id' => $fileId));
 
+        // Create upload directory
+        if (!$this->createUploadDirectory($file->get('media_sources_id'))) {
+            return [
+                'status'  => self::STATUS_ERROR,
+                'message' => $this->alertMessageHtml($this->mediaManager->modx->lexicon('mediamanager.files.error.create_directory'), 'danger')
+            ];
+        }
+
         $version                = $this->createVersionNumber($file->get('id'));
         $data['version']        = $version;
 
@@ -981,7 +989,7 @@ class MediaManagerFilesHelper
 
         $data['unique_name']    = $filename;
         $data['extension']      = $fileInformation['extension'];
-        $data['upload_dir']     = MODX_BASE_PATH . ltrim($pathInfo['dirname'], '/') . DIRECTORY_SEPARATOR;
+        $data['upload_dir']     = $this->uploadDirectory . $this->uploadDirectoryMonth;
 
         $this->saveMetaFields($fileId, $metaArray);
 
@@ -1266,18 +1274,18 @@ class MediaManagerFilesHelper
             return $response;
         }
 
-        // Create archive directory
-        if (!$this->createUploadDirectory()) {
-            $response['status']  = self::STATUS_ERROR;
-            $response['message'] = $this->alertMessageHtml($this->mediaManager->modx->lexicon('mediamanager.files.error.create_directory'), 'danger');
-            return $response;
-        }
-
         // Archive files
         foreach ($fileIds as $key => $id) {
             $file = $this->mediaManager->modx->getObject('MediamanagerFiles', $id);
 
-            $old = $this->addTrailingSlash(MODX_BASE_PATH) . $this->removeSlashes($file->get('path'));
+            // Create archive directories
+            if (!$this->createUploadDirectory($file->get('media_sources_id'))) {
+                $response['status']  = self::STATUS_ERROR;
+                $response['message'] = $this->alertMessageHtml($this->mediaManager->modx->lexicon('mediamanager.files.error.create_directory'), 'danger');
+                return $response;
+            }
+
+            $old = $this->filePath($file->toArray());
             $new = $this->createUniqueFile($this->archiveDirectory, time(), $file->get('file_type'), uniqid('-'));
 
             if (!$this->renameFile($old, $this->archiveDirectory . $new)) {
@@ -2007,7 +2015,7 @@ class MediaManagerFilesHelper
             $this->uploadUrl         = $this->addTrailingSlash($this->mediaManager->modx->getOption('site_url')) . $this->removeSlashes($mediaSource['baseUrl']) . DIRECTORY_SEPARATOR;
         }
 
-        $this->uploadUrlYear         = $this->uploadUrl . $year . DIRECTORY_SEPARATOR;
+        $this->uploadUrlYear         = $year . DIRECTORY_SEPARATOR;
         $this->uploadUrlMonth        = $this->uploadUrlYear . $month . DIRECTORY_SEPARATOR;
 
         // Upload directories
@@ -2016,46 +2024,43 @@ class MediaManagerFilesHelper
             $this->uploadDirectory   = $this->addTrailingSlash(MODX_BASE_PATH) . $this->removeSlashes($mediaSource['basePath']) . DIRECTORY_SEPARATOR;
         }
 
-        $this->uploadDirectoryYear   = $this->uploadDirectory . $year . DIRECTORY_SEPARATOR;
+        $this->uploadDirectoryYear   = $year . DIRECTORY_SEPARATOR;
         $this->uploadDirectoryMonth  = $this->uploadDirectoryYear . $month . DIRECTORY_SEPARATOR;
 
-        // Upload directory without base path
-        $this->uploadDirectoryNoBase = $year . DIRECTORY_SEPARATOR . $month . DIRECTORY_SEPARATOR;
-
         // Archive url and path
-        $this->archiveUrl            = $this->uploadUrl . self::ARCHIVE_DIRECTORY . DIRECTORY_SEPARATOR;
-        $this->archiveDirectory      = $this->uploadDirectory . self::ARCHIVE_DIRECTORY . DIRECTORY_SEPARATOR;
+        $this->archiveUrl            = self::ARCHIVE_DIRECTORY . DIRECTORY_SEPARATOR;
+        $this->archiveDirectory      = self::ARCHIVE_DIRECTORY . DIRECTORY_SEPARATOR;
 
         // Download url and path
-        $this->downloadUrl           = $this->uploadUrl . self::DOWNLOAD_DIRECTORY . DIRECTORY_SEPARATOR;
-        $this->downloadDirectory     = $this->uploadDirectory . self::DOWNLOAD_DIRECTORY . DIRECTORY_SEPARATOR;
+        $this->downloadUrl           = self::DOWNLOAD_DIRECTORY . DIRECTORY_SEPARATOR;
+        $this->downloadDirectory     = self::DOWNLOAD_DIRECTORY . DIRECTORY_SEPARATOR;
 
         // Version url and path
-        $this->versionUrl            = $this->uploadUrl . self::VERSION_DIRECTORY . DIRECTORY_SEPARATOR;
-        $this->versionDirectory      = $this->uploadDirectory . self::VERSION_DIRECTORY . DIRECTORY_SEPARATOR;
+        $this->versionUrl            = self::VERSION_DIRECTORY . DIRECTORY_SEPARATOR;
+        $this->versionDirectory      = self::VERSION_DIRECTORY . DIRECTORY_SEPARATOR;
 
-        if (!file_exists($this->uploadDirectory)) {
-            if (!$this->createDirectory($this->uploadDirectory)) return false;
+        if (!file_exists($this->uploadDirectory . $this->uploadDirectory)) {
+            if (!$this->createDirectory($this->uploadDirectory . $this->uploadDirectory)) return false;
         }
 
-        if (!file_exists($this->uploadDirectoryYear)) {
-            if (!$this->createDirectory($this->uploadDirectoryYear)) return false;
+        if (!file_exists($this->uploadDirectory . $this->uploadDirectoryYear)) {
+            if (!$this->createDirectory($this->uploadDirectory . $this->uploadDirectoryYear)) return false;
         }
 
-        if (!file_exists($this->uploadDirectoryMonth)) {
-            if (!$this->createDirectory($this->uploadDirectoryMonth)) return false;
+        if (!file_exists($this->uploadDirectory . $this->uploadDirectoryMonth)) {
+            if (!$this->createDirectory($this->uploadDirectory . $this->uploadDirectoryMonth)) return false;
         }
 
-        if (!file_exists($this->archiveDirectory)) {
-            if (!$this->createDirectory($this->archiveDirectory)) return false;
+        if (!file_exists($this->uploadDirectory . $this->archiveDirectory)) {
+            if (!$this->createDirectory($this->uploadDirectory . $this->archiveDirectory)) return false;
         }
 
-        if (!file_exists($this->downloadDirectory)) {
-            if (!$this->createDirectory($this->downloadDirectory)) return false;
+        if (!file_exists($this->uploadDirectory . $this->downloadDirectory)) {
+            if (!$this->createDirectory($this->uploadDirectory . $this->downloadDirectory)) return false;
         }
 
         if (!file_exists($this->versionDirectory)) {
-            if (!$this->createDirectory($this->versionDirectory)) return false;
+            if (!$this->createDirectory($this->uploadDirectory . $this->versionDirectory)) return false;
         }
 
         return true;
