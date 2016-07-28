@@ -1521,7 +1521,7 @@ class MediaManagerFilesHelper
         }
 
         foreach ($files as $file) {
-            $zip->addFile($this->addTrailingSlash(MODX_BASE_PATH) . $this->removeSlashes($file->get('path')), $file->get('path'));
+            $zip->addFile($this->uploadDirectory . $this->removeSlashes($file->get('path')), $file->get('path'));
         }
 
         $zip->close();
