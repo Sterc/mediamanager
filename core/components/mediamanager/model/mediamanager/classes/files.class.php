@@ -2108,6 +2108,11 @@ class MediaManagerFilesHelper
     {
         $target     = $this->uploadDirectory . $this->uploadDirectoryMonth . $file['unique_name'];
         $uploadFile = move_uploaded_file($file['tmp_name'], $target);
+        
+        if (!$uploadFile) {
+            $uploadFile = copy($file['tmp_name'], $target);
+        }
+
         if ($uploadFile) {
             return true;
         }
