@@ -2063,7 +2063,7 @@ class MediaManagerFilesHelper
      *
      * @return bool
      */
-    private function createDirectory($directoryPath, $mode = 0777)
+    private function createDirectory($directoryPath, $mode = 0755)
     {
         return mkdir($directoryPath, $mode, true);
     }
