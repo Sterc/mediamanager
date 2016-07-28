@@ -1172,7 +1172,7 @@ class MediaManagerFilesHelper
         }
 
         // Delete file from server
-        unlink($this->addTrailingSlash(MODX_BASE_PATH) . $this->removeSlashes($path));
+        unlink($this->uploadDirectory . $path);
 
         // Delete file
         $this->mediaManager->modx->removeObject('MediamanagerFiles', array('id' => $fileId));
@@ -1296,7 +1296,7 @@ class MediaManagerFilesHelper
 
             $file->set('is_archived', 1);
             $file->set('archive_date', time());
-            $file->set('archive_path', $this->archiveUrl . $new);
+            $file->set('archive_path', $this->archiveDirectory . $new);
             $file->save();
 
             $response['archivedFiles'][] = $key;
@@ -1441,8 +1441,8 @@ class MediaManagerFilesHelper
         foreach ($fileIds as $key => $id) {
             $file = $this->mediaManager->modx->getObject('MediamanagerFiles', $id);
 
-            $old = $this->addTrailingSlash(MODX_BASE_PATH) . $this->removeSlashes($file->get('archive_path'));
-            $new = $this->addTrailingSlash(MODX_BASE_PATH) . $this->removeSlashes($file->get('path'));
+            $old = $this->uploadDirectory . $file->get('archive_path');
+            $new = $this->uploadDirectory . $file->get('path');
 
             if (!$this->renameFile($old, $new)) {
                 $response['status'] = self::STATUS_ERROR;
@@ -1504,9 +1504,9 @@ class MediaManagerFilesHelper
 
         // Create zip
         $zip         = new ZipArchive();
-        $zipName     = $this->createUniqueFile($this->downloadDirectory, sha1(time()), 'zip', uniqid('-'));
-        $zipLocation = $this->downloadDirectory . $zipName;
-        $zipUrl      = $this->addTrailingSlash($this->downloadUrl) . $zipName;
+        $zipName     = $this->createUniqueFile($this->uploadDirectory . $this->downloadDirectory, sha1(time()), 'zip', uniqid('-'));
+        $zipLocation = $this->uploadDirectory . $this->downloadDirectory . $zipName;
+        $zipUrl      = $this->addTrailingSlash($this->uploadUrl . $this->downloadUrl) . $zipName;
 
         $zipFile = $zip->open($zipLocation, ZipArchive::CREATE);
         if ($zipFile !== true) {
@@ -1684,7 +1684,7 @@ class MediaManagerFilesHelper
         }
 
         $file['version']    = $this->createVersionNumber();
-        $file['upload_dir'] = $this->uploadDirectoryMonth;
+        $file['upload_dir'] = $this->uploadDirectory . $this->uploadDirectoryMonth;
         // Add file to database
         $fileId = $this->insertFile($file, $data);
         $versionCreated = $this->saveFileVersion($fileId, $file, 'create');
@@ -1735,10 +1735,10 @@ class MediaManagerFilesHelper
 
         // Add unique id to file name if needed
         $fileName = explode('.', $file['name']);
-        $fileName = $this->createUniqueFile($this->uploadDirectoryMonth, $fileName[0], $file['file_type']);
+        $fileName = $this->createUniqueFile($this->uploadDirectory . $this->uploadDirectoryMonth, $fileName[0], $file['file_type']);
 
         // Copy file
-        $fileCreated = $this->copyFile($this->addTrailingSlash(MODX_BASE_PATH) . $this->removeSlashes($file['path']), $this->uploadDirectoryMonth . $fileName);
+        $fileCreated = $this->copyFile($this->uploadDirectory . $file['path'], $this->uploadDirectory . $this->uploadDirectoryMonth . $fileName);
         if ($fileCreated === false) {
             return [
                 'status'  => self::STATUS_ERROR,
@@ -2099,7 +2099,7 @@ class MediaManagerFilesHelper
      */
     private function uploadFile($file)
     {
-        $target     = $this->uploadDirectoryMonth . $file['unique_name'];
+        $target     = $this->uploadDirectory . $this->uploadDirectoryMonth . $file['unique_name'];
         $uploadFile = move_uploaded_file($file['tmp_name'], $target);
         if ($uploadFile) {
             return true;
@@ -2245,7 +2245,7 @@ class MediaManagerFilesHelper
      */
     private function removeFile($file)
     {
-        $target = $this->uploadDirectoryMonth . $file['unique_name'];
+        $target = $this->uploadDirectory . $this->uploadDirectoryMonth . $file['unique_name'];
 
         return unlink($target);
     }
