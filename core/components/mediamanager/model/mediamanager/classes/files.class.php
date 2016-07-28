@@ -302,6 +302,7 @@ class MediaManagerFilesHelper
 
         $versions = $this->mediaManager->modx->getIterator('MediamanagerFilesVersions', $v);
 
+        $this->setUploadPaths();
         $bodyData['history'] = '';
         foreach ($versions as $version) {
             $versionArr = $version->toArray();
@@ -318,11 +319,13 @@ class MediaManagerFilesHelper
             $versionArr['type']             = strtolower($fileInformation['extension']);
             $versionArr['file_size']        = $this->formatFileSize($versionArr['file_size']);
             $versionArr['active_version']   = $file['version'];
+            $versionArr['path']             = $this->uploadUrl . $versionArr['path'];
 
             $versionArr['replaceHtml'] = '';
             if($versionArr['action'] == 'replace') {
                 if($versionArr['replaced_file_id'] != 0){
                     $oldFile = $this->mediaManager->modx->getObject('MediamanagerFiles', array('id' => $versionArr['replaced_file_id']));
+
 
                     if($oldFile){
                         $versionArr['replaceHtml'] = '<a href="' . $oldFile->get('path') . '" target="_blank">' . $oldFile->get('name') . '</a> was replaced by <a href="' . $versionArr['path'] . '">' . $versionArr['file_name'] . '</a>.';
@@ -1103,9 +1106,11 @@ class MediaManagerFilesHelper
             $file->set('edited_on',       time());
             $file->set('edited_by',       $this->mediaManager->modx->getUser()->get('id'));
 
+            $this->setUploadPaths();
+
             //Get old file and replace current file
-            $versionFile = $this->addTrailingSlash(MODX_BASE_PATH) . $this->removeSlashes($version->get('path'));
-            $currentFile = $this->addTrailingSlash(MODX_BASE_PATH) . $this->removeSlashes($file->get('path'));
+            $versionFile = $this->uploadDirectory . $this->removeSlashes($version->get('path'));
+            $currentFile = $this->uploadDirectory . $this->removeSlashes($file->get('path'));
 
             $replacedFile = copy($versionFile, $currentFile);
             if ($replacedFile) {
