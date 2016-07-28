@@ -1625,7 +1625,7 @@ class MediaManagerFilesHelper
             $data                = $file->toArray();
             $fileInformation     = pathinfo($data['path']);
             $data['version']     = $versionNumber;
-            $data['upload_dir']  = $this->addTrailingSlash(MODX_BASE_PATH) . ltrim($this->addTrailingSlash($fileInformation['dirname']), '/');
+            $data['upload_dir']  = $this->uploadDirectory . ltrim($this->addTrailingSlash($fileInformation['dirname']), '/');
             $data['unique_name'] = $fileInformation['filename'] . '.' . $fileInformation['extension'];
 
             // Save file version.
