@@ -31,7 +31,6 @@ class cbMediaManagerGalleryInput extends cbBaseInput {
         return array(
             $assetsUrl . 'js/inputs/cb_mediamanager_gallery_input.js',
         );
-
     }
 
     /**

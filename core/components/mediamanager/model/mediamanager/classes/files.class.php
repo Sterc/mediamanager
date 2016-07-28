@@ -2127,9 +2127,6 @@ class MediaManagerFilesHelper
         }
 
         $uploadedFile = $this->uploadDirectory . $this->uploadDirectoryMonth . $file['unique_name'];
-
-      
-
         if (is_file($uploadedFile)) {
             $uploadFile = copy($uploadedFile, $target);
             if ($uploadFile) {
