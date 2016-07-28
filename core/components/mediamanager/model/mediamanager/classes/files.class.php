@@ -2070,7 +2070,7 @@ class MediaManagerFilesHelper
             if (!$this->createDirectory($this->uploadDirectory . $this->downloadDirectory)) return false;
         }
 
-        if (!file_exists($this->versionDirectory)) {
+        if (!file_exists($this->uploadDirectory . $this->versionDirectory)) {
             if (!$this->createDirectory($this->uploadDirectory . $this->versionDirectory)) return false;
         }
 
@@ -2085,7 +2085,7 @@ class MediaManagerFilesHelper
      *
      * @return bool
      */
-    private function createDirectory($directoryPath, $mode = 0755)
+    private function createDirectory($directoryPath, $mode = 0777)
     {
         return mkdir($directoryPath, $mode, true);
     }
