@@ -144,17 +144,10 @@ class MediaManagerFilesHelper
         $relations2 = $this->mediaManager->modx->getIterator('MediamanagerFiles', $q);
 
         // Get file content
-//        $q = $this->mediaManager->modx->newQuery('MediamanagerFilesContent');
-//        $q->select('
-//            modResource.id,
-//            modResource.pagetitle
-//        ');
-//        $q->where('MediamanagerFilesContent.mediamanager_files_id', $fileId);
-//        $q->innerJoin('modResource', 'modResource');
-//
-//        $content = $this->mediaManager->modx->getIterator('modResource', $q);
+        $q = $this->mediaManager->modx->newQuery('MediamanagerFilesContent');
+        $q->where(array('mediamanager_files_id' => $fileId));
 
-        $content = array();
+        $content = $this->mediaManager->modx->getIterator('MediamanagerFilesContent', $q);
 
         // Get user
         $user = $this->mediaManager->modx->getObject('modUser', array('id' => $file->get('uploaded_by')));
@@ -239,9 +232,22 @@ class MediaManagerFilesHelper
         // File content
         $bodyData['content'] = [];
         foreach ($data['content'] as $content) {
-            $bodyData['content'][] = '<a href="?a=resource/update&id=' . $content->get('id') . '">' . $content->get('pagetitle') . '</a>';
+            $resource = $this->mediaManager->modx->getObject('modResource', $content->get('site_content_id'));
+            if ($resource) {
+                $bodyData['content'][] = '<a href="?a=resource/update&id=' . $content->get('site_content_id') . '">' . $resource->get('pagetitle') . '</a>';
+            }
         }
         $bodyData['content'] = implode(', ', $bodyData['content']);
+
+        // check if file is linked to resources
+        // if so, show archive & replace button, otherwise only Archive button
+        if (!empty($bodyData['content'])) {
+            $footerData['button']['archive'] = 0;
+            $footerData['button']['archive_replace'] = 1;
+        } else {
+            $footerData['button']['archive'] = 1;
+            $footerData['button']['archive_replace'] = 0;
+        }
 
         // File relations
         $bodyData['relations'] = [];
