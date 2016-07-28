@@ -822,7 +822,7 @@ class MediaManagerFilesHelper
         }
 
         if ($file['extension'] === 'pdf' && extension_loaded('Imagick')) {
-            $pdfHandle = fopen($this->uploadDirectoryMonth . $file['unique_name'], 'rb');
+            $pdfHandle = fopen($this->uploadDirectory . $this->uploadDirectoryMonth . $file['unique_name'], 'rb');
             $previewName = str_replace('.pdf', '_thumb.jpg', $file['unique_name']);
 
             $pdfPreview = new Imagick();
@@ -2050,8 +2050,8 @@ class MediaManagerFilesHelper
     {
         $this->setUploadPaths($sourceId);
 
-        if (!file_exists($this->uploadDirectory . $this->uploadDirectory)) {
-            if (!$this->createDirectory($this->uploadDirectory . $this->uploadDirectory)) return false;
+        if (!file_exists($this->uploadDirectory)) {
+            if (!$this->createDirectory($this->uploadDirectory)) return false;
         }
 
         if (!file_exists($this->uploadDirectory . $this->uploadDirectoryYear)) {
