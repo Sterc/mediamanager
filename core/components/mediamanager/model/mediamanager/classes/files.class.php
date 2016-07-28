@@ -1593,7 +1593,9 @@ class MediaManagerFilesHelper
             // Save as new file
             $response = $this->duplicateFile($file, $imageData);
         } else {
-            $filePath = $this->addTrailingSlash(MODX_BASE_PATH) . $this->removeSlashes($file->get('path'));
+            $this->createUploadDirectory();
+            $this->setUploadPaths();
+            $filePath = $this->uploadDirectory . $this->removeSlashes($file->get('path'));
 
             // Replace current file
             $fileCreated = file_put_contents($filePath, $imageData);
@@ -2117,14 +2119,16 @@ class MediaManagerFilesHelper
      */
     private function uploadVersionFile($file)
     {
-        $path   = $file['version_path'];
+        $path   = $this->uploadDirectory . $file['version_path'];
         $target = $path . '/' . $file['version_name'];
 
         if (!file_exists($path)) {
-            $this->createDirectory($path);
+            $this->createDirectory($path );
         }
 
-        $uploadedFile = $file['upload_dir'] . $file['unique_name'];
+        $uploadedFile = $this->uploadDirectory . $this->uploadDirectoryMonth . $file['unique_name'];
+
+      
 
         if (is_file($uploadedFile)) {
             $uploadFile = copy($uploadedFile, $target);
