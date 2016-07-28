@@ -1286,9 +1286,9 @@ class MediaManagerFilesHelper
             }
 
             $old = $this->filePath($file->toArray());
-            $new = $this->createUniqueFile($this->archiveDirectory, time(), $file->get('file_type'), uniqid('-'));
+            $new = $this->createUniqueFile($this->uploadDirectory . $this->archiveDirectory, time(), $file->get('file_type'), uniqid('-'));
 
-            if (!$this->renameFile($old, $this->archiveDirectory . $new)) {
+            if (!$this->renameFile($old, $this->uploadDirectory . $this->archiveDirectory . $new)) {
                 $response['status'] = self::STATUS_ERROR;
                 $response['message'] .= $this->mediaManager->modx->lexicon('mediamanager.files.error.file_archive', array('id' => $id)) . '<br />';
                 continue;
@@ -1987,12 +1987,12 @@ class MediaManagerFilesHelper
     }
 
     /**
-     * Create upload directory if not exists.
+     * Set upload paths.
      *
      * @param int $sourceId
      * @return bool
      */
-    private function createUploadDirectory($sourceId = 0)
+    private function setUploadPaths($sourceId = 0)
     {
         // Set year and month
         $year  = date('Y');
@@ -2038,6 +2038,17 @@ class MediaManagerFilesHelper
         // Version url and path
         $this->versionUrl            = self::VERSION_DIRECTORY . DIRECTORY_SEPARATOR;
         $this->versionDirectory      = self::VERSION_DIRECTORY . DIRECTORY_SEPARATOR;
+    }
+
+    /**
+     * Create upload directory if not exists.
+     *
+     * @param int $sourceId
+     * @return bool
+     */
+    private function createUploadDirectory($sourceId = 0)
+    {
+        $this->setUploadPaths($sourceId);
 
         if (!file_exists($this->uploadDirectory . $this->uploadDirectory)) {
             if (!$this->createDirectory($this->uploadDirectory . $this->uploadDirectory)) return false;
