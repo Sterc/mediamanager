@@ -35,10 +35,15 @@ class MediaManagerPhpThumbProcessor extends modProcessor {
     public function process() {
         $src = $this->getProperty('src');
 
-        if(is_numeric($src)) {
+        if (is_numeric($src)) {
             $file = $this->modx->getObject('MediamanagerFiles', $src);
-            if($file) {
+
+            if ($file) {
                 $src = $file->get('path');
+
+                if ((int) $this->getProperty('return_url') === 1) {
+                    echo $src; exit;
+                }
             }
         }
 
