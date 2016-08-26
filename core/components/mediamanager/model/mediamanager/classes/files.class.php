@@ -1550,7 +1550,7 @@ class MediaManagerFilesHelper
 
         // Return download link
         $response['message'] = $this->mediaManager->modx->lexicon('mediamanager.files.share_download', array(
-            'link' => '<pre>' . $zipUrl . '</pre>',
+            'link' => '<input class="form-control" value="' . $this->removeSlashes($this->mediaManager->modx->getOption('site_url')) . $zipUrl . '">',
             'expiration' => self::DOWNLOAD_EXPIRATION
         ));
 
