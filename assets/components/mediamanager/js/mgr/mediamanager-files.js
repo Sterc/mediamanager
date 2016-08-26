@@ -13,7 +13,7 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
         $dropzonePreviews        : '.dropzone-previews',
         $dropzoneActions         : '.dropzone-actions',
         $dropzoneCopyButton      : '.btn-copy',
-        $dropzoneImageTypes      : ['image/jpg','image/png','image/gif'],
+        $dropzoneImageTypes      : ['image/jpg', 'image/png', 'image/gif', 'image/jpeg'],
         $dropzoneFeedback        : 'div[data-dropzone-feedback]',
 
         $editForm                : 'form[data-edit-form]',
