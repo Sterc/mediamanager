@@ -2,3 +2,5 @@
 
 # Ignore various IDE project files and folders
 .idea
+
+config.core.php

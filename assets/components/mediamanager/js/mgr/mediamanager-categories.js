@@ -99,8 +99,8 @@
 
             form.append($('<input />', {name: 'category_id', type: 'hidden', value: e.target.dataset.editCategory}));
 
-            var contexts = e.target.dataset.editContexts.split(',');
-            $.each(contexts, function(index, value) {
+            var sources = e.target.dataset.editSources.split(',');
+            $.each(sources, function(index, value) {
                 form.find('input[value="' + value + '"]').prop('checked', true);
             });
 
