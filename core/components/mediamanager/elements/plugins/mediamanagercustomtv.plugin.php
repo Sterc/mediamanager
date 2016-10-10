@@ -20,7 +20,9 @@ switch ($modx->event->name) {
             'type:IN' => array(
                 'mm_input_image',
                 'image',
-                'file'
+                'file',
+                'richtext',
+                'migx'
             )
         ));
 
@@ -38,6 +40,47 @@ switch ($modx->event->name) {
                 'tmplvarid' => $tv->get('id'),
                 'contentid' => $resource->get('id')
             ));
+            
+            // Get all the img src values from migx
+            if ($value && $tv->get('type') == 'migx') {
+                $doc = new DOMDocument();
+                $html = '';
+                $array = json_decode($value->get('value'), true);
+                foreach ($array as $a) {
+                    foreach ($a as $b) {
+                        $html .= $b;
+                    }
+                }
+                $doc->loadHTML($html);
+                
+                $tags = $doc->getElementsByTagName('img');
+                $out = '';
+                foreach ($tags as $tag) {
+                    $file = $modx->getObject('MediamanagerFiles', array(
+                        'path:LIKE' => '%'.$tag->getAttribute('src')
+                    ));
+                    
+                    if (!$file) {
+                        continue;
+                    }
+                    
+                    $fileContent = $modx->getObject('MediamanagerFilesContent', array(
+                        'mediamanager_files_id' => $file->get('id'),
+                        'site_content_id'       => $resource->get('id'),
+                        'is_tmplvar'            => 1
+                    ));
+        
+                    if (!$fileContent) {
+                        $fileContent = $modx->newObject('MediamanagerFilesContent');
+                    }
+        
+                    $fileContent->set('mediamanager_files_id', $file->get('id'));
+                    $fileContent->set('site_content_id', $resource->get('id'));
+                    $fileContent->set('site_tmplvars_id', $tv->get('id'));
+                    $fileContent->set('is_tmplvar', 1);
+                    $fileContent->save();
+                }
+            }
 
             if (!$value || !is_numeric($value->get('value'))) {
                 continue;
@@ -48,7 +91,6 @@ switch ($modx->event->name) {
             ));
 
             if (!$file) {
-                // @TODO: Remove tv value
                 continue;
             }
 
@@ -63,9 +105,9 @@ switch ($modx->event->name) {
             }
 
             $fileContent->set('mediamanager_files_id', $file->get('id'));
-            $fileContent->set('site_content_id',       $resource->get('id'));
-            $fileContent->set('site_tmplvars_id',      $tv->get('id'));
-            $fileContent->set('is_tmplvar',            1);
+            $fileContent->set('site_content_id', $resource->get('id'));
+            $fileContent->set('site_tmplvars_id', $tv->get('id'));
+            $fileContent->set('is_tmplvar', 1);
             $fileContent->save();
         }
 
@@ -78,6 +120,6 @@ switch ($modx->event->name) {
         //         $mm_relation = $modx->getObject('MediamanagerFilesContent',array('site_content_id' => $id,'mediamanager_files_id'));
         //     }
         // }
-
+        
         break;
 }
