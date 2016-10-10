@@ -202,7 +202,7 @@ class MediaManagerFilesHelper
 
         // Set file type
         if ($this->isImage($file['file_type'])) {
-            $bodyData['preview'] = '<img src="' . MODX_CONNECTORS_URL . '/system/phpthumb.php?src=' . $file['path'] . '&w=230&h=180&q=100&new=' . $file['file_hash'] . '" />';
+            $bodyData['preview'] = '<img src="' . MODX_CONNECTORS_URL . 'system/phpthumb.php?src=' . $file['path'] . '&w=230&h=180&q=100&new=' . $file['file_hash'] . '" />';
             $bodyData['is_image'] = 1;
         } elseif($file['file_type'] === 'pdf' && extension_loaded('Imagick')) {
             $bodyData['preview'] = '<img src="' . str_replace('.pdf', '_thumb.jpg', $file['path']) . '" />';
@@ -551,7 +551,7 @@ class MediaManagerFilesHelper
 
             if ($viewMode === 'grid') {
                 if ($this->isImage($file['file_type'])) {
-                    $file['preview_path'] = MODX_CONNECTORS_URL . '/system/phpthumb.php?src=' . ($isArchive ? $this->fileUrl($file, null, 'archive_path') : $file['path']) . '&w=230&h=180&q=100&new=' . $file['file_hash'];
+                    $file['preview_path'] = MODX_CONNECTORS_URL . 'system/phpthumb.php?src=' . ($isArchive ? $this->fileUrl($file, null, 'archive_path') : $file['path']) . '&w=230&h=180&q=100&new=' . $file['file_hash'];
                     $file['preview'] = $this->mediaManager->getChunk('files/file_preview_img', $file);
                 } elseif($file['file_type'] === 'pdf' && extension_loaded('Imagick')) {
                     $file['preview_path'] = str_replace('.pdf', '_thumb.jpg', $file['path']);
@@ -770,13 +770,12 @@ class MediaManagerFilesHelper
             $data = $_REQUEST;
         }
 
-        $sourceId = 0;
-        if (isset($fileData['source'])) {
-            $sourceId = $fileData['source'];
+        if (!isset($data['source'])) {
+            $data['source'] = $this->mediaManager->sources->getCurrentSource();
         }
 
         // Create upload directory
-        if (!$this->createUploadDirectory($sourceId)) {
+        if (!$this->createUploadDirectory($data['source'])) {
             return [
                 'status'  => self::STATUS_ERROR,
                 'message' => $this->alertMessageHtml($this->mediaManager->modx->lexicon('mediamanager.files.error.create_directory'), 'danger')
@@ -790,7 +789,7 @@ class MediaManagerFilesHelper
             $hashExists = $this->fileHashExists($file['hash']);
             if ($hashExists) {
                 return [
-                    'status' => self::STATUS_ERROR,
+                    'status'  => self::STATUS_ERROR,
                     'message' => $this->alertMessageHtml(
                         $this->mediaManager->modx->lexicon('mediamanager.files.error.file_exists', array(
                             'file' => $file['name'],
@@ -849,7 +848,7 @@ class MediaManagerFilesHelper
             $this->removeFile($file);
 
             return [
-                'status' => self::STATUS_ERROR,
+                'status'  => self::STATUS_ERROR,
                 'message' => $this->alertMessageHtml($this->mediaManager->modx->lexicon('mediamanager.files.error.file_save', array('file' => $file['name'])), 'danger')
             ];
         }
@@ -873,20 +872,15 @@ class MediaManagerFilesHelper
     {
         $file = $this->mediaManager->modx->newObject('MediamanagerFiles');
 
-        $file->set('name', $fileData['unique_name']);
-        $file->set('version', $fileData['version']);
-        $file->set('path', $this->uploadDirectoryMonth . $fileData['unique_name']);
-        $file->set('file_type', $fileData['extension']);
-        $file->set('file_size', $fileData['size']);
-        $file->set('file_hash', $fileData['hash']);
-        $file->set('uploaded_by', $this->mediaManager->modx->getUser()->get('id'));
-        $file->set('edited_by', $this->mediaManager->modx->getUser()->get('id'));
-
-        if (isset($fileData['source'])) {
-            $file->set('media_sources_id', $fileData['source']);
-        } else {
-            $file->set('media_sources_id', $this->mediaManager->sources->getCurrentSource());
-        }
+        $file->set('name',             $fileData['unique_name']);
+        $file->set('version',          $fileData['version']);
+        $file->set('path',             $this->uploadDirectoryMonth . $fileData['unique_name']);
+        $file->set('file_type',        $fileData['extension']);
+        $file->set('file_size',        $fileData['size']);
+        $file->set('file_hash',        $fileData['hash']);
+        $file->set('uploaded_by',      $this->mediaManager->modx->getUser()->get('id'));
+        $file->set('edited_by',        $this->mediaManager->modx->getUser()->get('id'));
+        $file->set('media_sources_id', $data['source']);
 
         // If file type is image set dimensions
         if ($this->isImage($fileData['extension'])) {
@@ -1690,8 +1684,12 @@ class MediaManagerFilesHelper
             $data['tags'][] = $tag->get('mediamanager_tags_id');
         }
 
+        // Set source
+        $data['source'] = $file['media_sources_id'];
+
         $file['version']    = $this->createVersionNumber();
         $file['upload_dir'] = $this->uploadDirectory . $this->uploadDirectoryMonth;
+
         // Add file to database
         $fileId = $this->insertFile($file, $data);
         $versionCreated = $this->saveFileVersion($fileId, $file, 'create');
@@ -1733,7 +1731,7 @@ class MediaManagerFilesHelper
         }
 
         // Create upload directory
-        if (!$this->createUploadDirectory()) {
+        if (!$this->createUploadDirectory($sourceId)) {
             return [
                 'status'  => self::STATUS_ERROR,
                 'message' => $this->alertMessageHtml($this->mediaManager->modx->lexicon('mediamanager.files.error.create_directory'), 'danger')
@@ -1772,6 +1770,9 @@ class MediaManagerFilesHelper
         foreach ($tags as $tag) {
             $data['tags'][] = $tag->get('mediamanager_tags_id');
         }
+
+        // Set source
+        $data['source'] = $file['media_sources_id'];
 
         // Add file to database
         if (!$this->insertFile($file, $data)) {
@@ -1867,12 +1868,12 @@ class MediaManagerFilesHelper
         // Create new tag
         if ($tagId === 0 && $name !== false) {
             $tag = $this->mediaManager->modx->getObject('MediamanagerTags', [
-                'name:='                   => $name,
-                'media_sources_id' => $this->mediaManager->sources->getUserSource()
+                'name:='           => $name,
+                'media_sources_id' => $this->mediaManager->sources->getCurrentSource()
             ]);
             if (!$tag) {
                 $newTag = $this->mediaManager->modx->newObject('MediamanagerTags');
-                $newTag->set('media_sources_id', $this->mediaManager->sources->getUserSource());
+                $newTag->set('media_sources_id', $this->mediaManager->sources->getCurrentSource());
                 $newTag->set('name', $name);
                 $newTag->save();
 

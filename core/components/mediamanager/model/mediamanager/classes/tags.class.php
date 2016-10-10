@@ -145,7 +145,7 @@ class MediaManagerTagsHelper
     {
         $sourceId = 0;
         if ($isSourceTag) {
-            $sourceId = $this->mediaManager->sources->getUserSource();
+            $sourceId = $this->mediaManager->sources->getCurrentSource();
         }
 
         $tags = $this->mediaManager->modx->getIterator('MediamanagerTags', [
@@ -175,7 +175,7 @@ class MediaManagerTagsHelper
     {
         $sourceId = 0;
         if ($isSourceTag) {
-            $sourceId = $this->mediaManager->sources->getUserSource();
+            $sourceId = $this->mediaManager->sources->getCurrentSource();
         }
 
         $tags = $this->mediaManager->modx->getIterator('MediamanagerTags', [
