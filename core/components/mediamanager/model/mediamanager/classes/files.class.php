@@ -839,6 +839,7 @@ class MediaManagerFilesHelper
 
         $file['version']    = $this->createVersionNumber();
         $file['upload_dir'] = $this->uploadDirectory . $this->uploadDirectoryMonth;
+        $file['media_sources_id'] = $data['source'];
 
         // Add file to database
         $fileId         = $this->insertFile($file, $data);
@@ -1011,7 +1012,7 @@ class MediaManagerFilesHelper
         }
 
         if (!$this->versionDirectory) {
-            $this->createUploadDirectory();
+            $this->createUploadDirectory($file['media_sources_id']);
         }
 
         $version = $this->mediaManager->modx->newObject('MediamanagerFilesVersions');
@@ -1593,7 +1594,6 @@ class MediaManagerFilesHelper
             $response = $this->duplicateFile($file, $imageData);
         } else {
             $this->createUploadDirectory();
-            $this->setUploadPaths();
             $filePath = $this->uploadDirectory . $this->removeSlashes($file->get('path'));
 
             // Replace current file
@@ -1645,7 +1645,7 @@ class MediaManagerFilesHelper
         $data = array();
 
         // Create upload directory
-        if (!$this->createUploadDirectory()) {
+        if (!$this->createUploadDirectory($file['media_sources_id'])) {
             return [
                 'status'  => self::STATUS_ERROR,
                 'message' => $this->alertMessageHtml($this->mediaManager->modx->lexicon('mediamanager.files.error.create_directory'), 'danger')
@@ -1653,7 +1653,7 @@ class MediaManagerFilesHelper
         }
 
         // Add unique id to file name if needed
-        $fileName = explode('.', $file['name']);
+        $fileName = explode('.', $file['name']); // @TODO: Need better solution (what if a filename contains multiple dots?)
         $fileName = $this->createUniqueFile($this->uploadDirectory . $this->uploadDirectoryMonth, $fileName[0], $file['file_type']);
 
         // Create new file
