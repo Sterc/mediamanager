@@ -573,8 +573,14 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
          * @param e
          */
         changeSource: function(e) {
-            var self = this;
-            window.location.href = self.updateQueryStringParameter(window.location.href, 'source', e.target.value);
+            var self     = this,
+                location = window.location.href;
+
+            // Reset category
+            location = self.updateQueryStringParameter(location, 'category', 0);
+
+            // Change source
+            window.location.href = self.updateQueryStringParameter(location, 'source', e.target.value);
         },
 
         /**
