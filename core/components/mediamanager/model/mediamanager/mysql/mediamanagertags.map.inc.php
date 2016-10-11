@@ -1,7 +1,4 @@
 <?php
-/**
- * @package mediamanager
- */
 $xpdo_meta_map['MediamanagerTags']= array (
   'package' => 'mediamanager',
   'version' => NULL,

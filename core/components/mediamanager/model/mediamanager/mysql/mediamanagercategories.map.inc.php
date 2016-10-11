@@ -1,7 +1,4 @@
 <?php
-/**
- * @package mediamanager
- */
 $xpdo_meta_map['MediamanagerCategories']= array (
   'package' => 'mediamanager',
   'version' => NULL,
@@ -9,12 +6,22 @@ $xpdo_meta_map['MediamanagerCategories']= array (
   'extends' => 'xPDOSimpleObject',
   'fields' => 
   array (
+    'media_sources_id' => 0,
     'parent_id' => 0,
     'name' => '',
     'rank' => 0,
   ),
   'fieldMeta' => 
   array (
+    'media_sources_id' => 
+    array (
+      'dbtype' => 'int',
+      'precision' => '10',
+      'attributes' => 'unsigned',
+      'phptype' => 'integer',
+      'null' => true,
+      'default' => 0,
+    ),
     'parent_id' => 
     array (
       'dbtype' => 'int',
@@ -45,14 +52,6 @@ $xpdo_meta_map['MediamanagerCategories']= array (
   ),
   'composites' => 
   array (
-    'CategoriesExcludes' => 
-    array (
-      'class' => 'MediamanagerCategoriesExcludes',
-      'local' => 'id',
-      'foreign' => 'mediamanager_categories_id',
-      'cardinality' => 'many',
-      'owner' => 'local',
-    ),
     'Files' => 
     array (
       'class' => 'MediamanagerFilesCategories',
@@ -60,6 +59,17 @@ $xpdo_meta_map['MediamanagerCategories']= array (
       'foreign' => 'mediamanager_categories_id',
       'cardinality' => 'many',
       'owner' => 'local',
+    ),
+  ),
+  'aggregates' => 
+  array (
+    'MediaSource' => 
+    array (
+      'class' => 'modMediaSource',
+      'local' => 'media_sources_id',
+      'foreign' => 'id',
+      'cardinality' => 'one',
+      'owner' => 'foreign',
     ),
   ),
 );
