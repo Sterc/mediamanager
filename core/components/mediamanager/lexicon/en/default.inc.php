@@ -54,13 +54,13 @@ $_lang['mediamanager.tags.notice'] = 'Select at least three tags before you want
 
 /* Categories */
 $_lang['mediamanager.categories'] = 'Media Categories';
-$_lang['mediamanager.categories.exclude'] = 'Exclude from';
 $_lang['mediamanager.categories.desc'] = 'Manage media categories';
 $_lang['mediamanager.categories.root'] = 'root';
 $_lang['mediamanager.categories.category'] = 'Category';
 $_lang['mediamanager.categories.title'] = 'Create category';
 $_lang['mediamanager.categories.label'] = 'Category';
 $_lang['mediamanager.categories.parent_label'] = 'Parent category';
+$_lang['mediamanager.categories.source_label'] = 'Media source';
 $_lang['mediamanager.categories.save'] = 'Save';
 $_lang['mediamanager.categories.placeholder'] = 'example: Products';
 $_lang['mediamanager.categories.button'] = 'Create';
@@ -164,6 +164,9 @@ $_lang['mediamanager.files.save_new_image'] = 'Save as new image';
 $_lang['mediamanager.files.save_image'] = 'Save image';
 $_lang['mediamanager.files.copy_categories_and_tags'] = 'Use categories and tags above for all files';
 $_lang['mediamanager.files.source_tags'] = 'Source tags';
+
+/* Sources */
+$_lang['mediamanager.sources.root'] = 'None';
 
 /* Permissions */
 $_lang['mediamanager.permissions.admin'] = 'Media Manager administrator permission';

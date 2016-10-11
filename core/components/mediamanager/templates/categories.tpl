@@ -16,8 +16,15 @@
                         <input type="hidden" name="HTTP_MODAUTH" value="{$token}">
 
                         <div class="form-group">
+                            <label>{$create_source_label}</label>
+                            <select class="form-control" name="source" data-source-select>
+                                {$source_options}
+                            </select>
+                        </div>
+
+                        <div class="form-group">
                             <label>{$create_parent_label}</label>
-                            <select class="form-control" name="parent">
+                            <select class="form-control" name="parent" data-parent-select>
                                 {$parent_options}
                             </select>
                         </div>
@@ -26,9 +33,6 @@
                             <label>{$create_label}</label>
                             <input type="text" class="form-control" name="name" placeholder="{$create_placeholder}">
                         </div>
-
-                        <strong>{$create_exclude}</strong>
-                        {$create_checkboxes}
 
                         <button type="submit" class="btn btn-success">{$create_button}</button>
                     </form>

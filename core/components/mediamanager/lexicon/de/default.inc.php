@@ -54,13 +54,13 @@ $_lang['mediamanager.tags.notice'] = 'Bitte wählen Sie mindestens 3 Tags aus, b
 
 /* Categories */
 $_lang['mediamanager.categories'] = 'Medien-Kategorien';
-$_lang['mediamanager.categories.exclude'] = 'Ausschließen von';
 $_lang['mediamanager.categories.desc'] = 'Medien-Kategorien verwalten';
 $_lang['mediamanager.categories.root'] = 'root';
 $_lang['mediamanager.categories.category'] = 'Kategorie';
 $_lang['mediamanager.categories.title'] = 'Kategorie anlegen';
 $_lang['mediamanager.categories.label'] = 'Kategorie';
 $_lang['mediamanager.categories.parent_label'] = 'Eltern-Kategorie';
+$_lang['mediamanager.categories.source_label'] = 'Media source';
 $_lang['mediamanager.categories.save'] = 'Speichern';
 $_lang['mediamanager.categories.placeholder'] = 'Beispiel: Aktionen';
 $_lang['mediamanager.categories.button'] = 'Anlegen';
@@ -151,6 +151,7 @@ $_lang['mediamanager.files.bulk.download_message'] = 'Klicken Sie auf den `Downl
 $_lang['mediamanager.files.version'] = 'Version';
 $_lang['mediamanager.files.action'] = 'Aktion';
 $_lang['mediamanager.files.type'] = 'Typ';
+$_lang['mediamanager.files.file_id'] = 'ID';
 $_lang['mediamanager.files.file_dimension'] = 'Auflösung';
 $_lang['mediamanager.files.file_size_available'] = 'Verfügbare Größen';
 $_lang['mediamanager.files.file_upload_date'] = 'Upload-Datum';
@@ -164,11 +165,13 @@ $_lang['mediamanager.files.save_image'] = 'Bild speichern';
 $_lang['mediamanager.files.copy_categories_and_tags'] = 'Kategorien und Tags von oben für alle Dateien nutzen';
 $_lang['mediamanager.files.source_tags'] = 'Source Tags';
 
-$_lang['mm_input_image'] = 'Bild aus Medien-Manager'; // custom tv input type
+/* Sources */
+$_lang['mediamanager.sources.root'] = 'None';
 
+/* Permissions */
 $_lang['mediamanager.permissions.admin'] = 'Medien-Manager Administrationsrechte';
 
 /* Custom input/output filter */
-$_lang['mm_input_image'] = 'Media Manager Image';
-$_lang['mm_output_image'] = 'Media Manager Image';
+$_lang['mm_input_image'] = 'Bild aus Medien-Manager';
+$_lang['mm_output_image'] = 'Bild aus Medien-Manager';
 $_lang['mm_input_file'] = 'Media Manager File';

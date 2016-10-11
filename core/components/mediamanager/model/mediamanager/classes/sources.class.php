@@ -141,12 +141,9 @@ class MediaManagerSourcesHelper
     /**
      * Get media sources.
      *
-     * @param bool $includeAll
-     * @param bool $includeMain
-     *
      * @return array
      */
-    public function getList($includeAll = true, $includeMain = true)
+    public function getList()
     {
         $mediaSources = $this->mediaManager->modx->getIterator('modMediaSource');
 
@@ -159,8 +156,10 @@ class MediaManagerSourcesHelper
                     'id'               => $source->get('id'),
                     'name'             => $source->get('name'),
                     'basePath'         => $properties['basePath']['value'] ?: '',
+                    'basePathRelative' => $properties['basePathRelative']['value'],
                     'baseUrl'          => $properties['baseUrl']['value'] ?: '',
-                    'allowedFileTypes' => $properties['allowedFileTypes']['value'] ?: '',
+                    'baseUrlRelative'  => $properties['baseUrlRelative']['value'],
+                    'allowedFileTypes' => $properties['allowedFileTypes']['value'] ?: ''
                 ];
             }
         }

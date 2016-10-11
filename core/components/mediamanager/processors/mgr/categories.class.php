@@ -51,13 +51,13 @@ class MediaManagerCategoriesProcessor extends modProcessor
 
     private function create()
     {
-        return $this->mediaManager->categories->createCategory($this->getProperty('name'), $this->getProperty('parent'), $this->getProperty('excludes'));
+        return $this->mediaManager->categories->createCategory($this->getProperty('name'), $this->getProperty('parent'), $this->getProperty('source'));
     }
 
     private function edit()
     {
 
-        return $this->mediaManager->categories->editCategory($this->getProperty('category_id'), $this->getProperty('name'), $this->getProperty('excludes'));
+        return $this->mediaManager->categories->editCategory($this->getProperty('category_id'), $this->getProperty('name'));
     }
 
     private function delete()

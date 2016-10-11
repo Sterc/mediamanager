@@ -9,14 +9,14 @@ class MediaManagerCategoriesManagerController extends MediaManagerManagerControl
     {
         $placeholders = [
             'pagetitle'           => $this->getPageTitle(),
+            'source_options'      => $this->mediaManager->categories->getSourceOptions(),
             'parent_options'      => $this->mediaManager->categories->getParentOptions(),
             'create_title'        => $this->modx->lexicon('mediamanager.categories.title'),
             'create_label'        => $this->modx->lexicon('mediamanager.categories.label'),
+            'create_source_label' => $this->modx->lexicon('mediamanager.categories.source_label'),
             'create_parent_label' => $this->modx->lexicon('mediamanager.categories.parent_label'),
             'create_placeholder'  => $this->modx->lexicon('mediamanager.categories.placeholder'),
             'create_button'       => $this->modx->lexicon('mediamanager.categories.button'),
-            'create_exclude'      => $this->modx->lexicon('mediamanager.categories.exclude'),
-            'create_checkboxes'   => $this->mediaManager->categories->getMediaSourcesCheckboxes(),
             'list'                => $this->mediaManager->categories->getList(),
             'token'               => $this->modx->user->getUserToken($this->modx->context->get('key')),
         ];

@@ -38,7 +38,6 @@ class MediaManagerFilesHelper
     private $uploadDirectory = null;
     private $uploadDirectoryYear = null;
     private $uploadDirectoryMonth = null;
-    private $uploadDirectoryNoBase = null;
 
     /**
      * Archive paths.
@@ -62,19 +61,19 @@ class MediaManagerFilesHelper
      * Image types.
      * @var array
      */
-    private $imageTypes = array();
+    private $imageTypes = [];
 
     /**
      * Sort options.
      * @var array
      */
-    private $sortOptions = array();
+    private $sortOptions = [];
 
     /**
      * Filter options.
      * @var array
      */
-    private $filterOptions = array();
+    private $filterOptions = [];
 
     /**
      * Tinify options.
@@ -112,12 +111,12 @@ class MediaManagerFilesHelper
     public function getFile($fileId)
     {
         // Get file
-        $file = $this->mediaManager->modx->getObject('MediamanagerFiles', array('id' => $fileId));
+        $file = $this->mediaManager->modx->getObject('MediamanagerFiles', ['id' => $fileId]);
 
         // Get file categories
         $q = $this->mediaManager->modx->newQuery('MediamanagerCategories');
         $q->innerJoin('MediamanagerFilesCategories', 'Files');
-        $q->where(array('Files.mediamanager_files_id' => $fileId));
+        $q->where(['Files.mediamanager_files_id' => $fileId]);
         $q->groupby('Files.mediamanager_categories_id');
 
         $categories = $this->mediaManager->modx->getIterator('MediamanagerCategories', $q);
@@ -125,7 +124,7 @@ class MediaManagerFilesHelper
         // Get file tags
         $q = $this->mediaManager->modx->newQuery('MediamanagerTags');
         $q->innerJoin('MediamanagerFilesTags', 'Files');
-        $q->where(array('Files.mediamanager_files_id' => $fileId));
+        $q->where(['Files.mediamanager_files_id' => $fileId]);
         $q->groupby('Files.mediamanager_tags_id');
 
         $tags = $this->mediaManager->modx->getIterator('MediamanagerTags', $q);
@@ -133,19 +132,19 @@ class MediaManagerFilesHelper
         // Get file relations
         $q = $this->mediaManager->modx->newQuery('MediamanagerFiles');
         $q->innerJoin('MediamanagerFilesRelations', 'Relations');
-        $q->where(array('Relations.mediamanager_files_id_relation' => $fileId));
+        $q->where(['Relations.mediamanager_files_id_relation' => $fileId]);
 
         $relations = $this->mediaManager->modx->getIterator('MediamanagerFiles', $q);
 
         $q = $this->mediaManager->modx->newQuery('MediamanagerFiles');
         $q->innerJoin('MediamanagerFilesRelations', 'Relations2');
-        $q->where(array('Relations2.mediamanager_files_id' => $fileId));
+        $q->where(['Relations2.mediamanager_files_id' => $fileId]);
 
         $relations2 = $this->mediaManager->modx->getIterator('MediamanagerFiles', $q);
 
         // Get file content
         $q = $this->mediaManager->modx->newQuery('MediamanagerFilesContent');
-        $q->where(array('mediamanager_files_id' => $fileId));
+        $q->where(['mediamanager_files_id' => $fileId]);
 
         $content = $this->mediaManager->modx->getIterator('MediamanagerFilesContent', $q);
 
@@ -174,10 +173,10 @@ class MediaManagerFilesHelper
      */
     public function getFileHtml($fileId, $template)
     {
-        $bodyData   = array();
-        $footerData = array();
+        $bodyData   = [];
+        $footerData = [];
 
-        $footerData['button'] = array(
+        $footerData['button'] = [
             'edit'     => 1,
             'crop'     => 1,
             'share'    => 1,
@@ -187,7 +186,7 @@ class MediaManagerFilesHelper
             'delete'   => 1,
             'history'  => 1,
             'copy'     => 0
-        );
+        ];
 
         $data                     = $this->getFile($fileId);
         $file                     = $data['file']->toArray();
@@ -204,7 +203,7 @@ class MediaManagerFilesHelper
         if ($this->isImage($file['file_type'])) {
             $bodyData['preview'] = '<img src="' . MODX_CONNECTORS_URL . 'system/phpthumb.php?src=' . $file['path'] . '&w=230&h=180&q=100&new=' . $file['file_hash'] . '" />';
             $bodyData['is_image'] = 1;
-        } elseif($file['file_type'] === 'pdf' && extension_loaded('Imagick')) {
+        } elseif ($file['file_type'] === 'pdf' && extension_loaded('Imagick')) {
             $bodyData['preview'] = '<img src="' . str_replace('.pdf', '_thumb.jpg', $file['path']) . '" />';
             $bodyData['is_image'] = 0;
             $footerData['button']['crop'] = 0;
@@ -418,12 +417,12 @@ class MediaManagerFilesHelper
      *
      * @return array
      */
-    public function getList($search = '', $filters = array(), $sorting = array(), $isArchive = 0)
+    public function getList($search = '', $filters = [], $sorting = [], $isArchive = 0)
     {
         $sourceId     = $this->mediaManager->sources->getCurrentSource();
         $sortColumn    = 'MediamanagerFiles.upload_date';
         $sortDirection = 'DESC';
-        $where         = array();
+        $where         = [];
 
         $q      = $this->mediaManager->modx->newQuery('MediamanagerFiles');
         $select = $this->mediaManager->modx->getSelectColumns('MediamanagerFiles', 'MediamanagerFiles');
@@ -515,7 +514,7 @@ class MediaManagerFilesHelper
      *
      * @return string
      */
-    public function getListHtml($category = 0, $search = '', $filters = array(), $sorting = array(), $viewMode = 'grid', $selectedFiles = array())
+    public function getListHtml($category = 0, $search = '', $filters = [], $sorting = [], $viewMode = 'grid', $selectedFiles = [])
     {
         $viewMode = ($viewMode === 'grid' ? 'grid' : 'list');
 
@@ -642,7 +641,7 @@ class MediaManagerFilesHelper
      */
     public function getFilterOptionsHtml()
     {
-        $html = array();
+        $html = [];
         foreach ($this->filterOptions as $key => $options) {
             $html[$key] = '';
             foreach ($options as $option) {
@@ -705,7 +704,7 @@ class MediaManagerFilesHelper
             array(
                 'value' => 0,
                 'name'  => $this->mediaManager->modx->lexicon('mediamanager.files.filter.all_types'),
-                'types' => array()
+                'types' => []
             ),
             array(
                 'value' => 1,
@@ -943,7 +942,7 @@ class MediaManagerFilesHelper
         $data['name']   = $data[0]['value'];
         unset($rawData[0]);
 
-        $metaArray = array();
+        $metaArray = [];
         foreach($rawData as $row){
             preg_match_all("/\[[^\]]*\]/", $row['name'], $matches);
 
@@ -1642,7 +1641,7 @@ class MediaManagerFilesHelper
     public function duplicateFile($file, $imageData)
     {
         $file = $file->toArray();
-        $data = array();
+        $data = [];
 
         // Create upload directory
         if (!$this->createUploadDirectory($file['media_sources_id'])) {
@@ -1724,7 +1723,7 @@ class MediaManagerFilesHelper
     {
         $file = $this->mediaManager->modx->getObject('MediamanagerFiles', array('id' => $fileId));
         $file = $file->toArray();
-        $data = array();
+        $data = [];
 
         if ($sourceId === 0) {
             $sourceId = $this->mediaManager->sources->getUserSource();
@@ -1941,7 +1940,7 @@ class MediaManagerFilesHelper
             'archive_date:<' => date('Y-m-d H:i:s', $time - ($cleanupMax * 86400))
         ));
 
-        $fileIds = array();
+        $fileIds = [];
         foreach ($files as $file) {
             $fileIds[] = $file->get('id');
         }
