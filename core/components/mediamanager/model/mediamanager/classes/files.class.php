@@ -290,13 +290,11 @@ class MediaManagerFilesHelper
             $footerData['button']['delete']   = 0;
         }
 
-        //File history
+        // File history
         $v = $this->mediaManager->modx->newQuery('MediamanagerFilesVersions');
-        $v->where(
-            array(
-                'mediamanager_files_id' => $fileId,
-            )
-        );
+        $v->where([
+            'mediamanager_files_id' => $fileId
+        ]);
         $v->sortBy('version', 'desc');
 
         $versions = $this->mediaManager->modx->getIterator('MediamanagerFilesVersions', $v);
@@ -305,13 +303,13 @@ class MediaManagerFilesHelper
         $bodyData['history'] = '';
         foreach ($versions as $version) {
             $versionArr = $version->toArray();
-            if(
+            if (
                 isset($versionArr['created_by']) &&
                 $versionArr['created_by'] != 0
             ) {
-                $user                       = $this->mediaManager->modx->getObject('modUser', array('id' => $versionArr['created_by']));
-                $profile                    = $user->getOne('Profile');
-                $versionArr['created_by']   = $profile->get('fullname');
+                $user = $this->mediaManager->modx->getObject('modUser', ['id' => $versionArr['created_by']]);
+                $profile = $user->getOne('Profile');
+                $versionArr['created_by'] = $profile->get('fullname');
             }
 
             $fileInformation                = pathinfo($versionArr['path']);
@@ -321,12 +319,13 @@ class MediaManagerFilesHelper
             $versionArr['path']             = $this->uploadUrl . $versionArr['path'];
 
             $versionArr['replaceHtml'] = '';
-            if($versionArr['action'] == 'replace') {
-                if($versionArr['replaced_file_id'] != 0){
-                    $oldFile = $this->mediaManager->modx->getObject('MediamanagerFiles', array('id' => $versionArr['replaced_file_id']));
+            if ($versionArr['action'] == 'replace') {
+                if ($versionArr['replaced_file_id'] != 0) {
+                    $oldFile = $this->mediaManager->modx->getObject('MediamanagerFiles', [
+                        'id' => $versionArr['replaced_file_id']
+                    ]);
 
-
-                    if($oldFile){
+                    if ($oldFile) {
                         $versionArr['replaceHtml'] = '<a href="' . $oldFile->get('path') . '" target="_blank">' . $oldFile->get('name') . '</a> was replaced by <a href="' . $versionArr['path'] . '">' . $versionArr['file_name'] . '</a>.';
                     }
                 }
@@ -336,17 +335,18 @@ class MediaManagerFilesHelper
         }
 
         $i = 0;
-        if($template == 'edit'){
+        if ($template == 'edit') {
             $metaChunk = 'files/formgroup_filemeta';
-        }
-        else {
+        } else {
             $metaChunk = 'files/filemeta_row';
         }
 
-        $bodyData['filemeta']  = '';
-        $filesMeta                  = $this->mediaManager->modx->getCollection('MediamanagerFilesMeta', array('mediamanager_files_id'  => $fileId));
-        if(sizeof($filesMeta) > 0){
-            foreach($filesMeta as $meta){
+        $bodyData['filemeta'] = '';
+        $filesMeta = $this->mediaManager->modx->getCollection('MediamanagerFilesMeta', [
+            'mediamanager_files_id'  => $fileId
+        ]);
+        if (sizeof($filesMeta) > 0) {
+            foreach ($filesMeta as $meta) {
                 $metaArr = $meta->toArray();
                 $metaArr['nameprefix'] = 'meta[' . $i . ']';
                 $bodyData['filemeta'] .= $this->mediaManager->getChunk($metaChunk, $metaArr);

@@ -20,19 +20,19 @@
             $iFrameElement.unbind('load');
 
             $dialogElement.dialog({
-                                      title     : 'Media Manager',
-                                      autoOpen  : false,
-                                      width     : settings.width,
-                                      height    : settings.height,
-                                      modal     : true,
-                                      resizable : false,
-                                      close     : function(event, ui) {
-                                          $dialogElement.remove();
-                                      },
-                                      open     : function(event, ui) {
-                                          $iFrameElement.attr('src', settings.url);
-                                      }
-                                  });
+                title     : 'Media Manager',
+                autoOpen  : false,
+                width     : settings.width,
+                height    : settings.height,
+                modal     : true,
+                resizable : false,
+                close : function(event, ui) {
+                    $dialogElement.remove();
+                },
+                open : function(event, ui) {
+                    $iFrameElement.attr('src', settings.url);
+                }
+            });
 
             $iFrameElement.on('load', function() {
                 var $iFrame = $(this).contents();

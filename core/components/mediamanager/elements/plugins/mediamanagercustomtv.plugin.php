@@ -1,45 +1,48 @@
 <?php
-$corePath     = $modx->getOption('mediamanager.core_path', null, $modx->getOption('core_path') . 'components/mediamanager/');
-$mediamanager = $modx->getService('mediamanager', 'MediaManager', $corePath . 'model/mediamanager/', array(
+$corePath = $modx->getOption('mediamanager.core_path', null, $modx->getOption('core_path') . 'components/mediamanager/');
+$mediamanager = $modx->getService('mediamanager', 'MediaManager', $corePath . 'model/mediamanager/', [
     'core_path' => $corePath
-));
+]);
 
 switch ($modx->event->name) {
     case 'OnTVInputRenderList':
         $modx->event->output($corePath.'elements/tv/input/');
         break;
+
     case 'OnTVOutputRenderList':
         $modx->event->output($corePath.'elements/tv/output/');
         break;
+
     case 'OnDocFormPrerender':
         $mediamanager->includeScriptAssets();
         break;
+
     case 'OnDocFormSave':
         $template = $resource->get('template');
-        $tmplVars = $modx->getCollection('modTemplateVar', array(
-            'type:IN' => array(
+        $tmplVars = $modx->getCollection('modTemplateVar', [
+            'type:IN' => [
                 'mm_input_image',
                 'image',
                 'file',
                 'richtext',
                 'migx'
-            )
-        ));
+            ]
+        ]);
 
         foreach ($tmplVars as $tv) {
-            $tvTemplate = $modx->getObject('modTemplateVarTemplate', array(
+            $tvTemplate = $modx->getObject('modTemplateVarTemplate', [
                 'tmplvarid'  => $tv->get('id'),
                 'templateid' => $template
-            ));
+            ]);
 
             if (!$tvTemplate) {
                 continue;
             }
 
-            $value = $modx->getObject('modTemplateVarResource', array(
+            $value = $modx->getObject('modTemplateVarResource', [
                 'tmplvarid' => $tv->get('id'),
                 'contentid' => $resource->get('id')
-            ));
+            ]);
             
             // Get all the img src values from migx
             if ($value && $tv->get('type') == 'migx') {
@@ -56,19 +59,19 @@ switch ($modx->event->name) {
                 $tags = $doc->getElementsByTagName('img');
                 $out = '';
                 foreach ($tags as $tag) {
-                    $file = $modx->getObject('MediamanagerFiles', array(
+                    $file = $modx->getObject('MediamanagerFiles', [
                         'path:LIKE' => '%'.$tag->getAttribute('src')
-                    ));
+                    ]);
                     
                     if (!$file) {
                         continue;
                     }
                     
-                    $fileContent = $modx->getObject('MediamanagerFilesContent', array(
+                    $fileContent = $modx->getObject('MediamanagerFilesContent', [
                         'mediamanager_files_id' => $file->get('id'),
                         'site_content_id'       => $resource->get('id'),
                         'is_tmplvar'            => 1
-                    ));
+                    ]);
         
                     if (!$fileContent) {
                         $fileContent = $modx->newObject('MediamanagerFilesContent');
@@ -86,19 +89,19 @@ switch ($modx->event->name) {
                 continue;
             }
 
-            $file = $modx->getObject('MediamanagerFiles', array(
+            $file = $modx->getObject('MediamanagerFiles', [
                 'id' => $value->get('value')
-            ));
+            ]);
 
             if (!$file) {
                 continue;
             }
 
-            $fileContent = $modx->getObject('MediamanagerFilesContent', array(
+            $fileContent = $modx->getObject('MediamanagerFilesContent', [
                 'mediamanager_files_id' => $file->get('id'),
                 'site_content_id'       => $resource->get('id'),
                 'is_tmplvar'            => 1
-            ));
+            ]);
 
             if (!$fileContent) {
                 $fileContent = $modx->newObject('MediamanagerFilesContent');
@@ -120,6 +123,14 @@ switch ($modx->event->name) {
         //         $mm_relation = $modx->getObject('MediamanagerFilesContent',array('site_content_id' => $id,'mediamanager_files_id'));
         //     }
         // }
-        
+        break;
+
+    case 'OnEmptyTrash':
+        foreach ($ids as $id) {
+            $modx->removeCollection('MediamanagerFilesContent', [
+                'site_content_id' => $id
+            ]);
+        }
+
         break;
 }
