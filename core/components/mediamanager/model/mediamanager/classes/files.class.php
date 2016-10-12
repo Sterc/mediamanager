@@ -513,6 +513,7 @@ class MediaManagerFilesHelper
      */
     public function getListHtml($category = 0, $search = '', $filters = [], $sorting = [], $viewMode = 'grid', $selectedFiles = [])
     {
+        $html = '';
         $viewMode = ($viewMode === 'grid' ? 'grid' : 'list');
 
         if ($category > 0 && ! isset($filters['categories'])) {
@@ -531,8 +532,24 @@ class MediaManagerFilesHelper
             $selectedFilesIds[] = $selectedFile['id'];
         }
 
-        $breadcrumbs = [];
-        $html        = '';
+        switch ($category) {
+            case 0 :
+                $breadcrumbs = $this->mediaManager->getChunk('files/breadcrumb', [
+                    'id' => 0,
+                    'name' => $this->mediaManager->modx->lexicon('mediamanager.global.root')
+                ]);
+                break;
+            case -1 :
+                $breadcrumbs = $this->mediaManager->getChunk('files/breadcrumb', [
+                    'id' => -1,
+                    'name' => $this->mediaManager->modx->lexicon('mediamanager.global.archive')
+                ]);
+                break;
+            default :
+                $breadcrumbs = $this->buildBreadcrumbs($this->mediaManager->categories->getCategories(), $category);
+        }
+
+        $breadcrumbs = ['breadcrumbs' => $breadcrumbs];
 
         foreach ($files as $file) {
             $file = $file->toArray();
@@ -585,6 +602,38 @@ class MediaManagerFilesHelper
         ];
 
         return $this->mediaManager->getChunk('files/' . $viewMode . '/list', $data);
+    }
+
+    /**
+     * Build breadcrumbs.
+     *
+     * @param array $categories
+     * @param int $category
+     * @param int $parent
+     * @param string $children
+     *
+     * @return string
+     */
+    public function buildBreadcrumbs(array $categories, $category, $parent = -1, $children = '')
+    {
+        if ($parent === 0) {
+            return $children;
+        }
+
+        foreach ($categories as $item) {
+            if ($parent === -1) {
+                if ($item->get('id') === $category) {
+                    $parent = $item->get('parent_id');
+                    return $this->buildBreadcrumbs($categories, $category, $parent) . $this->mediaManager->getChunk('files/breadcrumb', $item->toArray());
+                }
+            }
+
+            if ($parent !== -1 && $item->get('id') === $parent) {
+                return $this->buildBreadcrumbs($categories, $category, $item->get('parent_id')) . $this->mediaManager->getChunk('files/breadcrumb', $item->toArray());
+            }
+        }
+
+        return $children;
     }
 
     /**

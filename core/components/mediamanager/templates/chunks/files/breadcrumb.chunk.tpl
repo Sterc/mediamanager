@@ -1,0 +1,1 @@
+<li><a href="javascript:void(0);" data-breadcrumb-id="[[+id]]">[[+name]]</a></li>

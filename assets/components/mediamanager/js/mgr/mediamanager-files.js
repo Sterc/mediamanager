@@ -121,7 +121,7 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
 
         $breadcrumbsContainer    : 'ol.breadcrumb',
         $breadcrumbs             : [],
-        $breadcrumbsFlag         : true,
+        $breadcrumb              : 'a[data-breadcrumb-id]',
 
         $options                 : null,
 
@@ -547,7 +547,6 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                 self.resizeFileContainer();
                 self.setModxContentHeight();
                 self.lazyload();
-                self.buildBreadcrumbs();
             });
         },
 
@@ -1459,56 +1458,32 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
         },
 
         /**
-         * Build the breadcrumbs html.
+         * Select category when breadcrumb is clicked.
+         *
+         * @param e
          */
-        buildBreadcrumbs: function() {
-            var self = this;
+        selectCategory: function(e) {
+            var self       = this,
+                categoryId = parseInt(e.target.dataset.breadcrumbId),
+                currentUrl = window.location.href,
+                newUrl     = self.updateQueryStringParameter(currentUrl, 'category', categoryId);
 
-            if (self.$breadcrumbsFlag) {
-                self.$breadcrumbsFlag = false;
+            e.preventDefault();
 
-                setTimeout(function() {
-                    self.buildBreadcrumbs()
-                }, 500);
+            self.$currentCategory = categoryId;
 
-                return false;
+            if (currentUrl !== newUrl) {
+                history.pushState({}, '', newUrl);
             }
 
-            var lastBreadcrumb    = [],
-                selectedNodes     = $(self.$categoryTree).treeview('getSelected'),
-                selectedNodeId    = 0;
-                self.$breadcrumbs = [];
-
-            $.each(selectedNodes, function(index, value) {
-                $(self.$categoryTree).treeview('revealNode', [value.nodeId, {silent: true}]);
-                if (value.categoryId > 0) {
-                    lastBreadcrumb.push({'text': value.text, 'categoryId': value.categoryId});
+            $.each($(self.$categoryTree).treeview('getUnselected'), function(index, value) {
+                if (categoryId === value.categoryId) {
+                    $(self.$categoryTree).treeview('selectNode', [value.nodeId, {silent: true}]);
                 }
-                selectedNodeId = value.nodeId;
             });
 
-            var expandedNodes = $(self.$categoryTree).treeview('getExpanded', selectedNodeId);
-
-            $.each(expandedNodes, function(index, value) {
-                self.$breadcrumbs.push({'text': value.text, 'categoryId': value.categoryId});
-            });
-
-            if (lastBreadcrumb.length > 0) {
-                self.$breadcrumbs = self.$breadcrumbs.concat(lastBreadcrumb);
-            }
-
-            var currentUrl      = window.location.href;
-            var baseUrl         = self.updateQueryStringParameter(currentUrl, 'category', 0);
-            var breadcrumbsHtml = '<li><a href="' + baseUrl + '">Root</a></li>';
-
-            if (self.$breadcrumbs && self.$breadcrumbs.length > 0) {
-                $.each(self.$breadcrumbs, function(index, value){
-                    var categoryUrl = self.updateQueryStringParameter(currentUrl, 'category', value.categoryId);
-                    breadcrumbsHtml += '<li><a href="' + categoryUrl + '">' + value.text + '</a></li>';
-                });
-            }
-
-            $(self.$breadcrumbsContainer).html(breadcrumbsHtml);
+            self.clearSelectedFiles();
+            self.getList();
         },
 
         alert: function(message, type) {
@@ -1647,6 +1622,10 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
     $(document).on({
         click : $.proxy(MediaManagerFiles, 'selectFile')
     }, MediaManagerFiles.$fileContainer);
+
+    $(document).on({
+        click : $.proxy(MediaManagerFiles, 'selectCategory')
+    }, MediaManagerFiles.$breadcrumb);
 
     // File popup actions
 
