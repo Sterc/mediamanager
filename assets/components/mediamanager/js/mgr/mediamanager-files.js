@@ -1560,7 +1560,7 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                 index = $row.attr('data-meta-index');
 
             //If has meta id, then remove from database.
-            if($($row).find('input[data-meta-id]').length != 0) {
+            if ($($row).find('input[data-meta-id]').length != 0) {
                 $.ajax({
                     type: 'POST',
                     url: self.$connectorUrl,
@@ -1571,16 +1571,15 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                         metaId       : $($row).find('input[data-meta-id]').val()
                     },
                     success: function(data) {
-                        if(data.status == 'success'){
+                        if (data.status == 'success') {
                             // Remove element containing the fields
                             $row.remove();
-                        }
-                        else {
+                        } else {
                             alert(data.message);
                         }
                     }
                 });
-            }else {
+            } else {
                 // Remove element containing the fields
                 $row.remove();
             }

@@ -419,7 +419,7 @@ class MediaManagerFilesHelper
      */
     public function getList($search = '', $filters = [], $sorting = [], $isArchive = 0)
     {
-        $sourceId     = $this->mediaManager->sources->getCurrentSource();
+        $sourceId      = $this->mediaManager->sources->getCurrentSource();
         $sortColumn    = 'MediamanagerFiles.upload_date';
         $sortDirection = 'DESC';
         $where         = [];
@@ -428,10 +428,7 @@ class MediaManagerFilesHelper
         $select = $this->mediaManager->modx->getSelectColumns('MediamanagerFiles', 'MediamanagerFiles');
 
         $where[]['MediamanagerFiles.is_archived'] = $isArchive;
-
-        if ($sourceId !== $this->mediaManager->sources->getDefaultSource()) {
-            $where[]['MediamanagerFiles.media_sources_id'] = $sourceId;
-        }
+        $where[]['MediamanagerFiles.media_sources_id'] = $sourceId;
 
         if (!empty($search) && strlen($search) > 2) {
             $where[]['name:LIKE'] = '%' . $search . '%';
@@ -716,9 +713,7 @@ class MediaManagerFilesHelper
             array(
                 'value' => 2,
                 'name'  => $this->mediaManager->modx->lexicon('mediamanager.files.filter.type_images'),
-                'types' => array(
-                    'jpg', 'png', 'gif', 'tiff', 'bmp', 'jpeg'
-                )
+                'types' => $this->imageTypes
             ),
             array(
                 'value' => 3,

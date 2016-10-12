@@ -91,9 +91,9 @@ class MediaManager
     {
         $chunk = null;
         if (!isset($this->chunks[$name])) {
-            $chunk = $this->modx->getObject('modChunk',array('name' => $name),true);
+            $chunk = $this->modx->getObject('modChunk', array('name' => $name),true);
             if (empty($chunk)) {
-                $chunk = $this->_getTplChunk($name,$this->config['chunk_suffix']);
+                $chunk = $this->_getTplChunk($name, $this->config['chunk_suffix']);
                 if ($chunk == false) return false;
             }
             $this->chunks[$name] = $chunk->getContent();
@@ -118,12 +118,12 @@ class MediaManager
     private function _getTplChunk($name, $suffix = '.chunk.tpl')
     {
         $chunk = false;
-        $f = $this->config['chunks_path'].strtolower($name).$suffix;
+        $f = $this->config['chunks_path'] . strtolower($name) . $suffix;
         if (file_exists($f)) {
             $o = file_get_contents($f);
             /** @var modChunk $chunk */
             $chunk = $this->modx->newObject('modChunk');
-            $chunk->set('name',$name);
+            $chunk->set('name', $name);
             $chunk->setContent($o);
         }
         return $chunk;

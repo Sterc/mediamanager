@@ -358,6 +358,7 @@ class MediaManagerCategoriesHelper
     public function getCategoriesByName($search)
     {
         $categories = $this->mediaManager->modx->getIterator('MediamanagerCategories', [
+            'media_sources_id' => $this->mediaManager->sources->getCurrentSource(),
             'name:LIKE' => '%' . $search . '%'
         ]);
 
@@ -379,7 +380,9 @@ class MediaManagerCategoriesHelper
      */
     public function getAllCategories()
     {
-        $categories = $this->mediaManager->modx->getIterator('MediamanagerCategories');
+        $categories = $this->mediaManager->modx->getIterator('MediamanagerCategories', [
+            'media_sources_id' => $this->mediaManager->sources->getCurrentSource()
+        ]);
 
         $result = [];
         foreach ($categories as $category) {

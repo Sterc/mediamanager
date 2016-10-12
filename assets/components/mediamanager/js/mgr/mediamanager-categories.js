@@ -93,17 +93,13 @@
                 form  = $(self.$createForm).clone();
 
             form.find('button').remove();
+            form.find('[name="source"]').parents('.form-group').remove();
             form.find('[name="parent"]').parents('.form-group').remove();
             form.find('[name="name"]').val(e.target.dataset.editName);
             form.find('[name="method"]').val('edit');
             form.removeAttr('data-create-form');
 
             form.append($('<input />', {name: 'category_id', type: 'hidden', value: e.target.dataset.editCategory}));
-
-            var sources = e.target.dataset.editSources.split(',');
-            $.each(sources, function(index, value) {
-                form.find('input[value="' + value + '"]').prop('checked', true);
-            });
 
             $('<div />').html(e.target.dataset.editMessage).append(form).dialog({
                 draggable: false,
@@ -120,7 +116,7 @@
                             data: $(form).serializeArray(),
                             success: function(data) {
                                 $(self.$listing).html(data.results.html);
-                                $('select', self.$createForm).html(data.results.select);
+                                $(self.$parentSelect, self.$createForm).html(data.results.select);
                             }
                         });
 
@@ -146,7 +142,7 @@
             var self        = this,
                 count       = null,
                 parentCount = null,
-                options     = $('select', self.$createForm),
+                options     = $(self.$parentSelect, self.$createForm),
                 select      = $('<select />', {class: 'form-control', name: 'delete-move-to'}).append(options.html());
 
             select.find('option[value="0"]').remove();
@@ -191,7 +187,7 @@
                             },
                             success: function(data) {
                                 $(self.$listing).html(data.results.html);
-                                $('select', self.$createForm).html(data.results.select);
+                                $(self.$parentSelect, self.$createForm).html(data.results.select);
                             }
                         });
 
