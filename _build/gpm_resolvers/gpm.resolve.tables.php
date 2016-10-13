@@ -17,6 +17,7 @@ if ($object->xpdo) {
             
             $modx->addPackage('mediamanager', $modelPath, null);
 
+
             $manager = $modx->getManager();
 
             $manager->createObjectContainer('MediamanagerCategories');
