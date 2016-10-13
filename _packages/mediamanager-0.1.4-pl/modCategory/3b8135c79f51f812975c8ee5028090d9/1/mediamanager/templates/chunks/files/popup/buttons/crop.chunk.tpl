@@ -1,3 +1,0 @@
-<button type="button" class="btn btn-default" data-template="preview" data-file-action-button>[[%mediamanager.global.cancel]]</button>
-<button type="button" class="btn btn-success pull-right" data-method="getCroppedCanvas" data-new-image="0">[[%mediamanager.files.save_image]]</button>
-<button type="button" class="btn btn-info pull-right" data-method="getCroppedCanvas" data-new-image="1">[[%mediamanager.files.save_new_image]]</button>
