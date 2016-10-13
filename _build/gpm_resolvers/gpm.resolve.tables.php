@@ -17,14 +17,12 @@ if ($object->xpdo) {
             
             $modx->addPackage('mediamanager', $modelPath, null);
 
-
             $manager = $modx->getManager();
 
             $manager->createObjectContainer('MediamanagerCategories');
             $manager->createObjectContainer('MediamanagerTags');
             $manager->createObjectContainer('MediamanagerFiles');
             $manager->createObjectContainer('MediamanagerDownloads');
-            $manager->createObjectContainer('MediamanagerCategoriesExcludes');
             $manager->createObjectContainer('MediamanagerFilesCategories');
             $manager->createObjectContainer('MediamanagerFilesTags');
             $manager->createObjectContainer('MediamanagerFilesContent');

@@ -28,7 +28,7 @@
             "plugins": [{
                 "name": "mediaManagerCustomTv",
                 "file": "mediamanagercustomtv.plugin.php",
-                "events": ["OnDocFormPrerender","OnDocFormSave","OnTVInputRenderList"]
+                "events": ["OnDocFormPrerender","OnDocFormSave","OnTVInputRenderList","OnEmptyTrash"]
             },{
                 "name": "mediaManagerTinyMce",
                 "file": "mediamanagertinymce.plugin.php",
@@ -65,7 +65,6 @@
             "MediamanagerTags",
             "MediamanagerFiles",
             "MediamanagerDownloads",
-            "MediamanagerCategoriesExcludes",
             "MediamanagerFilesCategories",
             "MediamanagerFilesTags",
             "MediamanagerFilesContent",
