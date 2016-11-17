@@ -1,5 +1,0 @@
-[[+navigation]]
-
-[[+items]]
-
-[[+navigation]]

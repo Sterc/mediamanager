@@ -4,3 +4,7 @@
 .idea
 
 config.core.php
+
+# Only allow compressed build package
+_packages/*
+!_packages/*.zip
