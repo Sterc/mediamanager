@@ -75,7 +75,10 @@
     },
     "build": {
         "resolver": {
-            "after": "resolve.policies.php"
+            "after": [
+                "resolve.policies.php",
+                "resolve.tables.php"
+            ]
         }
     }
 }
