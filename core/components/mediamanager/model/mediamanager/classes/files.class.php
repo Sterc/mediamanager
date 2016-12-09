@@ -2158,9 +2158,10 @@ class MediaManagerFilesHelper
         }
 
         if ($uploadFile) {
+            chmod($target, 0644);
             return true;
         }
-
+    
         return false;
     }
 
