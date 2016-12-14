@@ -817,6 +817,10 @@ class MediaManagerFilesHelper
             $data['source'] = $this->mediaManager->sources->getCurrentSource();
         }
 
+        if (!isset($data['user'])) {
+            $data['user'] = $this->mediaManager->modx->getUser()->get('id');
+        }
+
         // Create upload directory
         if (!$this->createUploadDirectory($data['source'])) {
             return [
@@ -922,8 +926,8 @@ class MediaManagerFilesHelper
         $file->set('file_type',        $fileData['extension']);
         $file->set('file_size',        $fileData['size']);
         $file->set('file_hash',        $fileData['hash']);
-        $file->set('uploaded_by',      $this->mediaManager->modx->getUser()->get('id'));
-        $file->set('edited_by',        $this->mediaManager->modx->getUser()->get('id'));
+        $file->set('uploaded_by',      $data['user']);
+        $file->set('edited_by',        $data['user']);
         $file->set('media_sources_id', $data['source']);
 
         // If file type is image set dimensions
