@@ -232,7 +232,7 @@ class MediaManagerSourcesHelper
             'basePathRelative' => $properties['basePathRelative']['value'],
             'baseUrl'          => $properties['baseUrl']['value'] ?: '',
             'baseUrlRelative'  => $properties['baseUrlRelative']['value'],
-            'allowedFileTypes' => $properties['allowedFileTypes']['value'] ?: ''
+            'allowedFileTypes' => isset($properties['allowedFileTypes']) ? $properties['allowedFileTypes']['value'] : ''
         ];
 
         return $source;

@@ -2422,9 +2422,14 @@ class MediaManagerFilesHelper
      * @return string
      */
     public function formatFileSize($bytes, $precision = 0) {
-        $unit = ["B", "KB", "MB", "GB"];
-        $exp = floor(log($bytes, 1024)) | 0;
+        if ($bytes === 0) {
+            return '0 B';
+        }
 
-        return round($bytes / (pow(1024, $exp)), $precision) . ' ' . $unit[$exp];
+        $unit = ["B", "KB", "MB", "GB"];
+        $exp  = floor(log($bytes, 1024)) | 0;
+        $size = @round($bytes / (pow(1024, $exp)), $precision);
+
+        return ($size ? $size : 0) . ' ' . $unit[$exp];
     }
 }
