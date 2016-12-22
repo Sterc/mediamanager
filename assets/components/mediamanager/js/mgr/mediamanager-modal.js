@@ -1,10 +1,10 @@
 (function($) {
     var manager_url = '/manager/';
     if (MODx.config) {
-        var manager_url = MODx.config.manager_url;
+        manager_url = MODx.config.manager_url;
     }
     var defaults = {
-        url           : manager_url+'?a=home&namespace=mediamanager&tv_frame=1',
+        url           : manager_url + '?a=home&namespace=mediamanager&tv_frame=1',
         width         : $(window).width() * 0.94,
         height        : $(window).height() * 0.94,
         wrapperId     : 'modal-wrapper',
