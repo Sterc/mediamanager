@@ -77,7 +77,7 @@
         "resolver": {
             "after": [
                 "resolve.policies.php",
-                "resolve.tables.php"
+                "resolve.synctables.php"
             ]
         }
     }
