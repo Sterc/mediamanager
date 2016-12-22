@@ -926,6 +926,7 @@ class MediaManagerFilesHelper
         $file->set('file_type',        $fileData['extension']);
         $file->set('file_size',        $fileData['size']);
         $file->set('file_hash',        $fileData['hash']);
+        $file->set('upload_date',      time());
         $file->set('uploaded_by',      $data['user']);
         $file->set('edited_by',        $data['user']);
         $file->set('media_sources_id', $data['source']);
