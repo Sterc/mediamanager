@@ -16,7 +16,7 @@ $xpdo_meta_map['MediamanagerFiles']= array (
     'file_hash' => '',
     'upload_date' => 'CURRENT_TIMESTAMP',
     'uploaded_by' => 0,
-    'edited_on' => 'CURRENT_TIMESTAMP',
+    'edited_on' => '0',
     'edited_by' => 0,
     'is_archived' => 0,
     'archive_date' => NULL,
@@ -117,8 +117,9 @@ $xpdo_meta_map['MediamanagerFiles']= array (
       'dbtype' => 'timestamp',
       'phptype' => 'timestamp',
       'null' => false,
-      'default' => 'CURRENT_TIMESTAMP',
+      'default' => '0',
       'index' => 'index',
+      'attributes' => 'ON UPDATE CURRENT_TIMESTAMP',
     ),
     'edited_by' => 
     array (

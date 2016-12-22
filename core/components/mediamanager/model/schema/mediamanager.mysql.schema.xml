@@ -30,7 +30,7 @@
         <field key="file_hash" dbtype="varchar" precision="32" phptype="string" null="false" default="" index="index" />
         <field key="upload_date" dbtype="timestamp" phptype="timestamp" null="false" default="CURRENT_TIMESTAMP" index="index" />
         <field key="uploaded_by" dbtype="int" precision="10" phptype="integer" null="false" default="" index="index" />
-        <field key="edited_on" dbtype="timestamp" phptype="timestamp" null="false" default="CURRENT_TIMESTAMP" index="index" />
+        <field key="edited_on" dbtype="timestamp" phptype="timestamp" null="false" default="0" index="index" attributes="ON UPDATE CURRENT_TIMESTAMP" />
         <field key="edited_by" dbtype="int" precision="10" phptype="integer" null="false" default="" index="index" />
         <field key="is_archived" dbtype="tinyint" precision="1" attributes="unsigned" phptype="boolean" null="false" default="" index="index" />
         <field key="archive_date" dbtype="timestamp" phptype="timestamp" null="true" default="NULL" />
