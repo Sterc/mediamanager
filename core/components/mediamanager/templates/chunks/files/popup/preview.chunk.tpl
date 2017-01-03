@@ -38,11 +38,7 @@
                 </tr>
                 <tr>
                     <td>[[%mediamanager.files.file_name]]</td>
-                    <td>
-                        <a href="[[+file.path]]" target="_blank">
-                            [[+file.name]]
-                        </a>
-                    </td>
+                    <td>[[+file.name]]</td>
                 </tr>
                 [[+is_image:is=`1`:then=`
                 <tr>
@@ -70,6 +66,14 @@
                 <tr>
                     <td>[[%mediamanager.files.file_linked_to]]</td>
                     <td>[[+content]]</td>
+                </tr>
+                <tr>
+                    <td>[[%mediamanager.files.file_link]]</td>
+                    <td>
+                        <a href="[[+file.path]]" target="_blank">
+                            <input class="form-control" value="[[+file.path]]" readonly>
+                        </a>
+                    </td>
                 </tr>
                 `]]
             </tbody>
