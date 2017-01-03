@@ -3,8 +3,7 @@
         <input type="checkbox" name="file" value="[[+id]]"[[+selected:is=`1`:then=` checked`]] />
     </td>
     <td>
-        [[+name]]<br />
-        <a href="[[+path]]" target="_blank">[[+path]]</a>
+        <a href="[[+path]]" target="_blank">[[+name]]</a>
     </td>
     <td>
         [[+file_type]]
