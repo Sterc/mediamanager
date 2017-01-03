@@ -24,7 +24,7 @@
     </div>
     <div class="col-md-7">
 
-        <h3>File information</h3>
+        <h3>[[%mediamanager.files.meta.title]]</h3>
 
         <table class="table table-striped">
             <colgroup>
@@ -71,14 +71,27 @@
                     <td>[[%mediamanager.files.file_link]]</td>
                     <td>
                         <a href="[[+file.path]]" target="_blank">
-                            <input class="form-control" value="[[+file.path]]" readonly/>
+                            <input class="form-control" value="[[+file.path]]" readonly>
                         </a>
                     </td>
                 </tr>
-                [[+filemeta]]
                 `]]
             </tbody>
         </table>
+
+        [[+filemeta:notempty=`
+            <h3>[[%mediamanager.files.custom_meta.title]]</h3>
+
+            <table class="table table-striped">
+                <colgroup>
+                    <col width="1">
+                    <col width="1">
+                </colgroup>
+                <tbody>
+                    [[+filemeta]]
+                </tbody>
+            </table>
+        `:isempty=``]]
 
     </div>
 

@@ -78,6 +78,9 @@ $_lang['mediamanager.categories.edit_confirm_message'] = '';
 $_lang['mediamanager.categories.minimum_categories_message'] = 'Eine Datei braucht mindestens eine Medien-Kategorie.';
 
 /* Files */
+$_lang['mediamanager.files.meta.title'] = 'Datei-Informationen';
+$_lang['mediamanager.files.custom_meta.title'] = 'Benutzerdefinierte Dateiinformationen';
+$_lang['mediamanager.files.history'] = 'Dateiversionen';
 $_lang['mediamanager.files.upload_media'] = 'Medien hochladen';
 $_lang['mediamanager.files.upload_selected_files'] = 'Ausgewählte Dateien hochladen';
 $_lang['mediamanager.files.add_meta_title'] = 'Datei-Informationen hinzufügen';

@@ -78,6 +78,9 @@ $_lang['mediamanager.categories.edit_confirm_message'] = '';
 $_lang['mediamanager.categories.minimum_categories_message'] = 'A file needs at least one category.';
 
 /* Files */
+$_lang['mediamanager.files.meta.title'] = 'File information';
+$_lang['mediamanager.files.custom_meta.title'] = 'Custom file information';
+$_lang['mediamanager.files.history'] = 'File history';
 $_lang['mediamanager.files.upload_media'] = 'Upload Media';
 $_lang['mediamanager.files.upload_selected_files'] = 'Upload Selected Files';
 $_lang['mediamanager.files.add_meta_title'] = 'Add file information';
