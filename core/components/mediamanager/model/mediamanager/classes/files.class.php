@@ -1022,50 +1022,14 @@ class MediaManagerFilesHelper
         $file = $this->mediaManager->modx->getObject('MediamanagerFiles', array('id' => $fileId));
 
         /**
-         * Determine actions for setting the actionname.
+         * Check whether or not a file version should be created.
          */
-        $actions = [];
+        $createFileVersion = false;
+        $actionName        = '';
         if ($file->get('name') !== $data['name']) {
-            $actions = ['rename'];
+            $createFileVersion = true;
+            $actionName        = 'rename';
         }
-
-
-        /**
-         * Check if meta keys or meta values have been changed.
-         */
-        $metaFields              = $this->mediaManager->modx->getIterator('MediamanagerFilesMeta', array('mediamanager_files_id' => $file->get('id')));
-        $totalExistingMetaFields = 0;
-        $metaChanges             = false;
-        if ($metaFields && $metaArray) {
-            foreach ($metaFields as $metaField) {
-                /**
-                 * Check for changes.
-                 */
-                $matchingMeta = [];
-                foreach ($metaArray as $metaValues) {
-                    if ($metaValues['id'] == $metaField->get('id')) {
-                        $matchingMeta = $metaValues;
-                    }
-                }
-
-                if (empty($matchingMeta)) {
-                    continue;
-                }
-
-                if ($matchingMeta['key'] != $metaField->get('meta_key') || $matchingMeta['value'] != $metaField->get('meta_value')) {
-                    $metaChanges = true;
-                }
-
-                $totalExistingMetaFields++;
-            }
-        }
-
-        /* If totals of file info meta do not match or meta information has been changed. */
-        if ($totalExistingMetaFields !== sizeof($metaArray) || $metaChanges === true) {
-            $actions[] = 'updated filemeta';
-        }
-
-        $actionName = implode(' & ', $actions);
 
         // Create upload directory
         if (!$this->createUploadDirectory($file->get('media_sources_id'))) {
@@ -1095,7 +1059,7 @@ class MediaManagerFilesHelper
 
         $this->saveMetaFields($fileId, $metaArray);
 
-        if (!empty($actions)) {
+        if ($createFileVersion) {
             $this->saveFileVersion($file->get('id'), $data, $actionName);
         }
 
