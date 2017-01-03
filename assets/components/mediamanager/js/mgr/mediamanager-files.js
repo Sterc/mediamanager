@@ -889,7 +889,8 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
          * @param e
          */
         moveFiles: function(e) {
-            var self = this;
+            var self = this,
+                category = $(this).find('select').val();
 
             $('<div />').html($('<select />').addClass('form-control').append(self.$categoriesSelectOptions)).dialog({
                 draggable: false,
@@ -908,9 +909,16 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                                 method       : 'move',
                                 HTTP_MODAUTH : self.$httpModAuth,
                                 files        : self.$selectedFiles,
-                                category     : $(this).find('select').val()
+                                category     : category
                             },
                             success: function(data) {
+                                var alert = '<div class="alert alert-success alert-dismissible fade in move-alert" role="alert">';
+                                alert = alert + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>';
+                                alert = alert + data.results.message;
+                                alert = alert + '</div>';
+
+                                $(alert).insertAfter('.filters');
+
                                 self.clearSelectedFiles();
                                 self.getList();
                             }
