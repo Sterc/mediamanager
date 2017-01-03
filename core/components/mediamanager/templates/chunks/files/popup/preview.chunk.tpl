@@ -69,7 +69,11 @@
                 </tr>
                 <tr>
                     <td>[[%mediamanager.files.file_link]]</td>
-                    <td><input class="form-control" value="[[+file.path]]" readonly></td>
+                    <td>
+                        <a href="[[+file.path]]" target="_blank">
+                            <input class="form-control" value="[[+file.path]]" readonly/>
+                        </a>
+                    </td>
                 </tr>
                 [[+filemeta]]
                 `]]
