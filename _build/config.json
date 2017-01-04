@@ -3,7 +3,7 @@
     "lowCaseName": "mediamanager",
     "description": "Media Manager for MODX.",
     "author": "Sterc",
-    "version": "0.1.8",
+    "version": "0.1.9",
     "package":{
         "menus": [{
             "text": "mediamanager",
@@ -77,7 +77,8 @@
         "resolver": {
             "after": [
                 "resolve.policies.php",
-                "resolve.synctables.php"
+                "resolve.synctables.php",
+                "resolve.categoriesdefaultmediasource.php"
             ]
         }
     }
