@@ -336,6 +336,10 @@ ol.sortable li div {
     margin-top: 10px;
 }
 
+.modal .previewpopup-link {
+    word-break: break-all;
+}
+
 .modal .select2-container--default {
     width: 100% !important;
 }

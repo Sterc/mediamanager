@@ -70,8 +70,8 @@
                 <tr>
                     <td>[[%mediamanager.files.file_link]]</td>
                     <td>
-                        <a href="[[+file.path]]" target="_blank">
-                            <input class="form-control" value="[[+file.path]]" readonly>
+                        <a href="[[+file.path]]" class="previewpopup-link" target="_blank">
+                            [[+file.path]]
                         </a>
                     </td>
                 </tr>
