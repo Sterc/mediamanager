@@ -1,3 +1,5 @@
 [[+breadcrumbs]]
 
 [[+items]]
+
+[[+pagination]]

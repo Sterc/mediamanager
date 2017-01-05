@@ -207,16 +207,25 @@ class MediaManagerFilesProcessor extends modProcessor
 
     private function getList()
     {
-        return $this->outputArray(
-            (array) $this->mediaManager->files->getListHtml(
-                (int)    $this->getProperty('category'),
-                (string) $this->getProperty('search'),
-                (array)  $this->getProperty('filters'),
-                (array)  $this->getProperty('sorting'),
-                (string) $this->getProperty('viewMode'),
-                (array)  $this->getProperty('selectedFiles')
-            )
+        $response = $this->mediaManager->files->getListHtml(
+            (int)    $this->getProperty('category'),
+            (string) $this->getProperty('search'),
+            (array)  $this->getProperty('filters'),
+            (array)  $this->getProperty('sorting'),
+            (string) $this->getProperty('viewMode'),
+            (array)  $this->getProperty('selectedFiles'),
+            (int)    $this->getProperty('limit'),
+            (int)    $this->getProperty('offset')
         );
+
+//        var_dump($response);
+//        die();
+
+        if ($response['type'] === 'html') {
+            return $response['html'];
+        }
+
+        return $this->outputArray((array) $response['html']);
     }
 
     private function getFile()

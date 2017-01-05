@@ -414,10 +414,12 @@ class MediaManagerFilesHelper
      * @param array $filters
      * @param array $sorting
      * @param int $isArchive
+     * @param int $limit
+     * @param int $offset
      *
-     * @return array
+     * @return object xPDOIterator
      */
-    public function getList($search = '', $filters = [], $sorting = [], $isArchive = 0)
+    public function getList($search = '', $filters = [], $sorting = [], $isArchive = 0, $limit = 50, $offset = 0)
     {
         $sourceId      = $this->mediaManager->sources->getCurrentSource();
         $sortColumn    = 'MediamanagerFiles.upload_date';
@@ -493,6 +495,7 @@ class MediaManagerFilesHelper
 
         $q->select($select);
         $q->where($where);
+        $q->limit($limit, $offset);
         $q->sortby($sortColumn, $sortDirection);
         $q->groupby('MediamanagerFiles.id');
 
@@ -508,10 +511,12 @@ class MediaManagerFilesHelper
      * @param array $sorting
      * @param string $viewMode
      * @param array $selectedFiles
+     * @param int $limit
+     * @param int $offset
      *
      * @return string
      */
-    public function getListHtml($category = 0, $search = '', $filters = [], $sorting = [], $viewMode = 'grid', $selectedFiles = [])
+    public function getListHtml($category = 0, $search = '', $filters = [], $sorting = [], $viewMode = 'grid', $selectedFiles = [], $limit = 50, $offset = 0)
     {
         $html = '';
         $viewMode = ($viewMode === 'grid' ? 'grid' : 'list');
@@ -525,31 +530,36 @@ class MediaManagerFilesHelper
             $isArchive = 1;
         }
 
-        $files = $this->getList($search, $filters, $sorting, $isArchive);
+        $files = $this->getList($search, $filters, $sorting, $isArchive, $limit, $offset);
 
         $selectedFilesIds = [];
         foreach ($selectedFiles as $selectedFile) {
             $selectedFilesIds[] = $selectedFile['id'];
         }
 
-        switch ($category) {
-            case 0 :
-                $breadcrumbs = $this->mediaManager->getChunk('files/breadcrumb', [
-                    'id' => 0,
-                    'name' => $this->mediaManager->modx->lexicon('mediamanager.global.root')
-                ]);
-                break;
-            case -1 :
-                $breadcrumbs = $this->mediaManager->getChunk('files/breadcrumb', [
-                    'id' => -1,
-                    'name' => $this->mediaManager->modx->lexicon('mediamanager.global.archive')
-                ]);
-                break;
-            default :
-                $breadcrumbs = $this->buildBreadcrumbs($this->mediaManager->categories->getCategories(), $category);
-        }
+        $breadcrumbs = '';
 
-        $breadcrumbs = ['breadcrumbs' => $breadcrumbs];
+        if ($offset === 0) {
+            switch ($category) {
+                case 0 :
+                    $breadcrumbs = $this->mediaManager->getChunk('files/breadcrumb', [
+                        'id' => 0,
+                        'name' => $this->mediaManager->modx->lexicon('mediamanager.global.root')
+                    ]);
+                    break;
+                case -1 :
+                    $breadcrumbs = $this->mediaManager->getChunk('files/breadcrumb', [
+                        'id' => -1,
+                        'name' => $this->mediaManager->modx->lexicon('mediamanager.global.archive')
+                    ]);
+                    break;
+                default :
+                    $breadcrumbs = $this->buildBreadcrumbs($this->mediaManager->categories->getCategories(), $category);
+            }
+
+            $breadcrumbs = ['breadcrumbs' => $breadcrumbs];
+            $breadcrumbs = $this->mediaManager->getChunk('files/breadcrumbs', $breadcrumbs);
+        }
 
         foreach ($files as $file) {
             $file = $file->toArray();
@@ -592,16 +602,35 @@ class MediaManagerFilesHelper
             $html .= $this->mediaManager->getChunk('files/' . $viewMode . '/file', $file);
         }
 
-        if (empty($html)) {
+        if (empty($html) && $offset === 0) {
             $html = $this->alertMessageHtml($this->mediaManager->modx->lexicon('mediamanager.files.error.no_files_found'), 'info');
         }
 
+        $pagination = '';
+
+        if (!empty($html)) {
+            $paginationParameters = $_REQUEST;
+            $paginationParameters['offset'] += $paginationParameters['limit'];
+            $paginationParameters = http_build_query($paginationParameters);
+            $pagination = '<a data-pagination class="clearfix media-pagination" href="' . $this->mediaManager->config['connector_url'] . '?' . $paginationParameters . '">Loading</a>';
+        }
+
         $data = [
-            'breadcrumbs' => $this->mediaManager->getChunk('files/breadcrumbs', $breadcrumbs),
-            'items'       => $html
+            'breadcrumbs' => $breadcrumbs,
+            'items'       => $html,
+            'pagination'  => $pagination
         ];
 
-        return $this->mediaManager->getChunk('files/' . $viewMode . '/list', $data);
+        $response = [
+            'html' => $this->mediaManager->getChunk('files/' . $viewMode . '/list', $data),
+            'type' => 'array'
+        ];
+
+        if ($offset !== 0) {
+            $response['type'] = 'html';
+        }
+
+        return $response;
     }
 
     /**
