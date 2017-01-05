@@ -370,3 +370,8 @@ ol.sortable li div {
     left: 38%;
     width: 29%;
 }
+
+.media-pagination {
+    position: absolute;
+    bottom: 20px;
+}

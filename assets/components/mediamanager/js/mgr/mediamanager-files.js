@@ -89,7 +89,6 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
 
         $viewMode                : 'i[data-view-mode]',
         $currentViewMode         : 'grid',
-
         $currentSource           : 0,
         $currentCategory         : 0,
         $currentSearch           : '',
@@ -104,6 +103,8 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                 to   : ''
             }
         },
+        $currentLimit            : 30,
+        $currentOffset           : 0,
 
         $archiveReplaceFileId    : '',
         $archiveCategoryId       : -1,
@@ -116,7 +117,6 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
         $filesCategories         : [],
         $filesTags               : [],
         $filesSourceTags         : [],
-
         $filesCropper            : null,
 
         $breadcrumbsContainer    : 'ol.breadcrumb',
@@ -124,6 +124,8 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
         $breadcrumb              : 'a[data-breadcrumb-id]',
 
         $options                 : null,
+        $pagination              : 'a[data-pagination]',
+        $paginationActive        : false,
 
         /**
          * Init
@@ -540,14 +542,43 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                     filters       : self.$currentFilters,
                     sorting       : self.$currentSorting,
                     viewMode      : self.$currentViewMode,
-                    selectedFiles : self.$selectedFiles
+                    selectedFiles : self.$selectedFiles,
+                    limit         : self.$currentLimit,
+                    offset        : self.$currentOffset
                 }
             }).success(function(data) {
                 $(self.$filesContainer).html(data.results);
                 self.resizeFileContainer();
                 self.setModxContentHeight();
                 self.lazyload();
+                self.setPagination();
             });
+        },
+
+        /**
+         * Set pagination.
+         */
+        setPagination : function () {
+            var self = this,
+                filesContainer = $(self.$filesContainer);
+
+            if (self.$paginationActive) {
+                $(filesContainer).jscroll.destroy();
+            }
+
+            $(filesContainer).jscroll({
+                debug        : true,
+                autoTrigger  : true,
+                padding      : 200,
+                nextSelector : self.$pagination,
+                callback     : function() {
+                    self.resizeFileContainer();
+                    self.setModxContentHeight();
+                    self.lazyload(true);
+                }
+            });
+
+            self.$paginationActive = true;
         },
 
         /**
@@ -711,13 +742,19 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
         /**
          * Initialize lazyload for images.
          */
-        lazyload: function() {
-            var self = this;
+        lazyload : function ($newOnly) {
+            var self = this,
+                options = {
+                    threshold: 200,
+                    container: $(self.$modxContent)
+                };
 
-            $('img.lazy').lazyload({
-                threshold: 200,
-                container: $(self.$modxContent)
-            });
+            if ($newOnly === true) {
+                $('img.lazy', '.jscroll-added:last').lazyload(options);
+                return true;
+            }
+
+            $('img.lazy').lazyload(options);
         },
 
         /**
