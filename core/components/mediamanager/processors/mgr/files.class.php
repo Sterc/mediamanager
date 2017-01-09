@@ -218,9 +218,6 @@ class MediaManagerFilesProcessor extends modProcessor
             (int)    $this->getProperty('offset')
         );
 
-//        var_dump($response);
-//        die();
-
         if ($response['type'] === 'html') {
             return $response['html'];
         }
