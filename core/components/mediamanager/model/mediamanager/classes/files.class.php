@@ -1367,10 +1367,10 @@ class MediaManagerFilesHelper
     /**
      * Archive files.
      *
-     * @param array|int $selectedFiles
+     * @param array|int $fileIds
      * @return array
      */
-    public function archiveFiles($selectedFiles)
+    public function archiveFiles($fileIds)
     {
         $response = [
             'status'        => self::STATUS_SUCCESS,
@@ -1378,14 +1378,8 @@ class MediaManagerFilesHelper
             'archivedFiles' => []
         ];
 
-        $fileIds = [];
-
-        if (!is_array($selectedFiles)) {
-            $fileIds[] = $selectedFiles;
-        } else {
-            foreach ($selectedFiles as $file) {
-                $fileIds[] = $file['id'];
-            }
+        if (!is_array($fileIds)) {
+            $fileIds = [$fileIds];
         }
 
         // Check if files are linked to a resource

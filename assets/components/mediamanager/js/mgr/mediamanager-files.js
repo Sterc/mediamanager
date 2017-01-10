@@ -485,7 +485,7 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                     method       : 'getTree',
                     HTTP_MODAUTH : self.$httpModAuth,
                     selected     : self.$currentCategory
-                } 
+                }
             }).success(function(data) {
                 self.$categoriesSelectOptions = data.results.select;
                 $(self.$categoryTree).treeview({
@@ -567,7 +567,6 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
             }
 
             $(filesContainer).jscroll({
-                debug        : true,
                 autoTrigger  : true,
                 padding      : 200,
                 nextSelector : self.$pagination,
@@ -926,8 +925,7 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
          * @param e
          */
         moveFiles: function(e) {
-            var self = this,
-                category = $(this).find('select').val();
+            var self = this;
 
             $('<div />').html($('<select />').addClass('form-control').append(self.$categoriesSelectOptions)).dialog({
                 draggable: false,
@@ -946,7 +944,7 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                                 method       : 'move',
                                 HTTP_MODAUTH : self.$httpModAuth,
                                 files        : self.$selectedFiles,
-                                category     : category
+                                category     : $(this).find('select').val()
                             },
                             success: function(data) {
                                 var alert = '<div class="alert alert-success alert-dismissible fade in move-alert" role="alert">';
