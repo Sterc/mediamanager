@@ -203,7 +203,7 @@ class MediaManagerFilesHelper
         // Set file type
         if ($this->isImage($file['file_type'])) {
             $fileBasePath = $source['basePath'];
-            if ($source['baseUrlRelative'] === false) {
+            if ($source['basePathRelative'] !== false) {
                 $fileBasePath = $this->addTrailingSlash(MODX_BASE_PATH) .
                     $this->removeSlashes($source['basePath']) .
                     DIRECTORY_SEPARATOR;
