@@ -195,13 +195,49 @@ class MediaManagerFilesHelper
         $file['file_size']        = $this->formatFileSize($file['file_size']);
         $file['uploaded_by_name'] = $data['user']->get('fullname');
         $file['is_archived']      = (int) $file['is_archived'];
+        $file['file_path']        = $file['path'];
         $file['path']             = $this->fileUrl($file, $source);
         $bodyData['file']         = $file;
         $footerData['file']       = $file;
 
         // Set file type
         if ($this->isImage($file['file_type'])) {
-            $bodyData['preview'] = '<img src="' . MODX_CONNECTORS_URL . 'system/phpthumb.php?src=' . $file['path'] . '&w=230&h=180&q=100&new=' . $file['file_hash'] . '" />';
+            $fileBasePath = $source['basePath'];
+            if ($source['baseUrlRelative'] === false) {
+                $fileBasePath = $this->addTrailingSlash(MODX_BASE_PATH) .
+                    $this->removeSlashes($source['basePath']) .
+                    DIRECTORY_SEPARATOR;
+            }
+
+            $thumbName = 'thumbs' . DIRECTORY_SEPARATOR . $file['file_hash'] . '.' . $file['file_type'];
+            $cacheFilenameAbsolute = str_replace(
+                $file['name'],
+                $thumbName,
+                $fileBasePath . $file['file_path']
+            );
+
+            $cacheFilename = str_replace(
+                $file['name'],
+                $thumbName,
+                $file['path']
+            );
+
+            if (file_exists($cacheFilenameAbsolute) && is_readable($cacheFilenameAbsolute)) {
+                $bodyData['preview'] = '<img src="' . str_replace(rtrim(MODX_BASE_PATH, '/'), '', $cacheFilename) . '" />';
+            } else {
+                $params = [
+                    'action' => 'mgr/thumbnail',
+                    'HTTP_MODAUTH' => $this->mediaManager->modx->user->getUserToken(
+                        $this->mediaManager->modx->context->get('key')
+                    ),
+                    'path' => $fileBasePath . $file['file_path'],
+                    'cache' => $cacheFilenameAbsolute,
+                ];
+
+                $bodyData['preview'] = '<img src="' . $this->mediaManager->config['connector_url'] . '?' .
+                    http_build_query($params) . '" />';
+            }
+
             $bodyData['is_image'] = 1;
         } elseif ($file['file_type'] === 'pdf' && extension_loaded('Imagick')) {
             $bodyData['preview'] = '<img src="' . str_replace('.pdf', '_thumb.jpg', $file['path']) . '" />';
