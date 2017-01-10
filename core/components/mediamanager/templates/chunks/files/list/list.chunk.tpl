@@ -17,3 +17,5 @@
         [[+items]]
     </tbody>
 </table>
+
+[[+pagination]]

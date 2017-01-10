@@ -526,8 +526,10 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
 
         /**
          * Get media files.
+         *
+         * @param setViewModeClass
          */
-        getList: function() {
+        getList: function(setViewModeClass) {
             var self = this;
 
             $.ajax({
@@ -547,7 +549,12 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                     offset        : self.$currentOffset
                 }
             }).success(function(data) {
+                if (setViewModeClass) {
+                    self.setViewModeClass();
+                }
+
                 $(self.$filesContainer).html(data.results);
+
                 self.resizeFileContainer();
                 self.setModxContentHeight();
                 self.lazyload();
@@ -761,14 +768,26 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
          *
          * @param e
          */
-        switchViewMode: function(e) {
+        switchViewMode : function (e) {
             var self = this,
                 viewMode = e.target.dataset.viewMode;
 
-            $(self.$filesContainer).removeClass('view-mode-' + self.$currentViewMode).addClass('view-mode-' + viewMode);
             self.$currentViewMode = viewMode;
 
-            self.getList();
+            self.getList(true);
+        },
+
+        /**
+         * Set view mode class.
+         */
+        setViewModeClass : function () {
+            var self = this;
+
+            if (self.$currentViewMode === 'list') {
+                $(self.$filesContainer).removeClass('view-mode-grid').addClass('view-mode-list');
+            } else {
+                $(self.$filesContainer).removeClass('view-mode-list').addClass('view-mode-grid');
+            }
         },
 
         /**
