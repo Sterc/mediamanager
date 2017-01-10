@@ -34,6 +34,7 @@ class MediaManagerThumbnailProcessor extends modProcessor
         $phpThumb->setParameter('q', 80);
         $phpThumb->setParameter('far', 1);
         $phpThumb->setParameter('config_cache_directory', $thumbsDir);
+        $phpThumb->setParameter('config_allow_src_above_docroot', true);
         $phpThumb->set($path);
 
         /* Check to see if there's a cached file of this already. */

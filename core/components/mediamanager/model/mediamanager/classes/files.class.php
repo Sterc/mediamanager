@@ -614,7 +614,7 @@ class MediaManagerFilesHelper
             $file['path']       = $this->fileUrl($file, $source);
 
             $fileBasePath = $source['basePath'];
-            if ($source['baseUrlRelative'] === false) {
+            if ($source['basePathRelative'] !== false) {
                 $fileBasePath = $this->addTrailingSlash(MODX_BASE_PATH) .
                                 $this->removeSlashes($source['basePath']) .
                                 DIRECTORY_SEPARATOR;
