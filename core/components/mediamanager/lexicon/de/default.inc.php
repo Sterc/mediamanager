@@ -161,6 +161,7 @@ $_lang['mediamanager.files.file_upload_date'] = 'Upload-Datum';
 $_lang['mediamanager.files.file_size'] = 'Grö0e';
 $_lang['mediamanager.files.file_name'] = 'Name';
 $_lang['mediamanager.files.file_uploaded_by'] = 'Hochgeladen von';
+$_lang['mediamanager.files.file_unknown_user'] = 'Unbekannter Benutzer';
 $_lang['mediamanager.files.file_linked_to'] = 'Verknüpft mit';
 $_lang['mediamanager.files.file_link'] = 'Link';
 $_lang['mediamanager.files.save_new_image'] = 'Als neues Bild speichern';
