@@ -149,12 +149,13 @@ class MediaManagerFilesHelper
         $content = $this->mediaManager->modx->getIterator('MediamanagerFilesContent', $q);
 
         // Get user
-        $user = null;
-        if ($file->get('uploaded_by') !== 0) {
-            $user = $this->mediaManager->modx->getObject('modUser', [
-                'id' => $file->get('uploaded_by')
-            ]);
-            $user = $user->getOne('Profile');
+        $profile = null;
+        $user    = $this->mediaManager->modx->getObject('modUser', [
+            'id' => $file->get('uploaded_by')
+        ]);
+
+        if ($user) {
+            $profile = $user->getOne('Profile');
         }
 
         return [
@@ -164,7 +165,7 @@ class MediaManagerFilesHelper
             'relations'  => $relations,
             'relations2' => $relations2,
             'content'    => $content,
-            'user'       => $user
+            'user'       => $profile
         ];
     }
 
@@ -198,7 +199,7 @@ class MediaManagerFilesHelper
         $source                   = $this->mediaManager->sources->getSource($file['media_sources_id']);
 
         $file['file_size']        = $this->formatFileSize($file['file_size']);
-        $file['uploaded_by_name'] = ($data['user'] !== null ? $data['user']->get('fullname') : $this->mediaManager->modx->lexicon('mediamanager.files.file_unknown_user'));
+        $file['uploaded_by_name'] = ($data['user'] !== null ? $data['user']->get('fullname') : $this->mediaManager->modx->lexicon(''));
         $file['is_archived']      = (int) $file['is_archived'];
         $file['file_path']        = $file['path'];
         $file['path']             = $this->fileUrl($file, $source);
