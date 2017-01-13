@@ -64,6 +64,12 @@ class MediaManagerFilesHelper
     private $imageTypes = [];
 
     /**
+     * Video types.
+     * @var array
+     */
+    private $videoTypes = [];
+
+    /**
      * Sort options.
      * @var array
      */
@@ -96,6 +102,7 @@ class MediaManagerFilesHelper
         $this->tinifyLimit   = (int) $this->mediaManager->modx->getOption('mediamanager.tinify.limit', null, 500);
 
         $this->setImageTypes();
+        $this->setVideoTypes();
         $this->setSortOptions();
         $this->setFilterOptions();
 
@@ -897,7 +904,31 @@ class MediaManagerFilesHelper
      */
     private function setImageTypes()
     {
-        $this->imageTypes = array('jpg', 'png', 'gif', 'tiff', 'bmp', 'jpeg');
+        $this->imageTypes = array('jpg', 'png', 'gif', 'tiff', 'bmp', 'jpeg', 'webp', 'ico');
+    }
+
+    /**
+     * Get image types.
+     */
+    public function getImageTypes()
+    {
+        return $this->imageTypes;
+    }
+
+    /**
+     * Set video types.
+     */
+    private function setVideoTypes()
+    {
+        $this->videoTypes = array('webm', 'mkv', 'flv', 'ogg', 'avi', 'mov', 'wmv', 'mp4', 'mpg', 'm4v', '3gp');
+    }
+
+    /**
+     * Get video types.
+     */
+    public function getVideoTypes()
+    {
+        return $this->videoTypes;
     }
 
     /**
