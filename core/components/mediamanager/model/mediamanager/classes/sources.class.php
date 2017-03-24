@@ -149,6 +149,9 @@ class MediaManagerSourcesHelper
 
         $sources = [];
         foreach ($mediaSources as $source) {
+            if (!$source->checkPolicy('save')) {
+                continue;
+            }
             $properties = $source->get('properties');
             if ($properties['mediamanagerSource']['value']) {
                 $rank = (float) ($properties['rank']['value'] ?: 1) . '.' . $source->get('id');
@@ -180,14 +183,6 @@ class MediaManagerSourcesHelper
         $sources = $this->getList();
 
         foreach ($sources as $source) {
-            if (
-                !$this->mediaManager->permissions->isAdmin()
-                && $source['id'] !== $this->getUserSource()
-                && $source['id'] !== $this->getDefaultSource()
-            ) {
-                continue;
-            }
-
             $source['selected'] = 0;
             if ($source['id'] === $this->getCurrentSource()) {
                 $source['selected'] = 1;
