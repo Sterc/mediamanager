@@ -140,10 +140,10 @@ class MediaManagerSourcesHelper
 
     /**
      * Get media sources.
-     *
-     * @return array
+     * count = boolean
+     * @return mixed
      */
-    public function getList()
+    public function getList($count = false)
     {
         $mediaSources = $this->mediaManager->modx->getIterator('modMediaSource');
 
@@ -165,6 +165,10 @@ class MediaManagerSourcesHelper
                     'allowedFileTypes' => $properties['allowedFileTypes']['value'] ?: ''
                 ];
             }
+        }
+
+        if ($count) {
+            return count($sources);
         }
 
         ksort($sources);
