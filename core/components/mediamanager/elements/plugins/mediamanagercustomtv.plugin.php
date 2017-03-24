@@ -22,6 +22,7 @@ switch ($modx->event->name) {
         $tmplVars = $modx->getCollection('modTemplateVar', [
             'type:IN' => [
                 'mm_input_image',
+                'mm_input_file',
                 'image',
                 'file',
                 'richtext',
