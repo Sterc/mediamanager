@@ -13,7 +13,7 @@ $_lang['mediamanager.global.add'] = 'Hinzufügen';
 $_lang['mediamanager.global.edit'] = 'Bearbeiten';
 $_lang['mediamanager.global.delete'] = 'Löschen';
 $_lang['mediamanager.global.delete_confirm'] = 'Sind Sie sicher das Sie dies löschen möchten?';
-$_lang['mediamanager.global.unarchive'] = 'Entpacken';
+$_lang['mediamanager.global.unarchive'] = 'Wiederherstellen';
 $_lang['mediamanager.global.search'] = 'Suchen';
 $_lang['mediamanager.global.move'] = 'Verschieben';
 $_lang['mediamanager.global.crop'] = 'Ausschneiden';
@@ -30,7 +30,7 @@ $_lang['mediamanager.global.preview'] = 'Vorschau';
 $_lang['mediamanager.global.save'] = 'Speichern';
 $_lang['mediamanager.global.use'] = 'Benutzen';
 
-$_lang['mediamanager.global.error.mediasource'] = 'Ihr default mediasource (ID [[+ mediasource_id]]) ist nicht mit dem Media Manager konfiguriert. Bitte fügen Sie eine Property \'mediamanagerSource \' mit dem Wert \'1 \' zu diesem mediasource und alle anderen mediasources Sie mit dem Media Manager verwenden möchten.';
+$_lang['mediamanager.global.error.mediasource'] = 'Ihre Standard Medienquelle (ID [[+ mediasource_id]]) ist nicht für den Media Manager konfiguriert. Bitte fügen Sie die Einstellung \'mediamanagerSource \' mit dem Wert \'1 \' zu den Medienquellen hinzu, die Sie mit dem MediaManager verwenden möchten.';
 
 /* Tags */
 $_lang['mediamanager.tags'] = 'Medien-Tags';
@@ -60,7 +60,7 @@ $_lang['mediamanager.categories.category'] = 'Kategorie';
 $_lang['mediamanager.categories.title'] = 'Kategorie anlegen';
 $_lang['mediamanager.categories.label'] = 'Kategorie';
 $_lang['mediamanager.categories.parent_label'] = 'Eltern-Kategorie';
-$_lang['mediamanager.categories.source_label'] = 'Media source';
+$_lang['mediamanager.categories.source_label'] = 'Medienquelle';
 $_lang['mediamanager.categories.save'] = 'Speichern';
 $_lang['mediamanager.categories.placeholder'] = 'Beispiel: Aktionen';
 $_lang['mediamanager.categories.button'] = 'Anlegen';
@@ -103,7 +103,7 @@ $_lang['mediamanager.files.filter.type_other'] = 'Andere';
 $_lang['mediamanager.files.filter.date_from'] = 'Datum von';
 $_lang['mediamanager.files.filter.date_to'] = 'Datum bis';
 $_lang['mediamanager.files.filter.all_dates'] = 'Alle Daten';
-$_lang['mediamanager.files.filter.date_recent'] = 'Neuste';
+$_lang['mediamanager.files.filter.date_recent'] = 'Neueste';
 $_lang['mediamanager.files.filter.date_custom'] = 'Bis-Von-Datum';
 $_lang['mediamanager.files.error.no_files_found'] = 'Keine Dateien gefunden.';
 $_lang['mediamanager.files.error.meta_not_found'] = 'Es konnten keine Metadaten mit der Metadaten-ID [[+metaid]] zum Löschen gefunden werden.';
@@ -173,9 +173,9 @@ $_lang['mediamanager.files.source_tags'] = 'Source Tags';
 $_lang['mediamanager.sources.root'] = 'None';
 
 /* Permissions */
-$_lang['mediamanager.permissions.admin'] = 'Medien-Manager Administrationsrechte';
+$_lang['mediamanager.permissions.admin'] = 'MediaManager Administrationsrechte';
 
 /* Custom input/output filter */
-$_lang['mm_input_image'] = 'Bild aus Medien-Manager';
-$_lang['mm_output_image'] = 'Bild aus Medien-Manager';
-$_lang['mm_input_file'] = 'Media Manager File';
+$_lang['mm_input_image'] = 'Bild aus MediaManager';
+$_lang['mm_output_image'] = 'Bild aus MediaManager';
+$_lang['mm_input_file'] = 'Datei aus MediaManager';
