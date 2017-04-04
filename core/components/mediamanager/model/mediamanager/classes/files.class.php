@@ -1453,6 +1453,10 @@ class MediaManagerFilesHelper
 
         if (!is_array($fileIds)) {
             $fileIds = [$fileIds];
+        } else {
+            foreach ($fileIds as $key => $file) {
+                $fileIds[$key] = $file['id'];
+            }
         }
 
         // Check if files are linked to a resource

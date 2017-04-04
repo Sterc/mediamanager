@@ -29,6 +29,7 @@ class MediaManagerHomeManagerController extends MediaManagerManagerController
             'dropzone_title'               => $this->modx->lexicon('mediamanager.files.dropzone.title'),
             'token'                        => $this->modx->user->getUserToken($this->modx->context->get('key')),
             'source_list'                  => $this->mediaManager->sources->getListHtml(),
+            'source_list_status'           => '',
             'sort_options'                 => $this->mediaManager->files->getSortOptionsHtml(),
             'filter_options'               => $this->mediaManager->files->getFilterOptionsHtml(),
             'popup'                        => $this->mediaManager->getChunk('files/popup'),
@@ -37,6 +38,10 @@ class MediaManagerHomeManagerController extends MediaManagerManagerController
 
         $filters = $this->mediaManager->getChunk('files/filters', $placeholders);
         $placeholders['filters'] = $filters;
+
+        if ($this->mediaManager->sources->getList(true) < 2) {
+            $placeholders['source_list_status'] = 'disabled';
+        }
 
         if ($this->mediaManagerError) {
             $placeholders['message'] = $this->mediaManagerError;
