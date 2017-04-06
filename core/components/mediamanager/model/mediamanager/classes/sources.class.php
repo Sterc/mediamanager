@@ -140,7 +140,7 @@ class MediaManagerSourcesHelper
 
     /**
      * Get media sources.
-     * count = boolean
+     * @param boolean $count
      * @return mixed
      */
     public function getList($count = false)
@@ -206,6 +206,7 @@ class MediaManagerSourcesHelper
      * Get media source by id.
      *
      * @param int $sourceId
+     *
      * @return bool|array
      */
     public function getSource($sourceId)
