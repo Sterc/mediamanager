@@ -120,6 +120,10 @@ class MediaManagerFilesHelper
         // Get file
         $file = $this->mediaManager->modx->getObject('MediamanagerFiles', ['id' => $fileId]);
 
+        if (!$file) {
+            return [];
+        }
+
         // Get file categories
         $q = $this->mediaManager->modx->newQuery('MediamanagerCategories');
         $q->innerJoin('MediamanagerFilesCategories', 'Files');
@@ -2332,7 +2336,7 @@ class MediaManagerFilesHelper
             chmod($target, 0644);
             return true;
         }
-    
+
         return false;
     }
 

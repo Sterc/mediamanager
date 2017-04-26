@@ -1,11 +1,11 @@
 $(document).ready(function() {
 
-    var modalTrigger   = '.mediamanager-input',
-        tvId           = null,
-        input          = '.mediamanager-input-wrapper .textfield',
-        typeInterval   = 3000,
-        typingTimer,
-        currentInput;
+    var modalTrigger = '.mediamanager-input',
+        tvId         = null,
+        input        = '.mediamanager-input-wrapper .textfield',
+        typeInterval = 1000,
+        typingTimer  = null,
+        currentInput = null;
 
     $(input).keyup(function() {
         clearTimeout(typingTimer);
@@ -25,21 +25,28 @@ $(document).ready(function() {
 
     function keyupFunction() {
         $.ajax({
-                method: "GET",
-                url: MODx.config['mediamanager.assets_path'] + 'connector.php?action=mgr/migx/getfile&src=' + $(currentInput).val() + '&return_url=1'
-            })
-            .done(function(data) {
-                if (data !== '') {
-                    var inputId         = $(currentInput).parent().attr('data-tvid'),
-                        $imageContainer = $('#tv-image-preview-' + inputId),
-                        $imagePreview   = $imageContainer.find('img');
+            method: 'post',
+            url: MODx.config['mediamanager.assets_url'] + 'connector.php',
+            data: {
+                action       : 'mgr/file',
+                HTTP_MODAUTH : mediaManagerOptions.token,
+                id           : $(currentInput).val()
+            }
+        })
+        .done(function (data) {
+            if (data.results !== '') {
+                var inputId         = $(currentInput).parent().attr('data-tvid'),
+                    $imageContainer = $('#tv-image-preview-' + inputId),
+                    $imagePreview   = $imageContainer.find('img');
 
-                    if ($imageContainer.length) {
-                        $imagePreview.show();
-                        $imagePreview.css('max-width', 400).css('max-height', 300).attr('src', data);
-                    }
+                if (!$imagePreview.length) {
+                    $imagePreview = $('<img />').appendTo($imageContainer);
                 }
-            });
+
+                $imagePreview.show();
+                $imagePreview.css('max-width', 400).css('max-height', 300).attr('src', data.results.url);
+            }
+        });
     }
 
     $(document).on('click', modalTrigger, function(e) {
@@ -56,9 +63,7 @@ $(document).ready(function() {
                     $imagePreview = $('<img />').appendTo($imageContainer);
                 }
 
-                if (!$imageContainer.length) {
-                    $imagePreview.css('max-width', 400).css('max-height', 300).attr('src', file.preview);
-                }
+                $imagePreview.css('max-width', 400).css('max-height', 300).attr('src', file.preview);
 
                 $('input#tv' + tvId).attr('value', file.id);
             }
@@ -66,4 +71,5 @@ $(document).ready(function() {
 
         mediaManager.open();
     });
+
 });

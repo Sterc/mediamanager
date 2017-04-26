@@ -4,7 +4,7 @@
         {if $path|substr:-3 == "svg"}
             <img src="/{$params.basePath}{$path}" width="150" />
         {else}
-            <img src="{$_config.connectors_url}system/phpthumb.php?w=400&src={$path}" />
+            <img src="{$_config.connectors_url}system/phpthumb.php?w=400&source={$source}&src={$path}" />
         {/if}
     {/if}
 </div>
