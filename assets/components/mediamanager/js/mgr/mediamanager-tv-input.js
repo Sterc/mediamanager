@@ -34,7 +34,7 @@ $(document).ready(function() {
             }
         })
         .done(function (data) {
-            if (data.results !== '') {
+            if (data.results.url) {
                 var inputId         = $(currentInput).parent().attr('data-tvid'),
                     $imageContainer = $('#tv-image-preview-' + inputId),
                     $imagePreview   = $imageContainer.find('img');
