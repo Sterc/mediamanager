@@ -575,7 +575,7 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
 
             $(filesContainer).jscroll({
                 autoTrigger  : true,
-                padding      : 200,
+                padding      : 100,
                 nextSelector : self.$pagination,
                 callback     : function() {
                     self.resizeFileContainer();

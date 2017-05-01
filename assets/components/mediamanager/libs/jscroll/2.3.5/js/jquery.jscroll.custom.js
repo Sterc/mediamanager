@@ -60,7 +60,7 @@
             // Wrap inner content, if it isn't already
             _wrapInnerContent = function() {
                 if (!$e.find('.jscroll-inner').length) {
-                    $e.contents().wrapAll('<div class="jscroll-inner" />');
+                    $e.contents().wrapAll('<div class="jscroll-inner clearfix" />');
                 }
             },
 
@@ -92,11 +92,8 @@
                     var $inner = $e.find('div.jscroll-inner').first(),
                         data = $e.data('jscroll'),
                         borderTopWidth = parseInt($e.css('borderTopWidth'), 10),
-                        borderTopWidthInt = isNaN(borderTopWidth) ? 0 : borderTopWidth,
-                        iContainerTop = parseInt($e.css('paddingTop'), 10) + borderTopWidthInt,
-                        iTopHeight = _isWindow ? _$scroll.scrollTop() : $e.offset().top,
                         innerTop = $inner.length ? $inner.offset().top : 0,
-                        iTotalHeight = Math.ceil(iTopHeight - innerTop + _$scroll.height() + iContainerTop);
+                        iTotalHeight = Math.ceil(Math.abs(innerTop) + _$scroll.height());
 
                     if (!data.waiting && iTotalHeight + _options.padding >= $inner.outerHeight()) {
                         //data.nextHref = $.trim(data.nextHref + ' ' + _options.contentSelector);

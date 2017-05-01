@@ -6,7 +6,7 @@ $mediamanager = $modx->getService('mediamanager', 'MediaManager', $corePath . 'm
 
 switch ($modx->event->name) {
     case 'OnManagerPageBeforeRender':
-        if (!isset($_REQUEST['tv_frame'])) {
+        if (!isset($_REQUEST['tv_frame']) && $_REQUEST['namespace'] !== 'mediamanager') {
             $modx->regClientCSS($mediamanager->config['assets_url'] . 'libs/jquery-ui/1.11.4/css/jquery-ui.min.css');
             $modx->regClientCSS($mediamanager->config['assets_url'] . 'libs/jquery-ui/1.11.4/css/jquery-ui.structure.min.css');
             $modx->regClientCSS($mediamanager->config['assets_url'] . 'libs/jquery-ui/1.11.4/css/jquery-ui.theme.min.css');

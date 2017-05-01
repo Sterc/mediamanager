@@ -149,11 +149,13 @@ class MediaManagerSourcesHelper
 
         $sources = [];
         foreach ($mediaSources as $source) {
-            if (!$source->checkPolicy('save')) {
-                continue;
-            }
             $properties = $source->get('properties');
+
             if ($properties['mediamanagerSource']['value']) {
+                if (!$source->checkPolicy('save')) {
+                    continue;
+                }
+
                 $rank = (float) ($properties['rank']['value'] ?: 1) . '.' . $source->get('id');
                 $sources[$rank] = [
                     'id'               => $source->get('id'),
