@@ -4,26 +4,7 @@
     "description": "Media Manager for MODX.",
     "author": "Sterc",
     "version": "0.1.15",
-    "package":{
-        "menus": [{
-            "text": "mediamanager",
-            "description": "mediamanager.desc",
-            "action": "home",
-            "parent": "media",
-            "permissions": "file_manager"
-        },{
-            "text": "mediamanager.categories",
-            "description": "mediamanager.categories.desc",
-            "action": "categories",
-            "parent": "media",
-            "permissions": "file_manager"
-        },{
-            "text": "mediamanager.tags",
-            "description": "mediamanager.tags.desc",
-            "action": "tags",
-            "parent": "media",
-            "permissions": "file_manager"
-        }],
+    "package": {
         "elements": {
             "plugins": [{
                 "name": "mediaManagerCustomTv",
@@ -41,7 +22,7 @@
                 "name": "mediaManagerContentBlocks",
                 "file": "mediamanagercontentblocks.plugin.php",
                 "events": ["ContentBlocks_RegisterInputs"]
-            
+
             },{
                 "name": "mediaManagerCbGalleryInput",
                 "file": "mediamanagercbgalleryinput.plugin.php",
@@ -78,7 +59,8 @@
             "after": [
                 "resolve.policies.php",
                 "resolve.synctables.php",
-                "resolve.categoriesdefaultmediasource.php"
+                "resolve.categoriesdefaultmediasource.php",
+                "resolve.menus.php"
             ]
         }
     }
