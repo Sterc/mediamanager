@@ -1021,14 +1021,13 @@ class MediaManagerFilesHelper
         }
 
         if ($file['extension'] === 'pdf' && extension_loaded('Imagick')) {
-            $pdfHandle = fopen($this->uploadDirectory . $this->uploadDirectoryMonth . $file['unique_name'], 'rb');
             $previewName = str_replace('.pdf', '_thumb.jpg', $file['unique_name']);
 
             $pdfPreview = new Imagick();
-            $pdfPreview->setResolution(230, 180);
-            $pdfPreview->readImageFile($pdfHandle);
+            $pdfPreview->readImage($this->uploadDirectory . $this->uploadDirectoryMonth . $file['unique_name']);
             $pdfPreview->setIteratorIndex(0);
             $pdfPreview->setImageFormat('jpeg');
+            $pdfPreview->thumbnailImage(230, 180, true, true);
             $pdfPreview->writeImage($this->uploadDirectory . $this->uploadDirectoryMonth . $previewName);
             $pdfPreview->clear();
             $pdfPreview->destroy();

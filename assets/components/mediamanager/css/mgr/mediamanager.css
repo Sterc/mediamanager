@@ -145,7 +145,6 @@
 
 .mediamanager-browser .view-mode-grid .file .file-preview img,
 .mediamanager-browser .view-mode-grid .file .file-preview svg {
-    width: 100%;
     max-width: 100%;
     max-height: 100%;
 }
@@ -299,8 +298,8 @@ ol.sortable li div {
     padding: 10px 0;
 }
 
-.modal .file-preview img {
-    width: 100%;
+.modal .file-preview {
+    text-align: center;
 }
 
 .modal img.crop {
