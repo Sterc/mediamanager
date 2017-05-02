@@ -1,7 +1,7 @@
 --------------------
 Extra: Media Manager
 --------------------
-Version: 0.1.13
-Author: Sterc <modx+mediamanager@sterc.nl>
+Version: 0.1.16
+Author: Sterc <modx@sterc.nl>
 
 Media Manager for MODX.
