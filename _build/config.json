@@ -3,7 +3,7 @@
     "lowCaseName": "mediamanager",
     "description": "Media Manager for MODX.",
     "author": "Sterc",
-    "version": "0.1.16",
+    "version": "0.1.17",
     "package": {
         "elements": {
             "plugins": [{

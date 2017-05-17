@@ -1,3 +1,7 @@
+Media Manager 0.1.17-pl
+=======================
+- #20 Fix wrong mediasource shown if default_media_source not set
+
 Media Manager 0.1.16-pl
 =======================
 - #6 Prevent menu permissions being overwritten
