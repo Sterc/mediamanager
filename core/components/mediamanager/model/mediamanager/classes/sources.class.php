@@ -10,17 +10,17 @@ class MediaManagerSourcesHelper
     /**
      * @var int
      */
-    private $defaultSource = 1;
+    private $defaultSource = 0;
 
     /**
      * @var int
      */
-    private $currentSource = 1;
+    private $currentSource = 0;
 
     /**
      * @var int
      */
-    private $userSource = 1;
+    private $userSource = 0;
 
     /**
      * MediaManagerSourcesHelper constructor.
@@ -31,9 +31,9 @@ class MediaManagerSourcesHelper
     {
         $this->mediaManager = $mediaManager;
 
+        $this->setUserSource();
         $this->setDefaultSource();
         $this->setCurrentSource();
-        $this->setUserSource();
         $this->hasPermission();
     }
 
@@ -50,6 +50,8 @@ class MediaManagerSourcesHelper
 
         if ($source) {
             $this->defaultSource = (int) $source->get('id');
+        } else if ($this->getUserSource()) {
+            $this->defaultSource = $this->getUserSource();
         }
 
         return $this->defaultSource;
@@ -91,7 +93,9 @@ class MediaManagerSourcesHelper
      */
     private function setUserSource()
     {
-        return $this->userSource = (int) $this->mediaManager->modx->user->getOption('media_sources_id');
+        $userSettings = $this->mediaManager->modx->user->getSettings();
+
+        return $this->userSource = (int) $userSettings['media_sources_id'];
     }
 
     /**
@@ -100,7 +104,7 @@ class MediaManagerSourcesHelper
     private function hasPermission()
     {
         if (
-            !$this->mediaManager->permissions->isAdmin()
+            $this->userSource
             && $this->userSource !== $this->currentSource
             && $this->defaultSource !== $this->currentSource
         ) {
@@ -152,7 +156,7 @@ class MediaManagerSourcesHelper
             $properties = $source->get('properties');
 
             if ($properties['mediamanagerSource']['value']) {
-                if (!$source->checkPolicy('save')) {
+                if ($this->getUserSource() && $this->getUserSource() !== $source->get('id')) {
                     continue;
                 }
 
