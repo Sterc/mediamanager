@@ -3,8 +3,27 @@
     "lowCaseName": "mediamanager",
     "description": "Media Manager for MODX.",
     "author": "Sterc",
-    "version": "0.1.17",
-    "package": {
+    "version": "0.2.0",
+    "package":{
+        "menus": [{
+            "text": "mediamanager",
+            "description": "mediamanager.desc",
+            "action": "home",
+            "parent": "media",
+            "permissions": "file_manager"
+        },{
+            "text": "mediamanager.categories",
+            "description": "mediamanager.categories.desc",
+            "action": "categories",
+            "parent": "media",
+            "permissions": "file_manager"
+        },{
+            "text": "mediamanager.tags",
+            "description": "mediamanager.tags.desc",
+            "action": "tags",
+            "parent": "media",
+            "permissions": "file_manager"
+        }],
         "elements": {
             "plugins": [{
                 "name": "mediaManagerCustomTv",
@@ -60,8 +79,12 @@
                 "resolve.policies.php",
                 "resolve.synctables.php",
                 "resolve.categoriesdefaultmediasource.php",
-                "resolve.menus.php"
+                "setupoptions.resolver.php",
+                "stercextra.resolver.php"
             ]
+        },
+        "setupOptions":{
+            "source": "setup.options.php"
         }
     }
 }

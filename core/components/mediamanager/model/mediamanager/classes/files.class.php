@@ -1024,7 +1024,8 @@ class MediaManagerFilesHelper
             $previewName = str_replace('.pdf', '_thumb.jpg', $file['unique_name']);
 
             $pdfPreview = new Imagick();
-            $pdfPreview->readImage($this->uploadDirectory . $this->uploadDirectoryMonth . $file['unique_name']);
+            $pdfPreview->setResolution(230, 180);
+            $pdfPreview->readImage($this->uploadDirectory . $this->uploadDirectoryMonth . $file['unique_name'].'[0]');
             $pdfPreview->setIteratorIndex(0);
             $pdfPreview->setImageFormat('jpeg');
             $pdfPreview->thumbnailImage(230, 180, true, true);
