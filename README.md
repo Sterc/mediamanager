@@ -1,5 +1,5 @@
 # Media Manager for MODX [BETA]
-The Media Manager is a MODX Extra replacing the default Media Browser with an enterprise-grade media management solution.
+The Media Manager is a MODX Extra replacing the default Media Browser with an enterprise-grade media management solution, an initiative by [SEDA](https://seda.digital/) and [Sterc](https://www.sterc.com).
 
 ## Features
 - Fully responsive
