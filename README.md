@@ -20,7 +20,7 @@ A migration tool is not yet available. You will not loose your old images, but t
 
 ## Installation
 1. Install the package through package management by uploading the latest version from the _packages folder.
-2. You have to enable the Media Manager per MediaSource. Go to the top-menu "Media" -> "Media Sources" -> "Create property" and set the Textfield value to "1"  
+2. You have to enable the Media Manager per MediaSource. Go to the top-menu "Media" -> "Media Sources" -> "Create property": Name=mediamanagerSource, Type=Textfield, Value=1
 3. Now enable it per user by editing a user: "Manage" -> "Users" -> Edit a user -> "Settings" -> "Create new" and set the key and/or name to "media_sources_id" and set the value to the ID of the Media Source you just enabled.
 
 That's it, have fun!
