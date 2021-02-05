@@ -1746,9 +1746,13 @@ class MediaManagerFilesHelper
             return $response;
         }
 
+        if (strpos($zipUrl, $this->mediaManager->modx->getOption('site_url')) === false) {
+            $zipUrl = $this->removeSlashes($this->mediaManager->modx->getOption('site_url')) . $zipUrl;
+        }
+
         if ($isDownload) {
             // Return download link
-            $response['message'] = $this->removeSlashes($this->mediaManager->modx->getOption('site_url')) . $zipUrl;
+            $response['message'] = $zipUrl;
             return $response;
         }
 
@@ -1760,10 +1764,6 @@ class MediaManagerFilesHelper
         $download->set('path', $zipUrl);
         $download->set('hash', md5($zipUrl));
         $download->save();
-        
-        if (strpos($zipUrl, $this->mediaManager->modx->getOption('site_url')) === false) {
-            $zipUrl = $this->removeSlashes($this->mediaManager->modx->getOption('site_url')) . $zipUrl;
-        }
 
         // Return download link
         $response['message'] = $this->mediaManager->modx->lexicon('mediamanager.files.share_download', array(
