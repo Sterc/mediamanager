@@ -1,18 +1,16 @@
 (function($) {
     var manager_url = '/manager/';
-
     if (MODx.config) {
         manager_url = MODx.config.manager_url;
     }
-
     var defaults = {
         url           : manager_url + '?a=home&namespace=mediamanager&tv_frame=1',
         width         : $(window).width() * 0.94,
         height        : $(window).height() * 0.94,
         wrapperId     : 'modal-wrapper',
-        selectElement : '.mediamanager-browser .file .file-options .btn-success',
+        selectElement : '.mediamanager-browser .view-mode-grid .file .file-options .btn-success',
         onSelect      : function() {}
-    };
+    }
 
     $.MediaManagerModal = function(options) {
         var settings = $.extend({}, defaults, options);
@@ -48,14 +46,16 @@
                     e.preventDefault();
 
                     var $file       = $(this).parents('.file'),
+                        filePreview = $file.find('.file-preview img').data('path'),
+                        filePath    = $file.find('.file-preview').data('path'),
                         fileId      = $file.data('id'),
-                        fileName    = $file.data('name'),
-                        filePreview = $file.data('preview');
+                        fileName    = $.trim($file.find('.file-name').text());
 
                     var object = {
+                        'preview' : filePreview,
+                        'path'    : filePath,
                         'id'      : fileId,
-                        'name'    : fileName,
-                        'preview' : filePreview
+                        'name'    : fileName
                     };
 
                     settings.onSelect(object);
@@ -65,6 +65,6 @@
             });
 
             $dialogElement.dialog('open');
-        };
-    };
+        }
+    }
 }(jQuery));

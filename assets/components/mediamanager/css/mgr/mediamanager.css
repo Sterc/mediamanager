@@ -374,3 +374,7 @@ ol.sortable li div {
     position: absolute;
     bottom: 20px;
 }
+
+#modx-body-tag {
+    overflow: auto;
+}
