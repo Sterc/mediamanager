@@ -9,9 +9,14 @@ if (!class_exists('MediaManagerOutputRender')) {
             }
 
             $path = '';
-            $image = $this->modx->getObject('MediamanagerFiles', $value);
-            if ($image) {
-                $path = $image->get('path');
+            if ($image = $this->modx->getObject('MediamanagerFiles', $value)) {
+                if ($source = $this->modx->getObject('sources.modMediaSource', $image->get('media_sources_id'))) {
+                    $source->initialize();
+
+                    $path = $source->getBaseUrl();
+                }
+
+                $path .= $image->get('path');
             }
 
             return $path;
