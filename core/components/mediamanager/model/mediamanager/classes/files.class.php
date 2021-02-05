@@ -120,10 +120,6 @@ class MediaManagerFilesHelper
         // Get file
         $file = $this->mediaManager->modx->getObject('MediamanagerFiles', ['id' => $fileId]);
 
-        if (!$file) {
-            return [];
-        }
-
         // Get file categories
         $q = $this->mediaManager->modx->newQuery('MediamanagerCategories');
         $q->innerJoin('MediamanagerFilesCategories', 'Files');
@@ -633,8 +629,8 @@ class MediaManagerFilesHelper
             $fileBasePath = $source['basePath'];
             if ($source['basePathRelative'] !== false) {
                 $fileBasePath = $this->addTrailingSlash(MODX_BASE_PATH) .
-                                $this->removeSlashes($source['basePath']) .
-                                DIRECTORY_SEPARATOR;
+                    $this->removeSlashes($source['basePath']) .
+                    DIRECTORY_SEPARATOR;
             }
 
             if (in_array($file['id'], $selectedFilesIds)) {
@@ -669,7 +665,7 @@ class MediaManagerFilesHelper
                         ];
 
                         $file['preview_path'] = $this->mediaManager->config['connector_url'] . '?' .
-                                                http_build_query($params);
+                            http_build_query($params);
                     }
 
                     $file['preview'] = $this->mediaManager->getChunk('files/file_preview_img', $file);
@@ -1028,7 +1024,6 @@ class MediaManagerFilesHelper
             $pdfPreview->readImage($this->uploadDirectory . $this->uploadDirectoryMonth . $file['unique_name'].'[0]');
             $pdfPreview->setIteratorIndex(0);
             $pdfPreview->setImageFormat('jpeg');
-            $pdfPreview->thumbnailImage(230, 180, true, true);
             $pdfPreview->writeImage($this->uploadDirectory . $this->uploadDirectoryMonth . $previewName);
             $pdfPreview->clear();
             $pdfPreview->destroy();
@@ -1457,10 +1452,6 @@ class MediaManagerFilesHelper
 
         if (!is_array($fileIds)) {
             $fileIds = [$fileIds];
-        } else {
-            foreach ($fileIds as $key => $file) {
-                $fileIds[$key] = $file['id'];
-            }
         }
 
         // Check if files are linked to a resource
@@ -1493,8 +1484,8 @@ class MediaManagerFilesHelper
         }
 
         // Archive files
-        foreach ($fileIds as $key => $id) {
-            $file = $this->mediaManager->modx->getObject('MediamanagerFiles', $id);
+        foreach ($fileIds as $key => $file) {
+            $file = $this->mediaManager->modx->getObject('MediamanagerFiles', $file['id']);
 
             // Create archive directories
             if (!$this->createUploadDirectory($file->get('media_sources_id'))) {
@@ -1669,7 +1660,7 @@ class MediaManagerFilesHelper
             }
 
             $file->set('is_archived', 0);
-            $file->set('archive_date', 0);
+            $file->set('archive_date', null);
             $file->set('archive_path', '');
             $file->save();
 
