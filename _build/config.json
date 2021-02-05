@@ -25,6 +25,10 @@
             "permissions": "file_manager"
         }],
         "elements": {
+            "snippets": [{
+                "name": "getMMFilePath",
+                "file": "getmmfilepath.snippet.php"
+            }],
             "plugins": [{
                 "name": "mediaManagerCustomTv",
                 "file": "mediamanagercustomtv.plugin.php",
