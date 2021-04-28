@@ -1,6 +1,7 @@
 <?php
 
-class cbMediaManagerInput extends cbBaseInput {
+class cbMediaManagerInput extends cbBaseInput
+{
     public $defaultIcon = 'attachment';
     public $defaultTpl = '[[!mmRenderFile? &id=`[[+file_id]]`]]';
 
@@ -31,7 +32,7 @@ class cbMediaManagerInput extends cbBaseInput {
      */
     public function getTemplates()
     {
-        $tpls = array();
+        $tpls = [];
 
         // Grab the template from a .tpl file
         $corePath = $this->modx->getOption('mediamanager.core_path', null, MODX_CORE_PATH . 'components/mediamanager/');
@@ -40,6 +41,7 @@ class cbMediaManagerInput extends cbBaseInput {
         // Wrap the template, giving the input a reference of "my_awesome_input", and
         // add it to the returned array.
         $tpls[] = $this->contentBlocks->wrapInputTpl('cb_mediamanager_input', $template);
+
         return $tpls;
     }
 }
