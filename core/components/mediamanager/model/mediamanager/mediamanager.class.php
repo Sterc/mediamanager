@@ -45,7 +45,7 @@ class MediaManager
      */
     public function __construct(modX &$modx, array $config = array())
     {
-        $this->modx =& $modx;
+        $this->modx      =& $modx;
         $this->namespace = $this->modx->getOption('namespace', $config, 'mediamanager');
 
         $basePath   = $this->modx->getOption('mediamanager.core_path', $config, $this->modx->getOption('core_path') . 'components/mediamanager/');

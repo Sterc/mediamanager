@@ -1,9 +1,8 @@
 $(document).ready(function() {
-
     var modalTrigger = '.mediamanager-input',
         tvId         = null,
         input        = '.mediamanager-input-wrapper .textfield',
-        typeInterval = 1000,
+        typeInterval = 3000,
         typingTimer  = null,
         currentInput = null;
 
@@ -25,26 +24,19 @@ $(document).ready(function() {
 
     function keyupFunction() {
         $.ajax({
-            method: 'post',
-            url: MODx.config['mediamanager.assets_url'] + 'connector.php',
-            data: {
-                action       : 'mgr/file',
-                HTTP_MODAUTH : mediaManagerOptions.token,
-                id           : $(currentInput).val()
-            }
+            method  : 'GET',
+            url     : MODx.config['mediamanager.assets_path'] + 'connector.php?action=mgr/migx/getfile&src=' + $(currentInput).val() + '&return_url=1'
         })
-        .done(function (data) {
-            if (data.results.url) {
+        .done(function(data) {
+            if (data !== '') {
                 var inputId         = $(currentInput).parent().attr('data-tvid'),
                     $imageContainer = $('#tv-image-preview-' + inputId),
                     $imagePreview   = $imageContainer.find('img');
 
-                if (!$imagePreview.length) {
-                    $imagePreview = $('<img />').appendTo($imageContainer);
+                if ($imageContainer.length) {
+                    $imagePreview.show();
+                    $imagePreview.css('max-width', 400).css('max-height', 300).attr('src', data);
                 }
-
-                $imagePreview.show();
-                $imagePreview.css('max-width', 400).css('max-height', 300).attr('src', data.results.url);
             }
         });
     }

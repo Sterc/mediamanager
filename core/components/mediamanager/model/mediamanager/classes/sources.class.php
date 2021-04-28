@@ -93,9 +93,7 @@ class MediaManagerSourcesHelper
      */
     private function setUserSource()
     {
-        $userSettings = $this->mediaManager->modx->user->getSettings();
-
-        return $this->userSource = (int) $userSettings['media_sources_id'];
+        return $this->userSource = (int) $this->mediaManager->modx->user->getOption('media_sources_id');
     }
 
     /**
@@ -104,7 +102,7 @@ class MediaManagerSourcesHelper
     private function hasPermission()
     {
         if (
-            $this->userSource
+            !$this->mediaManager->permissions->isAdmin()
             && $this->userSource !== $this->currentSource
             && $this->defaultSource !== $this->currentSource
         ) {
@@ -189,10 +187,18 @@ class MediaManagerSourcesHelper
      */
     public function getListHtml()
     {
-        $html = '';
+        $html    = '';
         $sources = $this->getList();
 
         foreach ($sources as $source) {
+            if (
+                !$this->mediaManager->permissions->isAdmin()
+                && $source['id'] !== $this->getUserSource()
+                && $source['id'] !== $this->getDefaultSource()
+            ) {
+                continue;
+            }
+
             $source['selected'] = 0;
             if ($source['id'] === $this->getCurrentSource()) {
                 $source['selected'] = 1;

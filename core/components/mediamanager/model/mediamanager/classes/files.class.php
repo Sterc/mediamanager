@@ -656,16 +656,13 @@ class MediaManagerFilesHelper
                         $file['preview_path'] = str_replace(rtrim(MODX_BASE_PATH, '/'), '', $cacheFilename);
                     } else {
                         $params = [
-                            'action' => 'mgr/thumbnail',
-                            'HTTP_MODAUTH' => $this->mediaManager->modx->user->getUserToken(
-                                $this->mediaManager->modx->context->get('key')
-                            ),
-                            'path' => $fileBasePath . $file['file_path'],
-                            'cache' => $cacheFilenameAbsolute,
+                            'action'        => 'mgr/thumbnail',
+                            'HTTP_MODAUTH'  => $this->mediaManager->modx->user->getUserToken($this->mediaManager->modx->context->get('key')),
+                            'path'          => $fileBasePath . $file['file_path'],
+                            'cache'         => $cacheFilenameAbsolute,
                         ];
 
-                        $file['preview_path'] = $this->mediaManager->config['connector_url'] . '?' .
-                            http_build_query($params);
+                        $file['preview_path'] = $this->mediaManager->config['connector_url'] . '?' . http_build_query($params);
                     }
 
                     $file['preview'] = $this->mediaManager->getChunk('files/file_preview_img', $file);
@@ -1484,8 +1481,8 @@ class MediaManagerFilesHelper
         }
 
         // Archive files
-        foreach ($fileIds as $key => $file) {
-            $file = $this->mediaManager->modx->getObject('MediamanagerFiles', $file['id']);
+        foreach ($fileIds as $key => $id) {
+            $file = $this->mediaManager->modx->getObject('MediamanagerFiles', $id);
 
             // Create archive directories
             if (!$this->createUploadDirectory($file->get('media_sources_id'))) {
@@ -1499,7 +1496,7 @@ class MediaManagerFilesHelper
 
             if (!$this->renameFile($old, $this->uploadDirectory . $this->archiveDirectory . $new)) {
                 $response['status'] = self::STATUS_ERROR;
-                $response['message'] .= $this->mediaManager->modx->lexicon('mediamanager.files.error.file_archive', array('id' => $id)) . '<br />';
+                $response['message'] .= $this->mediaManager->modx->lexicon('mediamanager.files.error.file_archive', ['id' => $id]) . '<br />';
                 continue;
             }
 

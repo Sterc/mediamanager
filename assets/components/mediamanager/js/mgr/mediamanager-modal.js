@@ -47,7 +47,7 @@
 
                     var $file       = $(this).parents('.file'),
                         filePreview = $file.find('.file-preview img').data('path'),
-                        filePath    = $file.find('.file-preview').data('path'),
+                        filePath    = $file.find('.file-preview img').data('path'),
                         fileId      = $file.data('id'),
                         fileName    = $.trim($file.find('.file-name').text());
 
