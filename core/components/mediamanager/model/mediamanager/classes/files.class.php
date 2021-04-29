@@ -1367,40 +1367,51 @@ class MediaManagerFilesHelper
     /**
      * Delete file.
      *
-     * @param int $fileId
+     * @param $selectedFiles
      * @return bool
      */
-    public function deleteFile($fileId)
+    public function deleteFiles($selectedFiles)
     {
         if (!$this->mediaManager->permissions->delete()) {
             return false;
         }
 
-        $file = $this->mediaManager->modx->getObject('MediamanagerFiles', array('id' => $fileId));
-        if (!$file) {
+        $fileIds = [];
+        if (!is_array($selectedFiles)) {
+            $fileIds[] = $selectedFiles;
+        } else {
+            foreach ($selectedFiles as $file) {
+                $fileIds[] = $file['id'];
+            }
+        }
+
+        $files = $this->mediaManager->modx->getIterator('MediamanagerFiles', ['id:IN' => $fileIds]);
+        if (!$files) {
             return false;
         }
 
-        $path = $file->get('path');
-        if ($file->get('is_archived')) {
-            $path = $file->get('archive_path');
+        foreach ($files as $file) {
+            $path = $file->get('path');
+            if ($file->get('is_archived')) {
+                $path = $file->get('archive_path');
+            }
+
+            // Delete file from server
+            unlink($this->uploadDirectory . $path);
+
+            // Delete file
+            $file->remove();
+
+            // Delete file categories
+            $this->mediaManager->modx->removeCollection('MediamanagerFilesCategories', ['mediamanager_files_id' => $file->get('id')]);
+
+            // Delete file tags
+            $this->mediaManager->modx->removeCollection('MediamanagerFilesTags', ['mediamanager_files_id' => $file->get('id')]);
+
+            // Delete file relations
+            $this->mediaManager->modx->removeCollection('MediamanagerFilesRelations', ['mediamanager_files_id' => $file->get('id')]);
+            $this->mediaManager->modx->removeCollection('MediamanagerFilesRelations', ['mediamanager_files_id_relation' => $file->get('id')]);
         }
-
-        // Delete file from server
-        unlink($this->uploadDirectory . $path);
-
-        // Delete file
-        $this->mediaManager->modx->removeObject('MediamanagerFiles', array('id' => $fileId));
-
-        // Delete file categories
-        $this->mediaManager->modx->removeCollection('MediamanagerFilesCategories', array('mediamanager_files_id' => $fileId));
-
-        // Delete file tags
-        $this->mediaManager->modx->removeCollection('MediamanagerFilesTags', array('mediamanager_files_id' => $fileId));
-
-        // Delete file relations
-        $this->mediaManager->modx->removeCollection('MediamanagerFilesRelations', array('mediamanager_files_id' => $fileId));
-        $this->mediaManager->modx->removeCollection('MediamanagerFilesRelations', array('mediamanager_files_id_relation' => $fileId));
 
         return true;
     }
@@ -1442,7 +1453,7 @@ class MediaManagerFilesHelper
      * @param array|int $fileIds
      * @return array
      */
-    public function archiveFiles($fileIds)
+    public function archiveFiles($selectedFiles)
     {
         $response = [
             'status'        => self::STATUS_SUCCESS,
@@ -1450,8 +1461,13 @@ class MediaManagerFilesHelper
             'archivedFiles' => []
         ];
 
-        if (!is_array($fileIds)) {
-            $fileIds = [$fileIds];
+        $fileIds = [];
+        if (!is_array($selectedFiles)) {
+            $fileIds[] = $selectedFiles;
+        } else {
+            foreach ($selectedFiles as $file) {
+                $fileIds[] = $file['id'];
+            }
         }
 
         // Check if files are linked to a resource
@@ -1461,13 +1477,13 @@ class MediaManagerFilesHelper
             Files.name AS name
         ');
         $q->innerJoin('MediamanagerFiles', 'Files');
-        $q->where(array(
+        $q->where([
             'MediamanagerFilesContent.mediamanager_files_id:IN' => $fileIds
-        ));
+        ]);
         $q->groupby('MediamanagerFilesContent.mediamanager_files_id');
         $q->prepare();
 
-        $query = $this->mediaManager->modx->query($q->toSQL());
+        $query   = $this->mediaManager->modx->query($q->toSQL());
         $results = $query->fetchAll(PDO::FETCH_OBJ);
 
         // Send error message
@@ -1475,7 +1491,7 @@ class MediaManagerFilesHelper
             $message = '';
 
             foreach ($results as $result) {
-                $message .= $this->mediaManager->modx->lexicon('mediamanager.files.error.file_linked', array('file' => $result->name)) . '<br />';
+                $message .= $this->mediaManager->modx->lexicon('mediamanager.files.error.file_linked', ['file' => $result->name]) . '<br />';
             }
 
             $response['status']  = self::STATUS_ERROR;
@@ -1601,7 +1617,6 @@ class MediaManagerFilesHelper
         ];
 
         $fileIds = [];
-
         if (!is_array($selectedFiles)) {
             $fileIds[] = $selectedFiles;
         } else {
@@ -1617,13 +1632,13 @@ class MediaManagerFilesHelper
             Files.name AS name
         ');
         $q->innerJoin('MediamanagerFiles', 'Files');
-        $q->where(array(
+        $q->where([
             'MediamanagerFilesContent.mediamanager_files_id:IN' => $fileIds
-        ));
+        ]);
         $q->groupby('MediamanagerFilesContent.mediamanager_files_id');
         $q->prepare();
 
-        $query = $this->mediaManager->modx->query($q->toSQL());
+        $query   = $this->mediaManager->modx->query($q->toSQL());
         $results = $query->fetchAll(PDO::FETCH_OBJ);
 
         // Send error message
@@ -1631,7 +1646,7 @@ class MediaManagerFilesHelper
             $message = '';
 
             foreach ($results as $result) {
-                $message .= $this->mediaManager->modx->lexicon('mediamanager.files.error.file_linked', array('file' => $result->name)) . '<br />';
+                $message .= $this->mediaManager->modx->lexicon('mediamanager.files.error.file_linked', ['file' => $result->name]) . '<br />';
             }
 
             $response['status']  = self::STATUS_ERROR;
@@ -1646,7 +1661,7 @@ class MediaManagerFilesHelper
             return $response;
         }
 
-        // Archive files
+        // Unarchive files
         foreach ($fileIds as $key => $id) {
             $file = $this->mediaManager->modx->getObject('MediamanagerFiles', $id);
 
@@ -1659,8 +1674,8 @@ class MediaManagerFilesHelper
                 continue;
             }
 
-            $file->set('is_archived', 0);
-            $file->set('archive_date', 0);
+            $file->set('is_archived', false);
+            $file->set('archive_date', '');
             $file->set('archive_path', '');
             $file->save();
 
@@ -1715,7 +1730,7 @@ class MediaManagerFilesHelper
         $zip         = new ZipArchive();
         $zipName     = $this->createUniqueFile($this->uploadDirectory . $this->downloadDirectory, sha1(time()), 'zip', uniqid('-'));
         $zipLocation = $this->uploadDirectory . $this->downloadDirectory . $zipName;
-        $zipUrl      = $this->addTrailingSlash($this->uploadUrl . $this->downloadUrl) . $zipName;
+        $zipUrl      = $this->addTrailingSlash($this->uploadUrl) . $this->downloadUrl . $zipName;
 
         $zipFile = $zip->open($zipLocation, ZipArchive::CREATE);
         if ($zipFile !== true) {
@@ -1739,7 +1754,7 @@ class MediaManagerFilesHelper
 
         if ($isDownload) {
             // Return download link
-            $response['message'] = $this->removeSlashes($this->mediaManager->modx->getOption('site_url')) . $zipUrl;
+            $response['message'] = $zipUrl;
             return $response;
         }
 
@@ -1753,10 +1768,10 @@ class MediaManagerFilesHelper
         $download->save();
 
         // Return download link
-        $response['message'] = $this->mediaManager->modx->lexicon('mediamanager.files.share_download', array(
-            'link' => '<input class="form-control" value="' . $this->removeSlashes($this->mediaManager->modx->getOption('site_url')) . $zipUrl . '">',
+        $response['message'] = $this->mediaManager->modx->lexicon('mediamanager.files.share_download', [
+            'link'       => '<input class="form-control" value="' . $zipUrl . '">',
             'expiration' => self::DOWNLOAD_EXPIRATION
-        ));
+        ]);
 
         return $response;
     }

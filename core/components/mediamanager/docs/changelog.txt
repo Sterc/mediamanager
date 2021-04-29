@@ -2,5 +2,8 @@ Changelog for MediaManager.
 
 MediaManager 0.2.1
 ====================================
-- Added custom MIGX renderer
--
+- Added custom MIGX renderer "MediaManager.MIGX_Image_Renderer"
+- Fixed generated share link
+- Fixed bulk delete
+- Added image input field for ContentBlocks
+- Added support for Redactor 3.0

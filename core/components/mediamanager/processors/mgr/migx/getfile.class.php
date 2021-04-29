@@ -8,22 +8,23 @@
  * @package modx
  * @subpackage processors.system
  */
-class MediaManagerPhpThumbProcessor extends modProcessor {
+class MediaManagerPhpThumbProcessor extends modProcessor
+{
     /** @var modPhpThumb $phpThumb */
     public $phpThumb;
     /** @var modMediaSource|modFileMediaSource $source */
     public $source;
 
-    public function initialize() {
-        $this->setDefaultProperties(array(
-            'wctx' => $this->modx->context->get('key'),
-            'src' => '',
-            'source' => 1,
-        ));
-        $this->modx->getService('fileHandler','modFileHandler','',array(
-            'source' => $this->getProperty('wctx')
-        ));
-        error_reporting(E_ALL);
+    public function initialize()
+    {
+        $this->setDefaultProperties([
+            'wctx'   => $this->modx->context->get('key'),
+            'src'    => '',
+            'source' => 1
+        ]);
+
+        $this->modx->getService('fileHandler', 'modFileHandler', '', ['source' => $this->getProperty('wctx')]);
+
         return true;
     }
 
@@ -32,7 +33,8 @@ class MediaManagerPhpThumbProcessor extends modProcessor {
      *
      * @return mixed
      */
-    public function process() {
+    public function process()
+    {
         $src = $this->getProperty('src');
 
         if (is_numeric($src)) {
@@ -48,15 +50,33 @@ class MediaManagerPhpThumbProcessor extends modProcessor {
             }
         }
 
-        if (empty($src)) return $this->failure();
+        if (empty($src)) {
+            return $this->failure();
+        }
 
         $this->unsetProperty('src');
 
         $this->getSource($this->getProperty('source'));
-        if (empty($this->source)) $this->failure($this->modx->lexicon('source_err_nf'));
+        if (empty($this->source)) {
+            $this->failure($this->modx->lexicon('source_err_nf'));
+        }
+
+        /* SVG Support. */
+        if ($file && $file->get('file_type') === 'svg') {
+            $path = $this->source->getBasePath() . $file->get('path');
+
+            header('Content-type: image/svg+xml');
+
+            $svgFile = new DOMDocument();
+            $svgFile->load($path);
+            echo $svgFile->saveHTML($svgFile->getElementsByTagName('svg')[0]);
+            exit;
+        }
 
         $src = $this->source->prepareSrcForThumb($src);
-        if (empty($src)) return '';
+        if (empty($src)) {
+            return '';
+        }
 
         $this->loadPhpThumb();
         /* set source and generate thumbnail */
@@ -65,6 +85,7 @@ class MediaManagerPhpThumbProcessor extends modProcessor {
         /* check to see if there's a cached file of this already */
         if ($this->phpThumb->checkForCachedFile()) {
             $this->phpThumb->loadCache();
+
             return '';
         }
 
@@ -74,6 +95,7 @@ class MediaManagerPhpThumbProcessor extends modProcessor {
         /* cache the thumbnail and output */
         $this->phpThumb->cache();
         $this->phpThumb->output();
+
         return '';
     }
 
@@ -83,15 +105,20 @@ class MediaManagerPhpThumbProcessor extends modProcessor {
      * @param int $sourceId
      * @return modMediaSource|modFileMediaSource
      */
-    public function getSource($sourceId) {
+    public function getSource($sourceId)
+    {
         /** @var modMediaSource|modFileMediaSource $source */
         $this->modx->loadClass('sources.modMediaSource');
-        $this->source = modMediaSource::getDefaultSource($this->modx,$sourceId,false);
-        if (empty($this->source)) return false;
+
+        $this->source = modMediaSource::getDefaultSource($this->modx, $sourceId, false);
+        if (empty($this->source)) {
+            return false;
+        }
 
         if (!$this->source->getWorkingContext()) {
             return false;
         }
+
         $this->source->setRequestProperties($this->getProperties());
         $this->source->initialize();
         return $this->source;
@@ -102,16 +129,18 @@ class MediaManagerPhpThumbProcessor extends modProcessor {
      *
      * @return bool|modPhpThumb
      */
-    public function loadPhpThumb() {
-        if (!$this->modx->loadClass('modPhpThumb',$this->modx->getOption('core_path').'model/phpthumb/',true,true)) {
-            $this->modx->log(modX::LOG_LEVEL_ERROR,'Could not load modPhpThumb class.');
+    public function loadPhpThumb()
+    {
+        if (!$this->modx->loadClass('modPhpThumb', $this->modx->getOption('core_path').'model/phpthumb/', true, true)) {
+            $this->modx->log(modX::LOG_LEVEL_ERROR, 'Could not load modPhpThumb class.');
             return false;
         }
-        $this->phpThumb = new modPhpThumb($this->modx,$this->getProperties());
+        $this->phpThumb = new modPhpThumb($this->modx, $this->getProperties());
         /* do initial setup */
         $this->phpThumb->initialize();
 
         return $this->phpThumb;
     }
 }
+
 return 'MediaManagerPhpThumbProcessor';

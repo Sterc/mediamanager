@@ -10,7 +10,7 @@
             <button type="button" class="btn btn-default" data-bulk-cancel>[[%mediamanager.global.cancel]]</button>
 
             <button type="button" class="btn btn-default hidden" data-archive-title="[[%mediamanager.files.bulk.unarchive_title]]" data-archive-message="[[%mediamanager.files.bulk.unarchive_message]]" data-archive-confirm="[[%mediamanager.global.unarchive]]" data-archive-cancel="[[%mediamanager.global.cancel]]" data-bulk-unarchive>[[%mediamanager.global.unarchive]]</button>
-            <button type="button" class="btn btn-danger hidden" data-bulk-delete>[[%mediamanager.global.delete]]</button>
+            <button type="button" class="btn btn-danger hidden" data-delete-title="[[%mediamanager.files.bulk.delete_title]]" data-delete-message="[[%mediamanager.files.bulk.delete_message]]" data-delete-confirm="[[%mediamanager.global.delete]]" data-delete-cancel="[[%mediamanager.global.cancel]]" data-bulk-delete>[[%mediamanager.global.delete]]</button>
             
         </div>
 

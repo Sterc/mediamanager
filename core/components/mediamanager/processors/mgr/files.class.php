@@ -168,8 +168,8 @@ class MediaManagerFilesProcessor extends modProcessor
     private function delete()
     {
         return $this->outputArray(
-            $this->mediaManager->files->deleteFile(
-                $this->getProperty('fileId')
+            $this->mediaManager->files->deleteFiles(
+                $this->getProperty('files')
             )
         );
     }

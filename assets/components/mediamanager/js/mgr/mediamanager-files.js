@@ -1234,18 +1234,18 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                 files = self.$selectedFiles;
 
             var $dialog = $('<div />').html('<span data-error></span>' + e.target.dataset.downloadMessage).dialog({
-                draggable: false,
-                resizable: false,
-                modal: true,
-                title: e.target.dataset.downloadTitle,
-                buttons : [{
-                    text: e.target.dataset.downloadConfirm,
-                    class: 'btn btn-primary',
-                    click: function () {
+                draggable   : false,
+                resizable   : false,
+                modal       : true,
+                title       : e.target.dataset.downloadTitle,
+                buttons     : [{
+                    text        : e.target.dataset.downloadConfirm,
+                    class       : 'btn btn-primary',
+                    click       : function () {
                         $.ajax ({
-                            type: 'POST',
-                            url: self.$connectorUrl,
-                            data: {
+                            type    : 'POST',
+                            url     : self.$connectorUrl,
+                            data    : {
                                 action       : 'mgr/files',
                                 method       : 'download',
                                 HTTP_MODAUTH : self.$httpModAuth,
@@ -1280,30 +1280,31 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
         },
 
         /**
-         * Delete file.
+         * Delete files.
          *
          * @param e
          */
-        deleteFile: function(e) {
-            var self = this;
+        deleteFiles: function(e) {
+            var self  = this,
+                files = self.$selectedFiles;
 
             var $dialog = $('<div />').html(e.target.dataset.deleteMessage).dialog({
-                draggable: false,
-                resizable: false,
-                modal: true,
-                title: e.target.dataset.deleteTitle,
-                buttons : [{
-                    text: e.target.dataset.deleteConfirm,
-                    class: 'btn btn-danger',
-                    click: function () {
+                draggable   : false,
+                resizable   : false,
+                modal       : true,
+                title       : e.target.dataset.deleteTitle,
+                buttons     : [{
+                    text        : e.target.dataset.deleteConfirm,
+                    class       : 'btn btn-danger',
+                    click       : function () {
                         $.ajax({
-                            type: 'POST',
-                            url: self.$connectorUrl,
-                            data: {
+                            type    : 'POST',
+                            url     : self.$connectorUrl,
+                            data    : {
                                 action       : 'mgr/files',
                                 method       : 'delete',
                                 HTTP_MODAUTH : self.$httpModAuth,
-                                fileId       : self.$currentFile
+                                files        : files
                             },
                             complete: function(data) {
                                 $(self.$filePopup).modal('hide');
@@ -1719,7 +1720,7 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
     }, MediaManagerFiles.$fileShareButton);
 
     $(document).on({
-        click : $.proxy(MediaManagerFiles, 'deleteFile')
+        click : $.proxy(MediaManagerFiles, 'deleteFiles')
     }, MediaManagerFiles.$fileDeleteButton);
 
     $(document).on({
@@ -1739,6 +1740,10 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
     $(document).on({
         click : $.proxy(MediaManagerFiles, 'unArchiveFiles')
     }, MediaManagerFiles.$bulkUnArchiveButton);
+
+    $(document).on({
+        click : $.proxy(MediaManagerFiles, 'deleteFiles')
+    }, MediaManagerFiles.$bulkDeleteButton);
 
     $(document).on({
         click : $.proxy(MediaManagerFiles, 'shareFiles')

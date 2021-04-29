@@ -10,12 +10,13 @@
 
         // Do something when the input is being loaded
         input.init = function() {
-            console.log(data);
             if (data.file_id) {
                 var urls = ContentBlocks.utilities.normaliseUrls(data.url);
 
                 dom.find('.file_id').val(data.file_id);
                 dom.find('.url').val(urls.cleanedSrc);
+                dom.find('.width').val(data.width);
+                dom.find('.height').val(data.height);
                 dom.find('.contentblocks-field-image-title-input').val(data.title);
                 dom.find('.contentblocks-field-image-preview img').attr('src', urls.displaySrc);
                 dom.addClass('preview');
