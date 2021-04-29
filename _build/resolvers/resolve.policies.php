@@ -15,7 +15,10 @@
  * 
  * 
  */
-if (!$object->xpdo) return true;
+if (!$object->xpdo) {
+    return true;
+}
+
 switch ($options[xPDOTransport::PACKAGE_ACTION]) {
     case xPDOTransport::ACTION_INSTALL:
 

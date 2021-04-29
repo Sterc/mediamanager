@@ -1,0 +1,6 @@
+Changelog for MediaManager.
+
+MediaManager 0.2.1
+====================================
+- Added custom MIGX renderer
+-

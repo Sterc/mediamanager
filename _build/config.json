@@ -3,7 +3,7 @@
     "lowCaseName": "mediamanager",
     "description": "Media Manager for MODX.",
     "author": "Sterc",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "package":{
         "menus": [{
             "text": "mediamanager",
@@ -44,11 +44,6 @@
             },{
                 "name": "mediaManagerContentBlocks",
                 "file": "mediamanagercontentblocks.plugin.php",
-                "events": ["ContentBlocks_RegisterInputs"]
-
-            },{
-                "name": "mediaManagerCbGalleryInput",
-                "file": "mediamanagercbgalleryinput.plugin.php",
                 "events": ["ContentBlocks_RegisterInputs"]
             }]
         },
