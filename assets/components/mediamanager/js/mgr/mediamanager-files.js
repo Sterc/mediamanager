@@ -797,7 +797,8 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
             var self            = this,
                 $modxHeader     = $(self.$modxHeader),
                 $modxContent    = $(self.$modxContent),
-                height          = $(document).height() - $modxHeader.height();
+                majorVersion    = parseInt(MODx.config.version.split('.')[0]),
+                height          = majorVersion > 2 ? $(document).height() : $(document).height() - $modxHeader.height();
 
             $('.x-panel-bwrap', $modxContent).hide();
             $modxContent.height(height);
