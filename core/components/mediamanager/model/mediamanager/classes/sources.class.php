@@ -10,17 +10,17 @@ class MediaManagerSourcesHelper
     /**
      * @var int
      */
-    private $defaultSource = 0;
+    private $defaultSource = 1;
 
     /**
      * @var int
      */
-    private $currentSource = 0;
+    private $currentSource = 1;
 
     /**
      * @var int
      */
-    private $userSource = 0;
+    private $userSource = 1;
 
     /**
      * MediaManagerSourcesHelper constructor.
@@ -31,9 +31,9 @@ class MediaManagerSourcesHelper
     {
         $this->mediaManager = $mediaManager;
 
-        $this->setUserSource();
         $this->setDefaultSource();
         $this->setCurrentSource();
+        $this->setUserSource();
         $this->hasPermission();
     }
 
@@ -50,8 +50,6 @@ class MediaManagerSourcesHelper
 
         if ($source) {
             $this->defaultSource = (int) $source->get('id');
-        } else if ($this->getUserSource()) {
-            $this->defaultSource = $this->getUserSource();
         }
 
         return $this->defaultSource;
@@ -142,22 +140,17 @@ class MediaManagerSourcesHelper
 
     /**
      * Get media sources.
-     * @param boolean $count
-     * @return mixed
+     *
+     * @return array
      */
-    public function getList($count = false)
+    public function getList()
     {
         $mediaSources = $this->mediaManager->modx->getIterator('modMediaSource');
 
         $sources = [];
         foreach ($mediaSources as $source) {
             $properties = $source->get('properties');
-
             if ($properties['mediamanagerSource']['value']) {
-                if ($this->getUserSource() && $this->getUserSource() !== $source->get('id')) {
-                    continue;
-                }
-
                 $rank = (float) ($properties['rank']['value'] ?: 1) . '.' . $source->get('id');
                 $sources[$rank] = [
                     'id'               => $source->get('id'),
@@ -169,10 +162,6 @@ class MediaManagerSourcesHelper
                     'allowedFileTypes' => $properties['allowedFileTypes']['value'] ?: ''
                 ];
             }
-        }
-
-        if ($count) {
-            return count($sources);
         }
 
         ksort($sources);
@@ -187,7 +176,7 @@ class MediaManagerSourcesHelper
      */
     public function getListHtml()
     {
-        $html    = '';
+        $html = '';
         $sources = $this->getList();
 
         foreach ($sources as $source) {
@@ -218,7 +207,6 @@ class MediaManagerSourcesHelper
      * Get media source by id.
      *
      * @param int $sourceId
-     *
      * @return bool|array
      */
     public function getSource($sourceId)

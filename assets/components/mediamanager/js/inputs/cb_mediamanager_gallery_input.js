@@ -92,22 +92,23 @@
             //var extension = imageData.ext;
 
             this.addImage({
-                url: url,
-                title: imageData.name,
-                description: '',
-                link: '',
-                id: imageData.id,
-                size: '',
-                width: '',
-                height: '',
-                extension: '',
-                file_id: imageData.id
+                url         : url,
+                title       : imageData.name,
+                description : '',
+                link        : '',
+                id          : imageData.id,
+                size        : '',
+                width       : '',
+                height      : '',
+                extension   : '',
+                file_id     : imageData.id
             }, 'choose');
         };
 
         input.addImage = function(values, source) {
             var holder = dom.find('.gallery-image-holder'),
                 urls = ContentBlocks.utilities.normaliseUrls(values.url);
+
             values.url = urls.cleanedSrc;
             values.description = values.description || '';
             values.link = values.link || '';

@@ -1,4 +1,4 @@
-<tr class="file[[+selected:is=`1`:then=` file-selected`]]" data-id="[[+id]]" data-name="[[+name]]" data-preview="[[+path]]">
+<tr class="file[[+selected:is=`1`:then=` file-selected`]]" data-id="[[+id]]">
     <td>
         <input type="checkbox" name="file" value="[[+id]]"[[+selected:is=`1`:then=` checked`]] />
     </td>
@@ -21,11 +21,8 @@
         [[+upload_date]]
     </td>
     <td>
-        <div class="file-options pull-right">
-            <button type="button" class="btn btn-success" data-file-use-button>[[%mediamanager.global.use]]</button>
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="div[data-file-popup]" data-file-popup-button>
-                <i class="fa fa-eye"></i>
-            </button>
-        </div>
+        <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="div[data-file-popup]" data-file-popup-button>
+            <i class="fa fa-eye"></i>
+        </button>
     </td>
 </tr>

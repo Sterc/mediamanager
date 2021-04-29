@@ -38,7 +38,7 @@
     <div class="row">
         <div class="col-sm-3 col-lg-2">
 
-            <select class="form-control select-source" {$source_list_status} data-select-source>
+            <select class="form-control select-source" data-select-source>
                 {$source_list}
             </select>
 

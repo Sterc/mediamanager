@@ -5,6 +5,7 @@
  * @var array $scriptProperties
  */
 if ($modx->event->name == 'ContentBlocks_RegisterInputs') {
+       exit('test');
     // Load your own class. No need to require cbBaseInput, that's already loaded.
     $path = $modx->getOption('mediamanager.core_path', null, MODX_CORE_PATH . 'components/mediamanager/');
     require_once($path . 'elements/inputs/cb_mediamanager_gallery_input.class.php');

@@ -1,16 +1,16 @@
 <?php
-$corePath     = $modx->getOption('mediamanager.core_path', null, $modx->getOption('core_path') . 'components/mediamanager/');
+$corePath = $modx->getOption('mediamanager.core_path', null, $modx->getOption('core_path') . 'components/mediamanager/');
 $mediamanager = $modx->getService('mediamanager', 'MediaManager', $corePath . 'model/mediamanager/', [
     'core_path' => $corePath
 ]);
 
 switch ($modx->event->name) {
     case 'OnTVInputRenderList':
-        $modx->event->output($corePath . 'elements/tv/input/');
+        $modx->event->output($corePath.'elements/tv/input/');
         break;
 
     case 'OnTVOutputRenderList':
-        $modx->event->output($corePath . 'elements/tv/output/');
+        $modx->event->output($corePath.'elements/tv/output/');
         break;
 
     case 'OnDocFormPrerender':
@@ -22,7 +22,6 @@ switch ($modx->event->name) {
         $tmplVars = $modx->getCollection('modTemplateVar', [
             'type:IN' => [
                 'mm_input_image',
-                'mm_input_file',
                 'image',
                 'file',
                 'richtext',

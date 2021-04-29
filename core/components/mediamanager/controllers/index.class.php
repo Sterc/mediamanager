@@ -9,8 +9,7 @@ abstract class MediaManagerManagerController extends modExtraManagerController
     public function initialize()
     {
         $this->mediaManager = new MediaManager($this->modx);
-        $this->modx->getService('lexicon', 'modLexicon');
-        $this->modx->lexicon->load('mediamanager');
+
         /**
          * Add the CSS.
          */

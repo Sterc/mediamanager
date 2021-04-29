@@ -575,7 +575,7 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
 
             $(filesContainer).jscroll({
                 autoTrigger  : true,
-                padding      : 100,
+                padding      : 200,
                 nextSelector : self.$pagination,
                 callback     : function() {
                     self.resizeFileContainer();
@@ -794,10 +794,10 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
          * Set content height to enable scroll bar.
          */
         setModxContentHeight: function() {
-            var self = this,
-                $modxHeader = $(self.$modxHeader),
-                $modxContent = $(self.$modxContent),
-                height = $(document).height() - $modxHeader.height();
+            var self            = this,
+                $modxHeader     = $(self.$modxHeader),
+                $modxContent    = $(self.$modxContent),
+                height          = $(document).height() - $modxHeader.height();
 
             $('.x-panel-bwrap', $modxContent).hide();
             $modxContent.height(height);

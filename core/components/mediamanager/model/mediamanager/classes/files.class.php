@@ -629,8 +629,8 @@ class MediaManagerFilesHelper
             $fileBasePath = $source['basePath'];
             if ($source['basePathRelative'] !== false) {
                 $fileBasePath = $this->addTrailingSlash(MODX_BASE_PATH) .
-                    $this->removeSlashes($source['basePath']) .
-                    DIRECTORY_SEPARATOR;
+                                $this->removeSlashes($source['basePath']) .
+                                DIRECTORY_SEPARATOR;
             }
 
             if (in_array($file['id'], $selectedFilesIds)) {
@@ -656,13 +656,16 @@ class MediaManagerFilesHelper
                         $file['preview_path'] = str_replace(rtrim(MODX_BASE_PATH, '/'), '', $cacheFilename);
                     } else {
                         $params = [
-                            'action'        => 'mgr/thumbnail',
-                            'HTTP_MODAUTH'  => $this->mediaManager->modx->user->getUserToken($this->mediaManager->modx->context->get('key')),
-                            'path'          => $fileBasePath . $file['file_path'],
-                            'cache'         => $cacheFilenameAbsolute,
+                            'action' => 'mgr/thumbnail',
+                            'HTTP_MODAUTH' => $this->mediaManager->modx->user->getUserToken(
+                                $this->mediaManager->modx->context->get('key')
+                            ),
+                            'path' => $fileBasePath . $file['file_path'],
+                            'cache' => $cacheFilenameAbsolute,
                         ];
 
-                        $file['preview_path'] = $this->mediaManager->config['connector_url'] . '?' . http_build_query($params);
+                        $file['preview_path'] = $this->mediaManager->config['connector_url'] . '?' .
+                                                http_build_query($params);
                     }
 
                     $file['preview'] = $this->mediaManager->getChunk('files/file_preview_img', $file);
@@ -1496,7 +1499,7 @@ class MediaManagerFilesHelper
 
             if (!$this->renameFile($old, $this->uploadDirectory . $this->archiveDirectory . $new)) {
                 $response['status'] = self::STATUS_ERROR;
-                $response['message'] .= $this->mediaManager->modx->lexicon('mediamanager.files.error.file_archive', ['id' => $id]) . '<br />';
+                $response['message'] .= $this->mediaManager->modx->lexicon('mediamanager.files.error.file_archive', array('id' => $id)) . '<br />';
                 continue;
             }
 
@@ -1657,7 +1660,7 @@ class MediaManagerFilesHelper
             }
 
             $file->set('is_archived', 0);
-            $file->set('archive_date', null);
+            $file->set('archive_date', 0);
             $file->set('archive_path', '');
             $file->save();
 
@@ -1734,13 +1737,9 @@ class MediaManagerFilesHelper
             return $response;
         }
 
-        if (strpos($zipUrl, $this->mediaManager->modx->getOption('site_url')) === false) {
-            $zipUrl = $this->removeSlashes($this->mediaManager->modx->getOption('site_url')) . $zipUrl;
-        }
-
         if ($isDownload) {
             // Return download link
-            $response['message'] = $zipUrl;
+            $response['message'] = $this->removeSlashes($this->mediaManager->modx->getOption('site_url')) . $zipUrl;
             return $response;
         }
 
@@ -1755,7 +1754,7 @@ class MediaManagerFilesHelper
 
         // Return download link
         $response['message'] = $this->mediaManager->modx->lexicon('mediamanager.files.share_download', array(
-            'link' => '<input class="form-control" value="' . $zipUrl . '">',
+            'link' => '<input class="form-control" value="' . $this->removeSlashes($this->mediaManager->modx->getOption('site_url')) . $zipUrl . '">',
             'expiration' => self::DOWNLOAD_EXPIRATION
         ));
 
@@ -2328,7 +2327,7 @@ class MediaManagerFilesHelper
             chmod($target, 0644);
             return true;
         }
-
+    
         return false;
     }
 

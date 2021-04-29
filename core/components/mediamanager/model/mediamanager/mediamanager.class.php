@@ -45,7 +45,7 @@ class MediaManager
      */
     public function __construct(modX &$modx, array $config = array())
     {
-        $this->modx      =& $modx;
+        $this->modx =& $modx;
         $this->namespace = $this->modx->getOption('namespace', $config, 'mediamanager');
 
         $basePath   = $this->modx->getOption('mediamanager.core_path', $config, $this->modx->getOption('core_path') . 'components/mediamanager/');
@@ -134,9 +134,17 @@ class MediaManager
      */
     public function includeScriptAssets()
     {
+        $this->modx->regClientStartupHTMLBlock('<script type="text/javascript">
+            Ext.onReady(function() {
+                MediaManager.config =  ' . $this->modx->toJSON($this->config) . ';
+            });
+            </script>
+        ');
+
         $this->modx->regClientCSS($this->config['assets_url'] . 'css/mgr/mediamanager-tv-input.css');
         $this->modx->regClientStartupScript($this->config['assets_url'] . 'js/mgr/mediamanager-tv-input.js');
         $this->modx->regClientStartupScript($this->config['assets_url'] . 'js/inputs/mediamanager_cmp.js');
+        $this->modx->regClientStartupScript($this->config['assets_url'] . 'js/mgr/migx/renderer.js');
     }
 
     public function getCategoryChildIds(array $categories, $parent = 0)
