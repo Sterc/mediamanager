@@ -10,7 +10,7 @@ The Media Manager is a MODX Extra replacing the default Media Browser with an en
 - Version control for your media
 - Image editing features, including resizing and cropping
 - Ability to publish/unpublish media with reference-checking
-- Support for TinyMCE, TV's, ContentBlocks
+- Support for TinyMCE, Redactor 3.0, TV's, ContentBlocks
 - Meta data for images out of the box: id, version, filename, version, author, dimensions (original + cropped image size), category, tags)
 - Unlimited additional meta data (like TV's for images!)
 - MODX ACL for removing/archiving images
@@ -24,6 +24,12 @@ A migration tool is not yet available. You will not loose your old images, but t
 3. Now enable it per user by editing a user: "Manage" -> "Users" -> Edit a user -> "Settings" -> "Create new" and set the key and/or name to "media_sources_id" and set the value to the ID of the Media Source you just enabled.
 
 That's it, have fun!
+
+## Redactor implementation
+If you like to implement the mediamanager for Redactor 3.0, please take the following steps:
+* Add the following path to the system setting **redactor.js**: `/assets/components/mediamanager/js/inputs/redactor_mediamanager.js`
+* Go to the configuration set of redactor and add `mediamanager` under Miscellaneous --> Additional plugins
+* Add `mediamanager` in the Toolbar Buttons list in the Toolbar tab
 
 ## BETA BETA
 Please note that this manager is BETA. Please create your issues in Github or create Pull Requests. Any questions? Email us at modx@sterc.nl
