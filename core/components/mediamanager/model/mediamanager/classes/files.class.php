@@ -481,8 +481,13 @@ class MediaManagerFilesHelper
         $where[]['MediamanagerFiles.is_archived'] = $isArchive;
         $where[]['MediamanagerFiles.media_sources_id'] = $sourceId;
 
+        $searchArray = [];
+        if (!empty($search)) {
+            $searchArray = ['MediamanagerFiles.id' => $search];
+        }
+
         if (!empty($search) && strlen($search) > 2) {
-            $where[]['name:LIKE'] = '%' . $search . '%';
+            $searchArray[]['OR:name:LIKE'] = '%' . $search . '%';
         }
 
         if (!empty($filters)) {
@@ -537,8 +542,11 @@ class MediaManagerFilesHelper
             }
         }
 
+
+        $where[] = $searchArray;
+
         if (!empty($sorting)) {
-            $sortColumn = 'MediamanagerFiles.' . $sorting[0];
+            $sortColumn    = 'MediamanagerFiles.' . $sorting[0];
             $sortDirection = $sorting[1];
         }
 
@@ -629,8 +637,8 @@ class MediaManagerFilesHelper
             $fileBasePath = $source['basePath'];
             if ($source['basePathRelative'] !== false) {
                 $fileBasePath = $this->addTrailingSlash(MODX_BASE_PATH) .
-                                $this->removeSlashes($source['basePath']) .
-                                DIRECTORY_SEPARATOR;
+                    $this->removeSlashes($source['basePath']) .
+                    DIRECTORY_SEPARATOR;
             }
 
             if (in_array($file['id'], $selectedFilesIds)) {
@@ -665,7 +673,7 @@ class MediaManagerFilesHelper
                         ];
 
                         $file['preview_path'] = $this->mediaManager->config['connector_url'] . '?' .
-                                                http_build_query($params);
+                            http_build_query($params);
                     }
 
                     $file['preview'] = $this->mediaManager->getChunk('files/file_preview_img', $file);
@@ -2342,7 +2350,7 @@ class MediaManagerFilesHelper
             chmod($target, 0644);
             return true;
         }
-    
+
         return false;
     }
 

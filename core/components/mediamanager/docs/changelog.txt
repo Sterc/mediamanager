@@ -7,3 +7,4 @@ MediaManager 0.2.1
 - Fixed bulk delete
 - Added image input field for ContentBlocks
 - Added support for Redactor 3.0
+- Improved search, now searches in both file name and file id columns

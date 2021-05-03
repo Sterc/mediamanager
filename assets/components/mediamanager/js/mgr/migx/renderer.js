@@ -1,5 +1,5 @@
 var MediaManager = function (e) {
-    (e = e || {}),
+    e = e || {},
     MediaManager.superclass.constructor.call(this, e);
 };
 
@@ -19,16 +19,15 @@ Ext.extend(MediaManager, Ext.Component, {
         }
 
         return '';
-    },
-}),
+    }
+});
+Ext.reg('MediaManager', MediaManager);
 
-Ext.reg('MediaManager', MediaManager),
-(MediaManager = new MediaManager());
-
-(MediaManager.MIGX_Image_Renderer = function (id) {
-    if (null == id || !id.length) {
+MediaManager = new MediaManager();
+MediaManager.MIGX_Image_Renderer = function (id) {
+    if (id === null || parseInt(id) < 1) {
         return '';
     }
 
     return '<img src="' + MediaManager.generateThumbUrl(id) + '" style="width: auto; height: 60px;" />';
-});
+};
