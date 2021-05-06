@@ -26,7 +26,6 @@ abstract class MediaManagerManagerController extends modExtraManagerController
          */
         $this->addJavascript($this->mediaManager->config['assets_url'] . 'libs/jquery/1.12.1/js/jquery.min.js');
         $this->addJavascript($this->mediaManager->config['assets_url'] . 'libs/jquery-ui/1.11.4/js/jquery-ui.min.js');
-        $this->addJavascript($this->mediaManager->config['assets_url'] . 'libs/jquery-lazyload/1.9.7/js/jquery.lazyload.min.js');
         $this->addJavascript($this->mediaManager->config['assets_url'] . 'libs/jquery-cropper/2.3.0/js/cropper.min.js');
         $this->addJavascript($this->mediaManager->config['assets_url'] . 'libs/jscroll/2.3.5/js/jquery.jscroll.custom.js');
         $this->addJavascript($this->mediaManager->config['assets_url'] . 'libs/bootstrap/3.3.6/js/bootstrap.min.js');

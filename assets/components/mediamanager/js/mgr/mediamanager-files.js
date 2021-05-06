@@ -557,7 +557,6 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
 
                 self.resizeFileContainer();
                 self.setModxContentHeight();
-                self.lazyload();
                 self.setPagination();
             });
         },
@@ -580,7 +579,6 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                 callback     : function() {
                     self.resizeFileContainer();
                     self.setModxContentHeight();
-                    self.lazyload(true);
                 }
             });
 
@@ -746,24 +744,6 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
         },
 
         /**
-         * Initialize lazyload for images.
-         */
-        lazyload : function ($newOnly) {
-            var self = this,
-                options = {
-                    threshold: 200,
-                    container: $(self.$modxContent)
-                };
-
-            if ($newOnly === true) {
-                $('img.lazy', '.jscroll-added:last').lazyload(options);
-                return true;
-            }
-
-            $('img.lazy').lazyload(options);
-        },
-
-        /**
          * Switch between grid and view mode.
          *
          * @param e
@@ -798,7 +778,7 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                 $modxHeader     = $(self.$modxHeader),
                 $modxContent    = $(self.$modxContent),
                 majorVersion    = parseInt(MODx.config.version.split('.')[0]),
-                height          = majorVersion > 2 ? $(document).height() : $(document).height() - $modxHeader.height();
+                height          = majorVersion > 2 ? $(window).height() : $(window).height() - $modxHeader.height();
 
             $('.x-panel-bwrap', $modxContent).hide();
             $modxContent.height(height);

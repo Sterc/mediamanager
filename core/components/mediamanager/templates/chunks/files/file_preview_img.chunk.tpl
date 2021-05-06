@@ -1,1 +1,1 @@
-<img data-original="[[+preview_path]]" class="lazy" data-path="[[+path]]" />
+<img src="[[+preview_path]]" data-original="[[+preview_path]]" loading="lazy" data-path="[[+path]]" />

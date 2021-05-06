@@ -1,5 +1,11 @@
 Changelog for MediaManager.
 
+MediaManager 0.2.2
+====================================
+- Replaced JQuery lazyload with native lazyload
+- Fixed imagickloaded check and added fallback for pdf previews
+- Fixed issue with the mediamanager component height
+
 MediaManager 0.2.1
 ====================================
 - Added custom MIGX renderer "MediaManager.MIGX_Image_Renderer"

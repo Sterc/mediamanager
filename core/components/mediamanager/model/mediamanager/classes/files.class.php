@@ -252,13 +252,16 @@ class MediaManagerFilesHelper
             }
 
             $bodyData['is_image'] = 1;
-        } elseif ($file['file_type'] === 'pdf' && extension_loaded('Imagick')) {
-            $bodyData['preview'] = '<img src="' . str_replace('.pdf', '_thumb.jpg', $file['path']) . '" />';
-            $bodyData['is_image'] = 0;
+        } elseif ($file['file_type'] === 'pdf' && extension_loaded('Imagick') &&
+            ($thumb = str_replace('.pdf', '_thumb.jpg', $file['path'])) &&
+            file_exists(rtrim(MODX_BASE_PATH, '/') . $thumb)
+        ) {
+            $bodyData['preview']          = '<img src="' . $thumb . '" />';
+            $bodyData['is_image']         = 0;
             $footerData['button']['crop'] = 0;
         } else {
-            $bodyData['preview'] = $this->mediaManager->getChunk('files/file_preview_svg', $file);
-            $bodyData['is_image'] = 0;
+            $bodyData['preview']          = $this->mediaManager->getChunk('files/file_preview_file', $file);
+            $bodyData['is_image']         = 0;
             $footerData['button']['crop'] = 0;
         }
 
@@ -618,7 +621,7 @@ class MediaManagerFilesHelper
             $breadcrumbs = $this->mediaManager->getChunk('files/breadcrumbs', $breadcrumbs);
         }
 
-        $imagickLoaded = true;
+        $imagickLoaded = extension_loaded('Imagick');
         $source = null;
 
         foreach ($files as $file) {
@@ -677,11 +680,14 @@ class MediaManagerFilesHelper
                     }
 
                     $file['preview'] = $this->mediaManager->getChunk('files/file_preview_img', $file);
-                } elseif ($imagickLoaded && $file['file_type'] === 'pdf') {
-                    $file['preview_path'] = str_replace('.pdf', '_thumb.jpg', $file['path']);
-                    $file['preview'] = $this->mediaManager->getChunk('files/file_preview_img', $file);
+                } elseif ($imagickLoaded && $file['file_type'] === 'pdf' &&
+                    ($thumb = str_replace('.pdf', '_thumb.jpg', $file['path'])) &&
+                    file_exists(rtrim(MODX_BASE_PATH, '/') . $thumb)
+                ) {
+                    $file['preview_path'] = $thumb;
+                    $file['preview']      = $this->mediaManager->getChunk('files/file_preview_img', $file);
                 } else {
-                    $file['preview'] = $this->mediaManager->getChunk('files/file_preview_svg', $file);
+                    $file['preview'] = $this->mediaManager->getChunk('files/file_preview_file', $file);
                 }
             } else {
                 $user = $this->mediaManager->modx->getObject('modUser', array('id' => $file['uploaded_by']));
