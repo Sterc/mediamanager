@@ -53,19 +53,21 @@ class MediaManager
         $assetsPath = $this->modx->getOption('mediamanager.assets_path', $config, $this->modx->getOption('assets_path') . 'components/mediamanager/');
 
         $this->config = array_merge(array(
-            'base_path'       => $basePath,
-            'core_path'       => $basePath,
-            'model_path'      => $basePath . 'model/',
-            'processors_path' => $basePath . 'processors/',
-            'elements_path'   => $basePath . 'elements/',
-            'templates_path'  => $basePath . 'templates/',
-            'assets_path'     => $assetsPath,
-            'js_url'          => $assetsUrl . 'js/',
-            'css_url'         => $assetsUrl . 'css/',
-            'assets_url'      => $assetsUrl,
-            'connector_url'   => $assetsUrl . 'connector.php',
-            'chunks_path'     => $basePath . 'templates/chunks/',
-            'chunk_suffix'    => '.chunk.tpl',
+            'base_path'             => $basePath,
+            'core_path'             => $basePath,
+            'model_path'            => $basePath . 'model/',
+            'processors_path'       => $basePath . 'processors/',
+            'elements_path'         => $basePath . 'elements/',
+            'templates_path'        => $basePath . 'templates/',
+            'assets_path'           => $assetsPath,
+            'js_url'                => $assetsUrl . 'js/',
+            'css_url'               => $assetsUrl . 'css/',
+            'assets_url'            => $assetsUrl,
+            'connector_url'         => $assetsUrl . 'connector.php',
+            'chunks_path'           => $basePath . 'templates/chunks/',
+            'chunk_suffix'          => '.chunk.tpl',
+            'max_file_size'         => $this->modx->getOption('mediamanager.max_file_size'),
+            'max_file_size_images'  => $this->modx->getOption('mediamanager.max_file_size_images')
         ), $config);
 
         $this->modx->addPackage('mediamanager', $this->config['model_path']);

@@ -55,8 +55,8 @@ abstract class MediaManagerManagerController extends modExtraManagerController
             var mediaManagerOptions = {
                 cancel : "' . $this->modx->lexicon('mediamanager.global.cancel') . '",
                 dropzone : {
-                    maxFileSize       : ' . MediaManagerFilesHelper::MAX_FILE_SIZE . ',
-                    maxFileSizeImages : ' . MediaManagerFilesHelper::MAX_FILE_SIZE_IMAGES . ',
+                    maxFileSize       : ' . $this->mediaManager->config['max_file_size'] . ',
+                    maxFileSizeImages : ' . $this->mediaManager->config['max_file_size_images'] . ',
                     acceptedFiles     : "' . $acceptedFiles . '"
                 },
                 message : {

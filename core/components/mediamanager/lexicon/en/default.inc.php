@@ -5,6 +5,7 @@
  * @package mediamanager
  * @subpackage lexicon
  */
+$_lang['area_files'] = 'Files';
 
 $_lang['mediamanager'] = 'Media Manager';
 $_lang['mediamanager.desc'] = 'View, upload and manage media';
@@ -181,3 +182,9 @@ $_lang['mediamanager.permissions.admin'] = 'Media Manager administrator permissi
 $_lang['mm_input_image'] = 'Media Manager Image';
 $_lang['mm_output_image'] = 'Media Manager Image';
 $_lang['mm_input_file'] = 'Media Manager File';
+
+/* Settings. */
+$_lang['setting_mediamanager.max_file_size']             = 'Max file size';
+$_lang['setting_mediamanager.max_file_size_desc']        = 'Maximum file size in MB.';
+$_lang['setting_mediamanager.max_file_size_images']      = 'Max file size for images';
+$_lang['setting_mediamanager.max_file_size_images_desc'] = 'Maximum file size for images in MB.';

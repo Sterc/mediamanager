@@ -1,8 +1,9 @@
 Changelog for MediaManager.
 
-MediaManager 0.2.2
+MediaManager 0.2.3
 ====================================
 - SVG previews are now shown in the mediamanager
+- Added system settings for the maximum allowable file upload sizes
 
 MediaManager 0.2.2
 ====================================

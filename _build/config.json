@@ -3,7 +3,7 @@
     "lowCaseName": "mediamanager",
     "description": "Media Manager for MODX.",
     "author": "Sterc",
-    "version": "0.2.2",
+    "version": "0.2.3",
     "package":{
         "menus": [{
             "text": "mediamanager",
@@ -56,6 +56,14 @@
         },{
             "key": "default_media_source",
             "value": "1"
+        },{
+            "key": "max_file_size",
+            "value": 50,
+            "area": "files"
+        }, {
+            "key": "max_file_size_images",
+            "value": 5,
+            "area": "files"
         }]
     },
     "database": {

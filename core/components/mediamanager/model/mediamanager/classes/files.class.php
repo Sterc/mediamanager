@@ -17,8 +17,6 @@ class MediaManagerFilesHelper
     const VERSION_DIRECTORY = 'version';
 
     const DOWNLOAD_EXPIRATION = 14;
-    const MAX_FILE_SIZE = 50;
-    const MAX_FILE_SIZE_IMAGES = 5;
 
     /**
      * The mediaManager object.
