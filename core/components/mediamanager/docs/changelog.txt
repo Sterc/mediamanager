@@ -2,6 +2,10 @@ Changelog for MediaManager.
 
 MediaManager 0.2.2
 ====================================
+- SVG previews are now shown in the mediamanager
+
+MediaManager 0.2.2
+====================================
 - Replaced JQuery lazyload with native lazyload
 - Fixed imagickloaded check and added fallback for pdf previews
 - Fixed issue with the mediamanager component height

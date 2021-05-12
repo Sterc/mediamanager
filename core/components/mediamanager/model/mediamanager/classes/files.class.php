@@ -259,6 +259,11 @@ class MediaManagerFilesHelper
             $bodyData['preview']          = '<img src="' . $thumb . '" />';
             $bodyData['is_image']         = 0;
             $footerData['button']['crop'] = 0;
+        } elseif ($file['file_type'] === 'svg') {
+            $file['preview_path']         = $file['path'];
+            $bodyData['preview']          = $this->mediaManager->getChunk('files/file_preview_img', $file);
+            $bodyData['is_image']         = 0;
+            $footerData['button']['crop'] = 0;
         } else {
             $bodyData['preview']          = $this->mediaManager->getChunk('files/file_preview_file', $file);
             $bodyData['is_image']         = 0;
@@ -686,6 +691,9 @@ class MediaManagerFilesHelper
                 ) {
                     $file['preview_path'] = $thumb;
                     $file['preview']      = $this->mediaManager->getChunk('files/file_preview_img', $file);
+                } elseif ($file['file_type'] === 'svg') {
+                    $file['preview_path']     = $file['path'];
+                    $file['preview']          = $this->mediaManager->getChunk('files/file_preview_img', $file);
                 } else {
                     $file['preview'] = $this->mediaManager->getChunk('files/file_preview_file', $file);
                 }
