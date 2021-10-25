@@ -2,7 +2,6 @@
 /**
  * Thumbnail processor
  */
-require_once MODX_CORE_PATH . 'model/phpthumb/modphpthumb.class.php';
 
 class MediaManagerThumbnailProcessor extends modProcessor
 {
@@ -24,6 +23,11 @@ class MediaManagerThumbnailProcessor extends modProcessor
 
         if (empty($path) || empty($thumbsDir) || empty($thumbName)) {
             return '';
+        }
+
+        if (!$this->modx->getService('phpthumb', 'modPhpThumb')) {
+            $this->modx->log(modX::LOG_LEVEL_ERROR,'Could not load modPhpThumb class.');
+            return false;
         }
 
         /* Build the image. */
