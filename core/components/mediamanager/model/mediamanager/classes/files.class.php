@@ -1092,8 +1092,8 @@ class MediaManagerFilesHelper
         $file->set('file_size',        $fileData['size']);
         $file->set('file_hash',        $fileData['hash']);
         $file->set('upload_date',      time());
-        $file->set('uploaded_by',      $data['user']);
-        $file->set('edited_by',        $data['user']);
+        $file->set('uploaded_by',      isset($data['user']) ? $data['user'] : $this->mediaManager->modx->getUser()->get('id'));
+        $file->set('edited_by',        isset($data['user']) ? $data['user'] : $this->mediaManager->modx->getUser()->get('id'));
         $file->set('media_sources_id', $data['source']);
 
         // If file type is image set dimensions
