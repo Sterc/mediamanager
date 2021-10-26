@@ -62,7 +62,11 @@ class MediaManagerSourcesHelper
      */
     private function setCurrentSource()
     {
-        $sourceId = (int) $_REQUEST['source'];
+        $sourceId = 0;
+
+        if (isset($_REQUEST['source'])) {
+            $sourceId = (int) $_REQUEST['source'];
+        }
 
         if (!$sourceId && isset($_SESSION['mediamanager']['source'])) {
             return $this->currentSource = $_SESSION['mediamanager']['source'];
@@ -150,16 +154,16 @@ class MediaManagerSourcesHelper
         $sources = [];
         foreach ($mediaSources as $source) {
             $properties = $source->get('properties');
-            if ($properties['mediamanagerSource']['value']) {
-                $rank = (float) ($properties['rank']['value'] ?: 1) . '.' . $source->get('id');
+            if (isset($properties['mediamanagerSource']['value'])) {
+                $rank = (float) (isset($properties['rank']['value']) ? $properties['rank']['value'] : 1) . '.' . $source->get('id');
                 $sources[$rank] = [
                     'id'               => $source->get('id'),
                     'name'             => $source->get('name'),
-                    'basePath'         => $properties['basePath']['value'] ?: '',
-                    'basePathRelative' => $properties['basePathRelative']['value'],
-                    'baseUrl'          => $properties['baseUrl']['value'] ?: '',
-                    'baseUrlRelative'  => $properties['baseUrlRelative']['value'],
-                    'allowedFileTypes' => $properties['allowedFileTypes']['value'] ?: ''
+                    'basePath'         => isset($properties['basePath']['value']) ? $properties['basePath']['value'] : '',
+                    'basePathRelative' => isset($properties['basePathRelative']['value']) ? $properties['basePathRelative']['value'] : true,
+                    'baseUrl'          => isset($properties['baseUrl']['value']) ? $properties['baseUrl']['value'] : '',
+                    'baseUrlRelative'  => isset($properties['baseUrlRelative']['value']) ? $properties['baseUrlRelative']['value'] : true,
+                    'allowedFileTypes' => isset($properties['allowedFileTypes']['value']) ? $properties['allowedFileTypes']['value'] : ''
                 ];
             }
         }
@@ -228,11 +232,11 @@ class MediaManagerSourcesHelper
         $source = [
             'id'               => $source->get('id'),
             'name'             => $source->get('name'),
-            'basePath'         => $properties['basePath']['value'] ?: '',
-            'basePathRelative' => $properties['basePathRelative']['value'],
-            'baseUrl'          => $properties['baseUrl']['value'] ?: '',
-            'baseUrlRelative'  => $properties['baseUrlRelative']['value'],
-            'allowedFileTypes' => isset($properties['allowedFileTypes']) ? $properties['allowedFileTypes']['value'] : ''
+            'basePath'         => isset($properties['basePath']['value']) ? $properties['basePath']['value'] : '',
+            'basePathRelative' => isset($properties['basePathRelative']['value']) ? $properties['basePathRelative']['value'] : true,
+            'baseUrl'          => isset($properties['baseUrl']['value']) ? $properties['baseUrl']['value'] : '',
+            'baseUrlRelative'  => isset($properties['baseUrlRelative']['value']) ? $properties['baseUrlRelative']['value'] : true,
+            'allowedFileTypes' => isset($properties['allowedFileTypes']['value']) ? $properties['allowedFileTypes']['value'] : ''
         ];
 
         return $source;

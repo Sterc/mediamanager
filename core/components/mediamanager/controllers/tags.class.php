@@ -26,7 +26,7 @@ class MediaManagerTagsManagerController extends MediaManagerManagerController
     }
     public function getTemplateFile()
     {
-        return $this->mediaManager->config['templatesPath'] . 'tags.tpl';
+        return $this->mediaManager->config['templates_path'] . 'tags.tpl';
     }
 
     public function loadCustomCssJs()

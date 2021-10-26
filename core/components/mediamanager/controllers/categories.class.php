@@ -30,7 +30,7 @@ class MediaManagerCategoriesManagerController extends MediaManagerManagerControl
     }
     public function getTemplateFile()
     {
-        return $this->mediaManager->config['templatesPath'] . 'categories.tpl';
+        return $this->mediaManager->config['templates_path'] . 'categories.tpl';
     }
 
     public function loadCustomCssJs()

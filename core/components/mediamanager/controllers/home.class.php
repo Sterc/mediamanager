@@ -52,7 +52,7 @@ class MediaManagerHomeManagerController extends MediaManagerManagerController
 
     public function getTemplateFile()
     {
-        return $this->mediaManager->config['templatesPath'] . $this->templateFile;
+        return $this->mediaManager->config['templates_path'] . $this->templateFile;
     }
 
     public function loadCustomCssJs()
