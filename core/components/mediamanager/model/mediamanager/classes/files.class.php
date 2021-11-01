@@ -390,25 +390,64 @@ class MediaManagerFilesHelper
         }
 
         $i = 0;
+
         if ($template == 'edit') {
             $metaChunk = 'files/formgroup_filemeta';
         } else {
             $metaChunk = 'files/filemeta_row';
         }
 
-        $bodyData['filemeta'] = '';
-        $filesMeta = $this->mediaManager->modx->getCollection('MediamanagerFilesMeta', [
+        $bodyData['meta'] = [];
+
+        $metaValues = $this->mediaManager->modx->getCollection('MediamanagerFilesMeta', [
             'mediamanager_files_id'  => $fileId
         ]);
-        if (sizeof($filesMeta) > 0) {
-            foreach ($filesMeta as $meta) {
-                $metaArr = $meta->toArray();
-                $metaArr['nameprefix'] = 'meta[' . $i . ']';
-                $bodyData['filemeta'] .= $this->mediaManager->getChunk($metaChunk, $metaArr);
+
+        foreach ($metaValues as $metaKey => $metaValue) {
+            $metaValues[$metaValue->get('meta_key')] = [
+                'key'   => $metaValue->get('meta_key'),
+                'value' => $metaValue->get('meta_value')
+            ];
+
+            unset($metaValues[$metaKey]);
+        }
+
+        if (isset($source['meta']) && is_array($source['meta'])) {
+            foreach ($source['meta'] as $meta) {
+                if (isset($metaValues[$meta['key']])) {
+                    $meta['value']  = $metaValues[$meta['key']]['value'];
+
+                    unset($metaValues[$meta['key']]);
+                }
+
+                $bodyData['meta'][$meta['key']] = $this->mediaManager->getChunk($metaChunk, [
+                    'meta_key'      => $meta['key'],
+                    'meta_value'    => $meta['value'] ?: '',
+                    'meta_label'    => $meta['label'] ?: $meta['key'],
+                    'required'      => isset($meta['required']) && $meta['required'],
+                    'disabled'      => true,
+                    'prefix'        => $i
+                ]);
+
                 $i++;
             }
         }
-        $bodyData['meta_startname'] = 'meta[' . $i . ']';
+
+        foreach ($metaValues as $meta) {
+            $bodyData['meta'][$meta['key']] = $this->mediaManager->getChunk($metaChunk, [
+                'meta_key'      => $meta['key'],
+                'meta_value'    => $meta['value'] ?: '',
+                'meta_label'    => $meta['key'],
+                'required'      => false,
+                'disabled'      => false,
+                'prefix'        => $i
+            ]);
+
+            $i++;
+        }
+
+        $bodyData['meta']       = implode(PHP_EOL, $bodyData['meta']);
+        $bodyData['metaCount']  = $i;
 
         return [
             'body'   => $this->mediaManager->getChunk('files/popup/' . $template, $bodyData),
@@ -987,6 +1026,25 @@ class MediaManagerFilesHelper
             $data['user'] = $this->mediaManager->modx->getUser()->get('id');
         }
 
+        $mediaSource = $this->mediaManager->sources->getSource($data['source']);
+
+        if ($mediaSource) {
+            if (isset($mediaSource['meta']) && is_array($mediaSource['meta'])) {
+                foreach ($mediaSource['meta'] as $meta) {
+                    if (isset($meta['required']) && $meta['required']) {
+                        if (empty($data['meta'][$meta['key']])) {
+                            return [
+                                'status'  => self::STATUS_ERROR,
+                                'message' => $this->alertMessageHtml($this->mediaManager->modx->lexicon('mediamanager.files.error.required_field', [
+                                    'file'  => $file['name']
+                                ]))
+                            ];
+                        }
+                    }
+                }
+            }
+        }
+
         // Create upload directory
         if (!$this->createUploadDirectory($data['source'])) {
             return [
@@ -1104,87 +1162,121 @@ class MediaManagerFilesHelper
             }
         }
 
-        $file->save();
-        $fileId = $file->get('id');
+        if ($file->save()) {
+            // Save categories
+            if (isset($data['categories'])) {
+                if (!is_array($data['categories'])) {
+                    $data['categories'] = explode(',', $data['categories']);
+                }
 
-        // Save categories
-        $categories = $data['categories'];
-        if (!is_array($categories)) {
-            $categories = explode(',', $categories);
-        }
+                foreach ($data['categories'] as $category) {
+                    if (is_numeric($category)) {
+                        $object = $this->mediaManager->modx->newObject('MediamanagerFilesCategories');
 
-        foreach ($categories as $categoryId) {
-            if (!is_numeric($categoryId)) {
-                continue;
+                        if ($object) {
+                            $object->fromArray([
+                                'mediamanager_files_id'         => $file->get('id'),
+                                'mediamanager_categories_id'    => $category
+                            ]);
+
+                            $object->save();
+                        }
+                    }
+                }
             }
-            $category = $this->mediaManager->modx->newObject('MediamanagerFilesCategories');
-            $category->set('mediamanager_files_id', $fileId);
-            $category->set('mediamanager_categories_id', $categoryId);
-            $category->save();
-        }
 
-        // Save tags
-        $tags = $data['tags'];
-        if (!is_array($tags)) {
-            $tags = explode(',', $tags);
-        }
+            // Save tags
+            if (isset($data['tags'])) {
+                if (!is_array($data['tags'])) {
+                    $data['tags'] = explode(',', $data['tags']);
+                }
 
-        foreach ($tags as $tagId) {
-            if (!is_numeric($tagId)) {
-                continue;
+                foreach ($data['tags'] as $tag) {
+                    if (is_numeric($tag)) {
+                        $object = $this->mediaManager->modx->newObject('MediamanagerFilesTags');
+
+                        if ($object) {
+                            $object->fromArray([
+                                'mediamanager_files_id' => $file->get('id'),
+                                'mediamanager_tags_id'  => $tag
+                           ]);
+
+                            $object->save();
+                        }
+                    }
+                }
             }
-            $tag = $this->mediaManager->modx->newObject('MediamanagerFilesTags');
-            $tag->set('mediamanager_files_id', $fileId);
-            $tag->set('mediamanager_tags_id', $tagId);
-            $tag->save();
+
+            // Save meta fields
+            if (isset($data['meta']) && is_array($data['meta'])) {
+                foreach ($data['meta'] as $key => $value) {
+                    $object = $this->mediaManager->modx->newObject('MediamanagerFilesMeta');
+
+                    if ($object) {
+                        $object->fromArray([
+                            'mediamanager_files_id' => $file->get('id'),
+                            'meta_key'              => $key,
+                            'meta_value'            => $value
+                        ]);
+
+                        $object->save();
+                    }
+                }
+            }
         }
 
-        return $fileId;
+        return $file->get('id');
     }
 
     /**
      * Save file.
      *
      * @param int $fileId
-     * @param array $data
+     * @param array $rawData
      *
      * @return array
      */
-    public function saveFile($fileId, $data)
+    public function saveFile($fileId, $rawData)
     {
-        $rawData        = $data;
-        $data['name']   = $data[0]['value'];
-        unset($rawData[0]);
+        $data       = [
+            'name'      => '',
+            'meta'      => []
+        ];
 
-        $metaArray = [];
-        foreach($rawData as $row){
-            preg_match_all("/\[[^\]]*\]/", $row['name'], $matches);
+        $meta = [];
 
-            if(sizeof($matches[0])){
-                $metaArrayKey = filter_var($matches[0][0], FILTER_SANITIZE_NUMBER_INT);
-
-                if (strpos($row['name'], 'metakey') !== false) {
-                    $metaArray[$metaArrayKey]['key'] = $row['value'];
-                }
-                elseif (strpos($row['name'], 'metavalue') !== false) {
-                    $metaArray[$metaArrayKey]['value'] = $row['value'];
-                }
-                elseif (strpos($row['name'], 'metaid') !== false) {
-                    $metaArray[$metaArrayKey]['id'] = $row['value'];
-                }
+        foreach ($rawData as $row) {
+            if (preg_match('/^meta\[([\d]+)\]\[(key|value)\]$/', $row['name'], $matches)) {
+                $meta[$matches[1]][$matches[2]] = $row['value'];
+            } else if ($row['name'] === 'filename') {
+                $data['name'] = $row['value'];
             }
         }
 
-        /* If key is empty then remove from array */
-        if ($metaArray) {
-            foreach ($metaArray as $key => $values) {
-                if (empty($values['key'])) {
-                    unset($metaArray[$key]);
+        foreach ($meta as $row) {
+            $data['meta'][$row['key']] = $row;
+        }
+
+        $file = $this->mediaManager->modx->getObject('MediamanagerFiles', [
+            'id' => $fileId
+        ]);
+
+        $mediaSource = $this->mediaManager->sources->getSource($file->get('media_sources_id'));
+
+        if ($mediaSource) {
+            if (isset($mediaSource['meta']) && is_array($mediaSource['meta'])) {
+                foreach ($mediaSource['meta'] as $meta) {
+                    if (isset($meta['required']) && $meta['required']) {
+                        if (empty($data['meta'][$meta['key']]['value'])) {
+                            return [
+                                'status'  => self::STATUS_ERROR,
+                                'message' => $this->alertMessageHtml($this->mediaManager->modx->lexicon('mediamanager.files.error.required_field'), 'danger')
+                            ];
+                        }
+                    }
                 }
             }
         }
-
-        $file = $this->mediaManager->modx->getObject('MediamanagerFiles', array('id' => $fileId));
 
         /**
          * Check whether or not a file version should be created.
@@ -1222,7 +1314,28 @@ class MediaManagerFilesHelper
         $data['extension']      = $fileInformation['extension'];
         $data['upload_dir']     = $this->uploadDirectory . $this->uploadDirectoryMonth;
 
-        $this->saveMetaFields($fileId, $metaArray);
+        // Save meta fields
+        if (isset($data['meta']) && is_array($data['meta'])) {
+            $this->mediaManager->modx->removeCollection('MediamanagerFilesMeta', [
+                'mediamanager_files_id' => $file->get('id')
+            ]);
+
+            foreach ($data['meta'] as $meta) {
+                if (!empty($meta['key'])) {
+                    $object = $this->mediaManager->modx->newObject('MediamanagerFilesMeta');
+
+                    if ($object) {
+                        $object->fromArray([
+                           'mediamanager_files_id' => $file->get('id'),
+                           'meta_key'              => $meta['key'],
+                           'meta_value'            => $meta['value']
+                        ]);
+
+                        $object->save();
+                    }
+                }
+            }
+        }
 
         if ($createFileVersion) {
             $this->saveFileVersion($file->get('id'), $data, $actionName);
@@ -2391,65 +2504,6 @@ class MediaManagerFilesHelper
         }
 
         return false;
-    }
-
-    /**
-     * Save additional meta data for a file.
-     *
-     * @param int $fileId
-     * @param array $data   Contains the meta keys and values.
-     */
-    private function saveMetaFields($fileId, $data)
-    {
-        if ($data && is_array($data)) {
-            foreach($data as $meta) {
-                if (!empty($meta['key']) && !empty($meta['value'])) {
-
-                    if (isset($meta['id']) && $meta['id'] > 0) {
-                        $metaObj = $this->mediaManager->modx->getObject('MediamanagerFilesMeta', array('id' => $meta['id']));
-                    } else {
-                        $metaObj = $this->mediaManager->modx->newObject('MediamanagerFilesMeta');
-                    }
-
-                    $metaObj->set('mediamanager_files_id', $fileId);
-                    $metaObj->set('meta_key',              trim($meta['key']));
-                    $metaObj->set('meta_value',            trim($meta['value']));
-                    $metaObj->save();
-                }
-            }
-        }
-    }
-
-    /**
-     * Revert to a specified version of a file.
-     *
-     * @param int $metaId Id of meta row.
-     *
-     * @return array $response
-     */
-    public function removeFileMeta($metaId)
-    {
-        $response = [
-            'status'  => self::STATUS_SUCCESS,
-            'message' => ''
-        ];
-
-        if (isset($metaId) && $metaId > 0) {
-            $metaObj = $this->mediaManager->modx->getObject('MediamanagerFilesMeta', array('id' => $metaId));
-
-            if ($metaObj->remove() === false) {
-                $response['status']  = self::STATUS_ERROR;
-                $message             = $this->mediaManager->modx->lexicon('mediamanager.files.error.meta_not_removed', array('metaid' => $metaId));
-                $response['message'] = $this->alertMessageHtml($message, 'danger');
-            }
-
-        } else {
-            $response['status']  = self::STATUS_ERROR;
-            $message             = $this->mediaManager->modx->lexicon('mediamanager.files.error.meta_not_found', array('metaid' => $metaId));
-            $response['message'] = $this->alertMessageHtml($message, 'danger');
-        }
-
-        return $response;
     }
 
     /**

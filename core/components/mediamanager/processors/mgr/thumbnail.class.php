@@ -2,7 +2,6 @@
 /**
  * Thumbnail processor
  */
-
 class MediaManagerThumbnailProcessor extends modProcessor
 {
 

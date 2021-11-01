@@ -91,9 +91,6 @@ class MediaManagerFilesProcessor extends modProcessor
             case 'revert':
                 $data = $this->revertFile();
                 break;
-            case 'removeMeta':
-                $data = $this->removeFileMeta();
-                break;
         }
 
         return $data;
@@ -287,19 +284,6 @@ class MediaManagerFilesProcessor extends modProcessor
 
         return $this->toJSON($response);
     }
-
-    private function removeFileMeta()
-    {
-        $response = $this->mediaManager->files->removeFileMeta(
-            (int) $this->getProperty('metaId')
-        );
-        if ($response['status'] === 'error') {
-            header('HTTP/1.1 400 Bad Request');
-        }
-
-        return $this->toJSON($response);
-    }
-
 }
 
 return 'MediaManagerFilesProcessor';

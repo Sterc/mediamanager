@@ -10,9 +10,9 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
         $dropzone                : null,
         $dropzoneForm            : 'form[data-dropzone-form]',
         $dropzoneFileTemplate    : 'div[data-dropzone-file-template]',
-        $dropzonePreviews        : '.dropzone-previews',
-        $dropzoneActions         : '.dropzone-actions',
-        $dropzoneCopyButton      : '.btn-copy',
+        $dropzonePreviews        : 'div[data-dropzone-previews]',
+        $dropzoneActions         : 'div[data-dropzone-actions]',
+        $dropzoneCopyButton      : 'button[data-copy-values]',
         $dropzoneImageTypes      : ['image/jpg', 'image/png', 'image/gif', 'image/jpeg'],
         $dropzoneFeedback        : 'div[data-dropzone-feedback]',
 
@@ -22,16 +22,16 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
         $uploadMedia             : 'button[data-upload-media]',
         $uploadSelectedFiles     : '.upload-selected-files',
 
-        $addMetaFieldsButton     : '.addButton',
-        $removeMetaFieldsButton  : '.removeButton',
+        $addMetaFieldsButton     : 'button[data-add-meta]',
+        $removeMetaFieldsButton  : 'button[data-remove-meta]',
 
         $filesContainer          : 'div[data-files]',
         $fileContainer           : '.file',
         $fileCategories          : 'select[data-file-categories]',
         $fileTags                : 'select[data-file-tags]',
         $fileSourceTags          : 'select[data-file-source-tags]',
+        $fileMeta                : 'input[data-file-meta]',
         $fileRemoveButton        : 'button[data-dz-remove]',
-        $fileErrorMessage        : 'span[data-dz-errormessage]',
 
         $fileHistoryTable        : 'div[data-history-table]',
         $fileHistoryButton       : 'button[data-file-history-button]',
@@ -114,8 +114,6 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
         $modxHeader              : '#modx-header',
         $modxContent             : '#modx-content',
 
-        $filesCategories         : [],
-        $filesTags               : [],
         $filesSourceTags         : [],
         $filesCropper            : null,
 
@@ -137,7 +135,6 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
             self.$httpModAuth    = $('input[name="HTTP_MODAUTH"]', self.$dropzoneForm).val();
             self.$filesCropper   = MediaManagerFilesCropper;
             self.$options        = mediaManagerOptions;
-            self.metaFieldsIndex = 0;
 
             self.setSource();
             self.setCategory();
@@ -153,115 +150,162 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
          */
         setDropzone: function() {
             var self = this;
-            var feedback = $(self.$dropzoneFeedback);
 
             self.$dropzone = new Dropzone(document.getElementById('mediaManagerDropzone'), {
-                parallelUploads      : 9999,
-                maxFiles             : 9999,
-                maxFilesize          : mediaManagerOptions.dropzone.maxFileSize,
-                maxThumbnailFilesize : 10,
-                autoProcessQueue     : false,
-                clickable            : '.clickable',
-                dictDefaultMessage   : '',
-                previewsContainer    : self.$dropzonePreviews,
-                acceptedFiles        : mediaManagerOptions.dropzone.acceptedFiles,
-                params: {
-                    action  : 'mgr/files',
-                    method  : 'add'
+                parallelUploads         : 9999,
+                maxFiles                : 9999,
+                maxFilesize             : mediaManagerOptions.dropzone.maxFileSize,
+                maxThumbnailFilesize    : 10,
+                autoProcessQueue        : false,
+                clickable               : '[data-dropzone-trigger]',
+                dictDefaultMessage      : '',
+                previewsContainer       : self.$dropzonePreviews,
+                previewTemplate         : $(self.$dropzoneFileTemplate).html(),
+                acceptedFiles           : mediaManagerOptions.dropzone.acceptedFiles,
+                params                  : {
+                    action                  : 'mgr/files',
+                    method                  : 'add'
                 },
                 init: function() {
-                    this.on('addedfile', function(file) {
-                        var $filePreview = $(file.previewElement);
+                    var files               = {};
+                    var $dropzoneUploads    = $(self.$uploadMedia);
+                    var $dropzoneActions    = $(self.$dropzoneActions);
+                    var $dropzoneFeedback   = $(self.$dropzoneFeedback);
 
-                        self.$filesCategories.push($(self.$fileCategories, $filePreview).select2(self.$filterCategoriesOptions)
-                            .val(self.$currentCategory)
-                            .trigger('change')
-                        );
+                    this.on('addedfile', function (file) {
+                        var $file               = $(file.previewElement);
+                        var data                = files[file.name] || {};
 
-                        self.$filesTags.push($(self.$fileTags, $filePreview).select2(self.$filterTagsOptions));
+                        var $fieldCategories    = $(self.$fileCategories, $file).select2(self.$filterCategoriesOptions);
+                        var $fieldTags          = $(self.$fileTags, $file).select2(self.$filterTagsOptions);
+                        var $fieldsMeta         = $(self.$fileMeta, $file);
 
-                        // Disable upload media button
-                        $(self.$uploadMedia).prop('disabled', true);
-
-                        // Show upload selected files button
-                        $(self.$dropzoneActions).show();
-
-                        // Show copy categories and tags button if more than one file
-                        self.showCopyButton(this.files.length);
-
-                        // Images have lower max filesize, so check if type is image and check filesize
-                        if (self.$dropzoneImageTypes.indexOf(file.type) != -1) {
-                            var max = self.$options.dropzone.maxFileSizeImages * 1000000;
-                            if (file.size > max) {
-                                $('<div/>', {
-                                    class: 'alert alert-danger',
-                                    text: self.$options.message.maxFileSize
-                                }).appendTo(feedback).delay(3000).fadeOut(300);
-                                self.$dropzone.removeFile(file);
-                            }
+                        if (data[$fieldCategories.attr('name')]) {
+                            $fieldCategories.val(data[$fieldCategories.attr('name')]).trigger('change');
+                        } else {
+                            $fieldCategories.val(self.$currentCategory).trigger('change');
                         }
+
+                        if (data[$fieldTags.attr('name')]) {
+                            $fieldTags.val(data[$fieldTags.attr('name')]).trigger('change');
+                        }
+
+                        $fieldsMeta.each(function (index, fieldMeta) {
+                            var $fieldMeta = $(fieldMeta);
+
+                            if (data[$fieldMeta.attr('name')]) {
+                                $fieldMeta.val(data[$fieldMeta.attr('name')]);
+                            }
+                        });
+
+                        if (this.files.length >= 1) {
+                            $dropzoneUploads.prop('disabled', true);
+                            $dropzoneActions.show();
+                        } else {
+                            $dropzoneUploads.prop('disabled', false);
+                            $dropzoneActions.hide();
+                        }
+
+                        self.onToggleCopyButton(this.files.length);
                     });
 
-                    this.on('removedfile', function(file) {
-                        var queue = this.getQueuedFiles();
-
-                        if (queue.length === 0) {
-                            // Enable upload media button
-                            $(self.$uploadMedia).prop('disabled', false);
-
-                            // Disable and hide upload selected files button
-                            $(self.$dropzoneActions).hide();
+                    this.on('removedfile', function (file) {
+                        if (!file.cache) {
+                            files[file.name] = {};
                         }
 
-                        // Show copy categories and tags button if more than one file
-                        self.showCopyButton(this.files.length);
+                        if (this.files.length >= 1) {
+                            $dropzoneUploads.prop('disabled', true);
+
+                            $dropzoneActions.show();
+                        } else {
+                            $dropzoneUploads.prop('disabled', false);
+
+                            $dropzoneActions.hide();
+                        }
+
+                        self.onToggleCopyButton(this.files.length);
                     });
 
                     this.on('sending', function(file, xhr, formData) {
-                        var $file       = $(file.previewElement),
-                            $categories = $(self.$fileCategories, $file),
-                            $tags       = $(self.$fileTags, $file),
-                            $button     = $(self.$fileRemoveButton, $file);
+                        var $file               = $(file.previewElement);
+                        var data                = {};
 
-                        // Set correct categories and tags for file
-                        formData.append('categories', $categories.val());
-                        formData.append('tags', $tags.val());
+                        var $fieldCategories    = $(self.$fileCategories, $file);
+                        var $fieldTags          = $(self.$fileTags, $file);
+                        var $fieldsMeta         = $(self.$fileMeta, $file);
 
-                        // Disable input fields and buttons while file is being uploaded
-                        $categories.prop('disabled', true);
-                        $tags.prop('disabled', true);
-                        $button.prop('disabled', true);
+                        $fieldCategories.prop('disabled', true);
+                        data[$fieldCategories.attr('name')] = $fieldCategories.val();
+
+                        $fieldTags.prop('disabled', true);
+                        data[$fieldTags.attr('name')] = $fieldTags.val();
+
+                        formData.append('categories', $fieldCategories.val());
+                        formData.append('tags', $fieldTags.val());
+
+                        $fieldsMeta.each(function (index, fieldMeta) {
+                            var $fieldMeta = $(fieldMeta);
+
+                            $fieldMeta.prop('disabled', true);
+                            data[$fieldMeta.attr('name')] = $fieldMeta.val();
+
+                            formData.append('meta[' + $fieldMeta.attr('name').replace(/^m\[([a-z]+)\]$/gi, '$1') + ']', $fieldMeta.val());
+                        });
+
+                        $(self.$fileRemoveButton, $file).prop('disabled', true);
+
+                        files[file.name] = data;
                     });
 
                     this.on('complete', function(file) {
-                        var self     = this,
-                            response = null;
+                        var $file   = $(file.previewElement);
+                        var success = null;
 
-                        if (typeof file.xhr === 'undefined') {
-                            return false;
-                        }
-
-                        // If file is too big to upload, show error
                         if (file.xhr.status === 413) {
-                            response = self.alert(self.$options.message.maxFileSize, 'danger');
+                            success = false;
+
+                            $dropzoneFeedback.append(
+                                $('<div class="alert alert-danger">').append(self.$options.message.maxFileSize)
+                            );
                         } else {
-                            response = JSON.parse(file.xhr.response);
-                            response = response.message;
+                            var response = JSON.parse(file.xhr.response);
+
+                            $dropzoneFeedback.append(response.message);
+
+                            if (response.status === 'success') {
+                                success = true;
+                            } else {
+                                success = false;
+                            }
                         }
 
-                        $(file.previewElement).delay(1500).html(response);
+                        $(self.$fileCategories, $file).prop('disabled', false);
+                        $(self.$fileTags, $file).prop('disabled', false);
+                        $(self.$fileMeta, $file).prop('disabled', false);
+
+                        $(self.$fileRemoveButton, $file).prop('disabled', false);
+
+                        if (success) {
+                            this.removeFile(file);
+                        } else {
+                            file.cache = true;
+
+                            this.removeFile(file);
+                            this.addFile(file);
+                        }
+
+                        self.getList();
                     });
 
                     this.on('queuecomplete', function() {
-                        self.$filesCategories = [];
-                        self.$filesTags = [];
+                        files = {};
 
-                        $(self.$uploadMedia).prop('disabled', false);
-                        $(self.$dropzoneActions).hide();
+                        $dropzoneUploads.prop('disabled', false);
+
                         self.getList();
                     });
-                },
-                previewTemplate: $(self.$dropzoneFileTemplate).html()
+                }
             });
         },
         /*
@@ -286,50 +330,62 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
          * Process file queue.
          */
         dropzoneProcessQueue: function() {
-            var self = this;
-            self.$dropzone.processQueue();
+            $(this.$dropzoneFeedback).empty();
+
+            this.$dropzone.processQueue();
         },
 
         /**
-         * Copy categories and tags.
+         * Copy values from the first file
          */
-        copyCategoriesAndTags: function() {
-            var self    = this,
-                values  = null;
+        onHandleCopyValues: function() {
+            var values = {};
 
-            $.each(self.$filesCategories, function(i, file) {
-                if (i === 0) {
-                    values = file.val();
-                    return true;
+            $(this.$fileCategories, $(this.$dropzonePreviews)).each(function (index, category) {
+                var $category = $(category);
+
+                if (values[$category.attr('name')] === undefined) {
+                    values[$category.attr('name')] = $category.val();
+                } else {
+                    $category.val(values[$category.attr('name')]).trigger('change');
                 }
-
-                file.val(values).trigger('change');
             });
 
-            $.each(self.$filesTags, function(i, file) {
-                if (i === 0) {
-                    values = file.val();
-                    return true;
-                }
+            $(this.$fileTags, $(this.$dropzonePreviews)).each(function (index, tag) {
+                var $tag = $(tag);
 
-                file.val(values).trigger('change');
+                if (values[$tag.attr('name')] === undefined) {
+                    values[$tag.attr('name')] = $tag.val();
+                } else {
+                    $tag.val(values[$tag.attr('name')]).trigger('change');
+                }
+            });
+
+            $(this.$fileMeta, $(this.$dropzonePreviews)).each(function (index, meta) {
+                var $meta = $(meta);
+
+                if (values[$meta.attr('name')] === undefined) {
+                    values[$meta.attr('name')] = $meta.val();
+                } else {
+                    $meta.val(values[$meta.attr('name')]).trigger('change');
+                }
             });
         },
 
         /**
-         * Show or hide copy button.
+         * Show or hide copy button.s
          *
          * @param files
          */
-        showCopyButton: function(files) {
+        onToggleCopyButton: function(files) {
             var self = this;
 
             if (files > 1) {
-                var $previews = $(self.$dropzonePreviews);
-                $(self.$dropzoneCopyButton, $previews).hide().off('click');
-                $(self.$dropzoneCopyButton, $previews).first().show().on('click', function(e) {
-                    e.preventDefault();
-                    self.copyCategoriesAndTags();
+                $(self.$dropzoneCopyButton, $(self.$dropzonePreviews)).hide().off('click');
+
+                $(self.$dropzoneCopyButton, $(self.$dropzonePreviews)).first().show().on('click', function() {
+                    self.onHandleCopyValues();
+                    
                     return false;
                 });
             }
@@ -1475,20 +1531,25 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                     }
 
                     if (template === 'edit') {
-                        $(self.$fileEditSaveButton).on('click', function(e) {
-                            var values  = $(self.$editForm).serializeArray();
+                        $(self.$fileEditSaveButton).on('click', function() {
+                            var $form = $(self.$editForm);
+
                             $.ajax({
-                                type: 'POST',
-                                url: self.$connectorUrl,
-                                data: {
-                                    action       : 'mgr/files',
-                                    method       : 'save',
-                                    HTTP_MODAUTH : self.$httpModAuth,
-                                    fileId       : self.$currentFile,
-                                    data         : values
+                                type            : 'POST',
+                                url             : self.$connectorUrl,
+                                data            : {
+                                    action          : 'mgr/files',
+                                    method          : 'save',
+                                    HTTP_MODAUTH    : self.$httpModAuth,
+                                    fileId          : self.$currentFile,
+                                    data            : $form.serializeArray()
                                 },
-                                success: function(data) {
-                                    self.filePopup();
+                                success         : function(data) {
+                                    if (data.results.status === 'error') {
+                                        $('[data-alert-messages]', $form).html(data.results.message);
+                                    } else {
+                                        self.filePopup();
+                                    }
                                 }
                             });
                         });
@@ -1552,56 +1613,31 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
         /**
          * Add meta fields inside file edit screen.
          */
-        addMetaFields: function() {
-            var self  = this;
+        addMetaFields: function(event) {
+            var $button = $(event.target);
 
-            self.metaFieldsIndex++;
-            var $template = $('#metaTemplate'),
-                $clone    = $template
-                    .clone()
-                    .removeClass('hide')
-                    .removeAttr('id')
-                    .attr('data-meta-index', self.metaFieldsIndex)
-                    .insertBefore($template);
+            var index   = $button.parents('[data-edit-form]').find('input[type="text"]').filter(function() {
+                return $(this).attr('name').match(/^meta\[\d\]\[value\]/);
+            }).length;
+
+            var $template   = $('[data-meta-template]');
+            var $clone      = $template.clone();
+
+            $clone.removeClass('hide').removeAttr('data-meta-template');
 
             $clone
-                .find('[name="metakey"]').attr('name', 'meta[' + self.metaFieldsIndex + '].metakey').end()
-                .find('[name="metavalue"]').attr('name', 'meta[' + self.metaFieldsIndex + '].metavalue').end()
+                .find('[name="key"]').attr('name', 'meta[' + index + '][key]');
+            $clone
+                .find('[name="value"]').attr('name', 'meta[' + index + '][value]');
 
+            $clone.insertBefore($template);
         },
 
         /**
          * Remove meta fields from file edit screen.
          */
-        removeMetaFields: function(e) {
-            var self = this,
-                $row  = $(e.target).parents('.form-group'),
-                index = $row.attr('data-meta-index');
-
-            //If has meta id, then remove from database.
-            if ($($row).find('input[data-meta-id]').length != 0) {
-                $.ajax({
-                    type: 'POST',
-                    url: self.$connectorUrl,
-                    data: {
-                        action       : 'mgr/files',
-                        method       : 'removeMeta',
-                        HTTP_MODAUTH : self.$httpModAuth,
-                        metaId       : $($row).find('input[data-meta-id]').val()
-                    },
-                    success: function(data) {
-                        if (data.status == 'success') {
-                            // Remove element containing the fields
-                            $row.remove();
-                        } else {
-                            alert(data.message);
-                        }
-                    }
-                });
-            } else {
-                // Remove element containing the fields
-                $row.remove();
-            }
+        removeMetaFields: function(event) {
+             $(event.target).parents('.form-group').remove();
         }
     }
 

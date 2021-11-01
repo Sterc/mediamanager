@@ -14,24 +14,24 @@
 
     <div class="row">
         <div class="col-xs-12">
-
-            <div data-dropzone-feedback></div>
-
             <form action="{$connector_url}" class="dropzone-form clickable" id="mediaManagerDropzone" data-dropzone-form>
                 <input type="hidden" name="HTTP_MODAUTH" value="{$token}">
 
-                <h2 class="dz-message clickable">{$dropzone_title}</h2>
-                <button type="button" class="btn btn-default btn-lg clickable">{$dropzone_button}</button>
-                <div class="fallback">
-                    <input name="file" type="file" multiple />
+                <div data-dropzone-trigger>
+                    <h2>{$dropzone_title}</h2>
+                    <button type="button" class="btn btn-default btn-lg">{$dropzone_button}</button>
+                    <div class="fallback">
+                        <input name="file" type="file" multiple />
+                    </div>
+                    <p class="note">{$dropzone_maximum_upload_size}</p>
                 </div>
-                <p class="note clickable">{$dropzone_maximum_upload_size}</p>
-                <div class="dropzone-previews"></div>
-                <div class="dropzone-actions">
-                    <button type="button" class="btn btn-success pull-right upload-selected-files">{$upload_selected_files}</button>
+
+                <div data-dropzone-feedback></div>
+                <div data-dropzone-previews></div>
+                <div data-dropzone-actions class="dropzone-actions">
+                    <button type="button" class="btn btn-success upload-selected-files" title="{$upload_selected_files}">{$upload_selected_files}</button>
                 </div>
             </form>
-
         </div>
     </div>
 

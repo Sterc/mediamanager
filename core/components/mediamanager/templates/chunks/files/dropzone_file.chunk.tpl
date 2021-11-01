@@ -5,17 +5,22 @@
                 <img data-dz-thumbnail />
             </div>
             <div class="col-sm-3 col-lg-4">
-                <div class=""><span data-dz-name></span></div>
-                <div class="" data-dz-size></div>
+                <p><span data-dz-name></span></p>
+                <p><span data-dz-size></span></p>
             </div>
             <div class="col-sm-4">
-                <div class="categories">
+                <div class="form-control-wrapper">
                     <select name="c[]" class="form-control" multiple="multiple" data-placeholder="[[%mediamanager.global.categories]]" data-file-categories></select>
                 </div>
-                <div class="tags">
+                <div class="form-control-wrapper">
                     <select name="t[]" class="form-control" multiple="multiple" data-placeholder="[[%mediamanager.global.tags]]" data-file-tags></select>
                 </div>
-                <button type="button" class="btn btn-primary btn-copy">[[%mediamanager.files.copy_categories_and_tags]]</button>
+
+                [[+metaFields]]
+
+                <p>
+                    <button type="button" class="btn btn-primary" data-copy-values>[[%mediamanager.files.copy_values]]</button>
+                </p>
             </div>
             <div class="col-sm-2">
                 <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
@@ -23,9 +28,10 @@
                 </div>
             </div>
             <div class="col-sm-1">
-                <button type="button" class="btn btn-danger dz-remove pull-right" data-dz-remove="">[[%mediamanager.global.delete]]</button>
+                <p>
+                    <button type="button" class="btn btn-danger dz-remove pull-right" data-dz-remove="">[[%mediamanager.global.delete]]</button>
+                </p>
             </div>
         </div>
-        <span data-dz-errormessage></span>
     </div>
 </div>

@@ -69,42 +69,53 @@
     margin: 20px 0;
 }
 
+.mediamanager-browser .dropzone-form .alert {
+    margin: 0 10px 10px;
+    text-align: left;
+}
+
 .mediamanager-browser .dropzone-form .dz-preview {
     margin: 0 10px;
-    padding: 10px 0;
+    padding: 10px 0 0;
     border-top: 1px solid #ddd;
     text-align: left;
 }
 
+.mediamanager-browser .dropzone-form .dz-preview.dz-error .alert,
 .mediamanager-browser .dropzone-form .dz-preview.dz-complete .alert {
-    margin: 0;
-}
-
-.mediamanager-browser .dropzone-form .dz-preview.dz-error .alert {
-    margin-top: 10px;
+    margin: 0 0 10px;
 }
 
 .mediamanager-browser .dropzone-form .dz-preview img {
     max-width: 80px;
+    margin: 0 0 10px;
+}
+
+.mediamanager-browser .dropzone-form .dz-preview p {
+    margin: 0 0 10px;
+}
+
+.mediamanager-browser .dropzone-form .dz-preview .form-control-wrapper {
+    margin: 0 0 10px;
+}
+
+.mediamanager-browser .dropzone-form .dz-preview  .progress {
+    margin: 0 0 10px;
 }
 
 .mediamanager-browser .dropzone-form .dz-preview .select2-container--default {
     width: 100% !important;
 }
 
-.mediamanager-browser .dropzone-form .dz-preview .categories {
-    margin-bottom: 10px;
-}
-
 .mediamanager-browser .dropzone-form .dz-preview .btn-copy {
     display: none;
-    margin-top: 10px;
 }
 
 .mediamanager-browser .dropzone-form .dropzone-actions {
-    display:none;
+    display: none;
     margin: 0 10px;
     padding: 10px 0;
+    text-align: right;
     border-top: 1px solid #ddd;
 }
 

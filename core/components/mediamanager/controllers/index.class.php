@@ -3,7 +3,8 @@ require_once __DIR__ . '/../model/mediamanager/mediamanager.class.php';
 
 abstract class MediaManagerManagerController extends modExtraManagerController
 {
-    protected $mediaManager = null;
+    public $mediaManager    = null;
+    public $mediaSource     = null;
     public $mediaManagerError = null;
 
     public function initialize()
@@ -33,17 +34,20 @@ abstract class MediaManagerManagerController extends modExtraManagerController
         $this->addJavascript($this->mediaManager->config['assets_url'] . 'libs/select2/4.0.2/js/select2.min.js');
         $this->addJavascript($this->mediaManager->config['assets_url'] . 'libs/dropzone/4.3.0/js/dropzone.min.js');
 
-
         $acceptedFiles = '';
         $categoriesAndTags = '';
+        $metaData = [];
+
         /**
          * Get the current/default mediasource
          */
-        $mediaSource = $this->mediaManager->sources->getSource($this->mediaManager->sources->getCurrentSource());
-        if ($mediaSource) {
+        $this->mediaSource = $this->mediaManager->sources->getSource($this->mediaManager->sources->getCurrentSource());
+
+        if ($this->mediaSource) {
             $acceptedFiles = '';
-            if (!empty($mediaSource['allowedFileTypes'])) {
-                $acceptedFiles = '.' . str_replace(',', ',.', $mediaSource['allowedFileTypes']);
+
+            if (!empty($this->mediaSource['allowedFileTypes'])) {
+                $acceptedFiles = '.' . str_replace(',', ',.', $this->mediaSource['allowedFileTypes']);
             }
 
             $categoriesAndTags = $this->mediaManager->getAllCategoriesAndTags();
@@ -53,21 +57,22 @@ abstract class MediaManagerManagerController extends modExtraManagerController
 
         $this->addHtml('<script type="text/javascript">
             var mediaManagerOptions = {
-                cancel : "' . $this->modx->lexicon('mediamanager.global.cancel') . '",
-                dropzone : {
-                    maxFileSize       : ' . $this->mediaManager->config['max_file_size'] . ',
-                    maxFileSizeImages : ' . $this->mediaManager->config['max_file_size_images'] . ',
-                    acceptedFiles     : "' . $acceptedFiles . '"
+                cancel              : "' . $this->modx->lexicon('mediamanager.global.cancel') . '",
+                dropzone            : {
+                    maxFileSize         : ' . $this->mediaManager->config['max_file_size'] . ',
+                    maxFileSizeImages   : ' . $this->mediaManager->config['max_file_size_images'] . ',
+                    acceptedFiles       : "' . $acceptedFiles . '"
                 },
-                message : {
-                    maxFileSize    : "' . $this->modx->lexicon('mediamanager.files.error.filetoobig') . '",
-                    minCategory    : "' . $this->modx->lexicon('mediamanager.categories.minimum_categories_message') . '",
-                    replaceButton  : "' . $this->modx->lexicon('mediamanager.files.archive_and_replace') . '",
-                    replaceConfirm : "' . $this->modx->lexicon('mediamanager.files.archive_and_replace_select_confirm') . '"
+                message             : {
+                    maxFileSize         : "' . $this->modx->lexicon('mediamanager.files.error.filetoobig') . '",
+                    minCategory         : "' . $this->modx->lexicon('mediamanager.categories.minimum_categories_message') . '",
+                    replaceButton       : "' . $this->modx->lexicon('mediamanager.files.archive_and_replace') . '",
+                    replaceConfirm      : "' . $this->modx->lexicon('mediamanager.files.archive_and_replace_select_confirm') . '"
                 },
-                categories  : ' . (isset($categoriesAndTags['categories']) ? json_encode($categoriesAndTags['categories']) : '""') . ',
-                tags        : ' . (isset($categoriesAndTags['tags']) ? json_encode($categoriesAndTags['tags']) : '""'). ',
-                contextTags : ' . (isset($categoriesAndTags['contextTags']) ? json_encode($categoriesAndTags['contextTags']) : '""') . '
+                categories          : ' . (isset($categoriesAndTags['categories']) ? json_encode($categoriesAndTags['categories']) : '""') . ',
+                tags                : ' . (isset($categoriesAndTags['tags']) ? json_encode($categoriesAndTags['tags']) : '""'). ',
+                contextTags         : ' . (isset($categoriesAndTags['contextTags']) ? json_encode($categoriesAndTags['contextTags']) : '""') . ', 
+                metaFields          : ' . json_encode($metaData) . '
             }
 
             Ext.onReady(function() {

@@ -27,68 +27,63 @@
         <h3>[[%mediamanager.files.meta.title]]</h3>
 
         <table class="table table-striped">
-            <colgroup>
-                <col width="1">
-                <col width="1">
-            </colgroup>
             <tbody>
                 <tr>
-                    <td>[[%mediamanager.files.file_id]]</td>
+                    <td width="150px">[[%mediamanager.files.file_id]]</td>
                     <td>[[+file.id]]</td>
                 </tr>
                 <tr>
-                    <td>[[%mediamanager.files.file_name]]</td>
+                    <td width="150px">[[%mediamanager.files.file_name]]</td>
                     <td>[[+file.name]]</td>
                 </tr>
+
                 [[+is_image:is=`1`:then=`
-                <tr>
-                    <td>[[%mediamanager.files.file_dimension]]</td>
-                    <td>[[+file.file_dimensions]]</td>
-                </tr>
-                <tr>
-                    <td>[[%mediamanager.files.file_size_available]]</td>
-                    <td data-file-relations>[[+relations]]</td>
-                </tr>
+                    <tr>
+                        <td width="150px">[[%mediamanager.files.file_dimension]]</td>
+                        <td>[[+file.file_dimensions]]</td>
+                    </tr>
+                    <tr>
+                        <td width="150px">[[%mediamanager.files.file_size_available]]</td>
+                        <td data-file-relations>[[+relations]]</td>
+                    </tr>
                 `]]
+
                 <tr>
-                    <td>[[%mediamanager.files.file_size]]</td>
+                    <td width="150px">[[%mediamanager.files.file_size]]</td>
                     <td>[[+file.file_size]]</td>
                 </tr>
                 <tr>
-                    <td>[[%mediamanager.files.file_uploaded_by]]</td>
+                    <td width="150px">[[%mediamanager.files.file_uploaded_by]]</td>
                     <td>[[+file.uploaded_by_name]]</td>
                 </tr>
                 <tr>
-                    <td>[[%mediamanager.files.file_upload_date]]</td>
+                    <td width="150px">[[%mediamanager.files.file_upload_date]]</td>
                     <td>[[+file.upload_date]]</td>
                 </tr>
+
                 [[+file.is_archived:is=`0`:then=`
-                <tr>
-                    <td>[[%mediamanager.files.file_linked_to]]</td>
-                    <td>[[+content]]</td>
-                </tr>
-                <tr>
-                    <td>[[%mediamanager.files.file_link]]</td>
-                    <td>
-                        <a href="[[+file.path]]" class="previewpopup-link" target="_blank">
-                            [[+file.path]]
-                        </a>
-                    </td>
-                </tr>
+                    <tr>
+                        <td width="150px">[[%mediamanager.files.file_linked_to]]</td>
+                        <td>[[+content]]</td>
+                    </tr>
+                    <tr>
+                        <td width="150px">[[%mediamanager.files.file_link]]</td>
+                        <td>
+                            <a href="[[+file.path]]" class="previewpopup-link" target="_blank">
+                                [[+file.path]]
+                            </a>
+                        </td>
+                    </tr>
                 `]]
             </tbody>
         </table>
 
-        [[+filemeta:notempty=`
+        [[+meta:notempty=`
             <h3>[[%mediamanager.files.custom_meta.title]]</h3>
 
             <table class="table table-striped">
-                <colgroup>
-                    <col width="1">
-                    <col width="1">
-                </colgroup>
                 <tbody>
-                    [[+filemeta]]
+                    [[+meta]]
                 </tbody>
             </table>
         `:isempty=``]]

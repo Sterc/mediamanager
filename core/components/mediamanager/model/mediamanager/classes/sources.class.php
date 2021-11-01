@@ -180,10 +180,9 @@ class MediaManagerSourcesHelper
      */
     public function getListHtml()
     {
-        $html = '';
-        $sources = $this->getList();
+        $output = [];
 
-        foreach ($sources as $source) {
+        foreach ($this->getList() as $source) {
             if (
                 !$this->mediaManager->permissions->isAdmin()
                 && $source['id'] !== $this->getUserSource()
@@ -193,18 +192,41 @@ class MediaManagerSourcesHelper
             }
 
             $source['selected'] = 0;
+
             if ($source['id'] === $this->getCurrentSource()) {
                 $source['selected'] = 1;
             }
 
-            $html .= $this->mediaManager->getChunk('sources/source', $source);
+            $output[] = $this->mediaManager->getChunk('sources/source', $source);
         }
 
-        if (empty($html)) {
-            $html = $this->mediaManager->modx->lexicon('mediamanager.sources.error.no_sources_found');
+        if (empty($output)) {
+            return $this->mediaManager->modx->lexicon('mediamanager.sources.error.no_sources_found');
         }
 
-        return $html;
+        return implode(PHP_EOL, $output);
+    }
+
+    /**
+     * Get media source meta fields html.
+     *
+     * @param array $source
+     * @return string
+     */
+    public function getMetaFieldsHtml(array $source = [])
+    {
+        $output = [];
+
+        if (isset($source['meta']) && is_array($source['meta'])) {
+            foreach ($source['meta'] as $meta) {
+                $output[] = $this->mediaManager->getChunk('files/dropzone_file_meta', array_merge([
+                    'value'     => '',
+                    'required'  => false
+                ], $meta));
+            }
+        }
+
+        return implode(PHP_EOL, $output);
     }
 
     /**
@@ -230,13 +252,14 @@ class MediaManagerSourcesHelper
         }
 
         $source = [
-            'id'               => $source->get('id'),
-            'name'             => $source->get('name'),
-            'basePath'         => isset($properties['basePath']['value']) ? $properties['basePath']['value'] : '',
-            'basePathRelative' => isset($properties['basePathRelative']['value']) ? $properties['basePathRelative']['value'] : true,
-            'baseUrl'          => isset($properties['baseUrl']['value']) ? $properties['baseUrl']['value'] : '',
-            'baseUrlRelative'  => isset($properties['baseUrlRelative']['value']) ? $properties['baseUrlRelative']['value'] : true,
-            'allowedFileTypes' => isset($properties['allowedFileTypes']['value']) ? $properties['allowedFileTypes']['value'] : ''
+            'id'                => $source->get('id'),
+            'name'              => $source->get('name'),
+            'basePath'          => isset($properties['basePath']['value']) ? $properties['basePath']['value'] : '',
+            'basePathRelative'  => isset($properties['basePathRelative']['value']) ? $properties['basePathRelative']['value'] : true,
+            'baseUrl'           => isset($properties['baseUrl']['value']) ? $properties['baseUrl']['value'] : '',
+            'baseUrlRelative'   => isset($properties['baseUrlRelative']['value']) ? $properties['baseUrlRelative']['value'] : true,
+            'allowedFileTypes'  => isset($properties['allowedFileTypes']['value']) ? $properties['allowedFileTypes']['value'] : '',
+            'meta'              => isset($properties['mediamanagerMeta']['value']) ? (array) json_decode($properties['mediamanagerMeta']['value'], true) : []
         ];
 
         return $source;

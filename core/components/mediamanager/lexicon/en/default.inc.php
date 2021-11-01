@@ -110,11 +110,12 @@ $_lang['mediamanager.files.error.no_files_found'] = 'No files found.';
 $_lang['mediamanager.files.error.meta_not_found'] = 'Could not find any metadata to delete from database with meta id [[+metaid]].';
 $_lang['mediamanager.files.error.meta_not_removed'] = 'Could not remove data from database with meta id [[+metaid]].';
 $_lang['mediamanager.files.error.create_directory'] = 'Could not create upload directory.';
+$_lang['mediamanager.files.error.required_field'] = 'File `[[+file]]` could not be uploaded. One of the required fields is not filled, required fields are marked with an asterisk.';
 $_lang['mediamanager.files.error.create_zip'] = 'Could not create zip file.';
 $_lang['mediamanager.files.error.version_not_found'] = 'Version [[+version]] could not be found.';
 $_lang['mediamanaegr.files.error.revert_failed'] = 'Failed to revert [[+file]]. The revert could not be saved to database.';
 $_lang['mediamanager.files.error.revertfile_failed'] = 'Failed to revert the file [[+file]] with the selected version of the file.';
-$_lang['mediamanager.files.error.file_exists'] = 'File `[[+file]]` already exists. [[+link]]';
+$_lang['mediamanager.files.error.file_exists'] = 'File `[[+file]]` could not be uploaded. File `[[+file]]` already exists. [[+link]]';
 $_lang['mediamanager.files.error.file_upload'] = 'File `[[+file]]` could not be uploaded.';
 $_lang['mediamanager.files.error.file_save'] = 'File `[[+file]]` not added to database.';
 $_lang['mediamanager.files.error.file_linked'] = 'File `[[+file]]` is used in resource.';
@@ -170,6 +171,7 @@ $_lang['mediamanager.files.file_link'] = 'Link';
 $_lang['mediamanager.files.save_new_image'] = 'Save as new image';
 $_lang['mediamanager.files.save_image'] = 'Save image';
 $_lang['mediamanager.files.copy_categories_and_tags'] = 'Use categories and tags above for all files';
+$_lang['mediamanager.files.copy_values'] = 'Use the values above for all files';
 $_lang['mediamanager.files.source_tags'] = 'Source tags';
 
 /* Sources */

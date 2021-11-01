@@ -109,11 +109,12 @@ $_lang['mediamanager.files.error.no_files_found'] = 'Keine Dateien gefunden.';
 $_lang['mediamanager.files.error.meta_not_found'] = 'Es konnten keine Metadaten mit der Metadaten-ID [[+metaid]] zum Löschen gefunden werden.';
 $_lang['mediamanager.files.error.meta_not_removed'] = 'Daten für die Metadaten-ID [[+metaid]] konnten nicht aus der Datenbank gelöscht werden.';
 $_lang['mediamanager.files.error.create_directory'] = 'Das Upload-Verzeichnis konnte nicht erstellt werden.';
+$_lang['mediamanager.files.error.required_field'] = 'Die Datei `[[+file]]` konnte nicht hochgeladen werden. Eines der Pflichtfelder ist nicht ausgefüllt, Pflichtfelder sind mit einem Stern gekennzeichnet.';
 $_lang['mediamanager.files.error.create_zip'] = 'Das ZIP-Archiv konnte nicht erstellt werden.';
 $_lang['mediamanager.files.error.version_not_found'] = 'Version [[+version]] konnte nicht gefunden werden.';
 $_lang['mediamanaegr.files.error.revert_failed'] = 'Die Datei [[+file]] konnte nicht zurückgesetzt werden. Die Änderung konnte nicht in der Datenbank vorgenommen werden.';
 $_lang['mediamanager.files.error.revertfile_failed'] = 'Die Datei [[+file]] konnte nicht auf die gewählte Version zurückgesetzt werden.';
-$_lang['mediamanager.files.error.file_exists'] = 'Die Datei `[[+file]]` existiert bereits: [[+link]]';
+$_lang['mediamanager.files.error.file_exists'] = 'Die Datei `[[+file]]` konnte nicht hochgeladen werden. Die Datei `[[+file]]` existiert bereits: [[+link]]';
 $_lang['mediamanager.files.error.file_upload'] = 'Die Datei `[[+file]]` konnte nicht hochgeladen werden.';
 $_lang['mediamanager.files.error.file_save'] = 'Die Datei `[[+file]]` konnte nicht in die Datenbank eingetragen werden.';
 $_lang['mediamanager.files.error.file_linked'] = 'Die Datei `[[+file]]` wird noch in einer Ressource genutzt.';
@@ -167,6 +168,7 @@ $_lang['mediamanager.files.file_link'] = 'Link';
 $_lang['mediamanager.files.save_new_image'] = 'Als neues Bild speichern';
 $_lang['mediamanager.files.save_image'] = 'Bild speichern';
 $_lang['mediamanager.files.copy_categories_and_tags'] = 'Kategorien und Tags von oben für alle Dateien nutzen';
+$_lang['mediamanager.files.copy_values'] = 'Verwenden Sie die obigen Werte für alle Dateien';
 $_lang['mediamanager.files.source_tags'] = 'Source Tags';
 
 /* Sources */
