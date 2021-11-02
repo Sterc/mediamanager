@@ -1,5 +1,14 @@
 Changelog for MediaManager.
 
+MediaManager 0.2.4
+====================================
+- Fix thumbnail generation (#15)
+- Fix some styling issues (#16)
+- Fix category creation (#17)
+- Fix tag creation (#18)
+- Fix uploading files error (#19)
+- Add metadata template (#21)
+
 MediaManager 0.2.3
 ====================================
 - SVG previews are now shown in the mediamanager
