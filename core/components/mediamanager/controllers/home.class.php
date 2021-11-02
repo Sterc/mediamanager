@@ -33,7 +33,7 @@ class MediaManagerHomeManagerController extends MediaManagerManagerController
             'filter_options'                => $this->mediaManager->files->getFilterOptionsHtml(),
             'popup'                         => $this->mediaManager->getChunk('files/popup'),
             'dropzoneFile'                  => $this->mediaManager->getChunk('files/dropzone_file', [
-                'metaFields'                    => $this->mediaManager->sources->getMetaFieldsHtml($this->mediaSource)
+                'metaFields'                    => $this->mediaManager->sources->getMetaFieldsHtml($this->mediaSource ?: [])
             ])
         ];
 
