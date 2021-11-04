@@ -111,6 +111,7 @@ $_lang['mediamanager.files.error.meta_not_found'] = 'Could not find any metadata
 $_lang['mediamanager.files.error.meta_not_removed'] = 'Could not remove data from database with meta id [[+metaid]].';
 $_lang['mediamanager.files.error.create_directory'] = 'Could not create upload directory.';
 $_lang['mediamanager.files.error.required_field'] = 'File `[[+file]]` could not be uploaded. One of the required fields is not filled, required fields are marked with an asterisk.';
+$_lang['mediamanager.files.error.required_field_update'] = 'One of the required fields is not filled, required fields are marked with an asterisk.';
 $_lang['mediamanager.files.error.create_zip'] = 'Could not create zip file.';
 $_lang['mediamanager.files.error.version_not_found'] = 'Version [[+version]] could not be found.';
 $_lang['mediamanaegr.files.error.revert_failed'] = 'Failed to revert [[+file]]. The revert could not be saved to database.';

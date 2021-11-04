@@ -1270,7 +1270,7 @@ class MediaManagerFilesHelper
                         if (empty($data['meta'][$meta['key']]['value'])) {
                             return [
                                 'status'  => self::STATUS_ERROR,
-                                'message' => $this->alertMessageHtml($this->mediaManager->modx->lexicon('mediamanager.files.error.required_field'), 'danger')
+                                'message' => $this->alertMessageHtml($this->mediaManager->modx->lexicon('mediamanager.files.error.required_field_update'), 'danger')
                             ];
                         }
                     }

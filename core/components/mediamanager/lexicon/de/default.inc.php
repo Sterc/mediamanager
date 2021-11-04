@@ -110,6 +110,7 @@ $_lang['mediamanager.files.error.meta_not_found'] = 'Es konnten keine Metadaten 
 $_lang['mediamanager.files.error.meta_not_removed'] = 'Daten für die Metadaten-ID [[+metaid]] konnten nicht aus der Datenbank gelöscht werden.';
 $_lang['mediamanager.files.error.create_directory'] = 'Das Upload-Verzeichnis konnte nicht erstellt werden.';
 $_lang['mediamanager.files.error.required_field'] = 'Die Datei `[[+file]]` konnte nicht hochgeladen werden. Eines der Pflichtfelder ist nicht ausgefüllt, Pflichtfelder sind mit einem Stern gekennzeichnet.';
+$_lang['mediamanager.files.error.required_field_update'] = 'Eines der Pflichtfelder ist nicht ausgefüllt, Pflichtfelder sind mit einem Stern gekennzeichnet.';
 $_lang['mediamanager.files.error.create_zip'] = 'Das ZIP-Archiv konnte nicht erstellt werden.';
 $_lang['mediamanager.files.error.version_not_found'] = 'Version [[+version]] konnte nicht gefunden werden.';
 $_lang['mediamanaegr.files.error.revert_failed'] = 'Die Datei [[+file]] konnte nicht zurückgesetzt werden. Die Änderung konnte nicht in der Datenbank vorgenommen werden.';
