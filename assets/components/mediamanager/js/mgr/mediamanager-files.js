@@ -1266,8 +1266,12 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
          * @param e
          */
         downloadFiles: function(e) {
-            var self = this,
+            var self  = this,
                 files = self.$selectedFiles;
+
+            if (self.$currentFile !== 0) {
+                files = self.$currentFile;
+            }
 
             var $dialog = $('<div />').html('<span data-error></span>' + e.target.dataset.downloadMessage).dialog({
                 draggable   : false,
@@ -1323,6 +1327,10 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
         deleteFiles: function(e) {
             var self  = this,
                 files = self.$selectedFiles;
+
+            if (self.$currentFile !== 0) {
+                files = self.$currentFile;
+            }
 
             var $dialog = $('<div />').html(e.target.dataset.deleteMessage).dialog({
                 draggable   : false,

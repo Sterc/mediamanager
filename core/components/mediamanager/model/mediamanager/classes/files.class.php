@@ -1501,12 +1501,20 @@ class MediaManagerFilesHelper
      * Delete file.
      *
      * @param $selectedFiles
-     * @return bool
+     * @return array
      */
     public function deleteFiles($selectedFiles)
     {
+        $response = [
+            'status'    => self::STATUS_SUCCESS,
+            'message'   => ''
+        ];
+
         if (!$this->mediaManager->permissions->delete()) {
-            return false;
+            return [
+                'status'    => self::STATUS_ERROR,
+                'message'   => ''
+            ];
         }
 
         $fileIds = [];
@@ -1546,7 +1554,7 @@ class MediaManagerFilesHelper
             $this->mediaManager->modx->removeCollection('MediamanagerFilesRelations', ['mediamanager_files_id_relation' => $file->get('id')]);
         }
 
-        return true;
+        return $response;
     }
 
     /**
