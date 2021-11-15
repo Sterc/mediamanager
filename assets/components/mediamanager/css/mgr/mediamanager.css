@@ -366,12 +366,6 @@ ol.sortable li div {
     overflow-y: auto;
 }
 
-#modx-leftbar,
-#modx-leftbar-tabs-xsplit,
-#modx-leftbar-tabs-xcollapsed {
-    display: none !important;
-}
-
 .breadcrumb {
     margin: 0;
     padding: 0;
@@ -391,6 +385,11 @@ ol.sortable li div {
 }
 
 #modx-header *,
+#modx-header *:before,
+#modx-header *:after,
+#modx-leftbar *,
+#modx-leftbar *:before,
+#modx-leftbar *:after,
 #modx-footer *,
 .x-window * {
     -webkit-box-sizing: initial;
