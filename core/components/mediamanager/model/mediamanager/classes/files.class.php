@@ -269,28 +269,36 @@ class MediaManagerFilesHelper
         }
 
         // File categories
-        foreach ($data['categories'] as $category) {
-            $bodyData['categories'] .= '<option value="' . $category->get('id') . '" selected="selected">' . $category->get('name') . '</option>';
+        if (isset($data['categories'])) {
+            foreach ($data['categories'] as $category) {
+                $bodyData['categories'] .= '<option value="' . $category->get('id') . '" selected="selected">' . $category->get('name') . '</option>';
+            }
         }
 
         // File tags
-        foreach ($data['tags'] as $tag) {
-            if ($tag->get('media_sources_id') === 0) {
-                $tagSource = 'tags';
-            } else {
-                $tagSource = 'source_tags';
+        if (isset($data['tags'])) {
+            foreach ($data['tags'] as $tag) {
+                if ($tag->get('media_sources_id') === 0) {
+                    $tagSource = 'tags';
+                } else {
+                    $tagSource = 'source_tags';
+                }
+                $bodyData[$tagSource] .= '<option value="' . $tag->get('id') . '" selected="selected">' . $tag->get('name') . '</option>';
             }
-            $bodyData[$tagSource] .= '<option value="' . $tag->get('id') . '" selected="selected">' . $tag->get('name') . '</option>';
         }
 
         // File content
         $bodyData['content'] = [];
-        foreach ($data['content'] as $content) {
-            $resource = $this->mediaManager->modx->getObject('modResource', $content->get('site_content_id'));
-            if ($resource) {
-                $bodyData['content'][] = '<a href="?a=resource/update&id=' . $content->get('site_content_id') . '">' . $resource->get('pagetitle') . '</a>';
+
+        if (isset($data['content'])) {
+            foreach ($data['content'] as $content) {
+                $resource = $this->mediaManager->modx->getObject('modResource', $content->get('site_content_id'));
+                if ($resource) {
+                    $bodyData['content'][] = '<a href="?a=resource/update&id=' . $content->get('site_content_id') . '">' . $resource->get('pagetitle') . '</a>';
+                }
             }
         }
+
         $bodyData['content'] = implode(', ', $bodyData['content']);
 
         // check if file is linked to resources
