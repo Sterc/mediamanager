@@ -18,113 +18,89 @@ switch ($modx->event->name) {
         break;
 
     case 'OnDocFormSave':
-        $template = $resource->get('template');
-        $tmplVars = $modx->getCollection('modTemplateVar', [
-            'type:IN' => [
-                'mm_input_image',
-                'image',
-                'file',
-                'richtext',
-                'migx'
-            ]
+        $modx->removeCollection('MediamanagerFilesContent', [
+            'site_content_id' => $resource->get('id')
         ]);
 
-        foreach ($tmplVars as $tv) {
-            $tvTemplate = $modx->getObject('modTemplateVarTemplate', [
-                'tmplvarid'  => $tv->get('id'),
-                'templateid' => $template
-            ]);
+        $criteria = $modx->newQuery('modTemplateVar');
 
-            if (!$tvTemplate) {
-                continue;
-            }
+        $criteria->select($modx->getSelectColumns('modTemplateVar', 'modTemplateVar'));
 
+        $criteria->innerJoin('modTemplateVarTemplate', 'modTemplateVarTemplate', [
+            '`modTemplateVarTemplate`.`tmplvarid` = `modTemplateVar`.`id`'
+        ]);
+
+        $criteria->where([
+            'modTemplateVar.type:IN'            => ['mm_input_image', 'mm_input_file', 'migx'],
+            'modTemplateVarTemplate.templateid' => $resource->get('template')
+        ]);
+
+        foreach ($modx->getCollection('modTemplateVar', $criteria) as $tv) {
             $value = $modx->getObject('modTemplateVarResource', [
                 'tmplvarid' => $tv->get('id'),
                 'contentid' => $resource->get('id')
             ]);
-            
-            // Get all the img src values from migx
-            if ($value && $tv->get('type') == 'migx') {
-                $doc = new DOMDocument();
-                $html = '';
-                $array = json_decode($value->get('value'), true);
-                foreach ($array as $a) {
-                    foreach ($a as $b) {
-                        $html .= $b;
+
+            if ($value) {
+                if ($tv->get('type') === 'migx') {
+                    $doc = new DOMDocument();
+
+                    $html = '';
+
+                    if ($array = json_decode($value->get('value'), true)) {
+                        foreach ($array as $a) {
+                            foreach ($a as $b) {
+                                $html .= $b;
+                            }
+                        }
+                    }
+
+                    $doc->loadHTML($html);
+
+                    foreach ($doc->getElementsByTagName('img') as $tag) {
+                        $file = $modx->getObject('MediamanagerFiles', [
+                            'path:LIKE' => '%' . $tag->getAttribute('src')
+                        ]);
+
+                        if ($file) {
+                            $mediamanager->saveFileContent($file->get('id'), $resource->get('id'), $tv->get('id'));
+                        }
+                    }
+                } else {
+                    if (is_numeric($value->get('value'))) {
+                        $mediamanager->saveFileContent($value->get('value'), $resource->get('id'), $tv->get('id'));
                     }
                 }
-                $doc->loadHTML($html);
-                
-                $tags = $doc->getElementsByTagName('img');
-                $out = '';
-                foreach ($tags as $tag) {
-                    $file = $modx->getObject('MediamanagerFiles', [
-                        'path:LIKE' => '%'.$tag->getAttribute('src')
-                    ]);
-                    
-                    if (!$file) {
-                        continue;
-                    }
-                    
-                    $fileContent = $modx->getObject('MediamanagerFilesContent', [
-                        'mediamanager_files_id' => $file->get('id'),
-                        'site_content_id'       => $resource->get('id'),
-                        'is_tmplvar'            => 1
-                    ]);
-        
-                    if (!$fileContent) {
-                        $fileContent = $modx->newObject('MediamanagerFilesContent');
-                    }
-        
-                    $fileContent->set('mediamanager_files_id', $file->get('id'));
-                    $fileContent->set('site_content_id', $resource->get('id'));
-                    $fileContent->set('site_tmplvars_id', $tv->get('id'));
-                    $fileContent->set('is_tmplvar', 1);
-                    $fileContent->save();
-                }
             }
-
-            if (!$value || !is_numeric($value->get('value'))) {
-                continue;
-            }
-
-            $file = $modx->getObject('MediamanagerFiles', [
-                'id' => $value->get('value')
-            ]);
-
-            if (!$file) {
-                continue;
-            }
-
-            $fileContent = $modx->getObject('MediamanagerFilesContent', [
-                'mediamanager_files_id' => $file->get('id'),
-                'site_content_id'       => $resource->get('id'),
-                'is_tmplvar'            => 1
-            ]);
-
-            if (!$fileContent) {
-                $fileContent = $modx->newObject('MediamanagerFilesContent');
-            }
-
-            $fileContent->set('mediamanager_files_id', $file->get('id'));
-            $fileContent->set('site_content_id', $resource->get('id'));
-            $fileContent->set('site_tmplvars_id', $tv->get('id'));
-            $fileContent->set('is_tmplvar', 1);
-            $fileContent->save();
         }
 
-        // @TODO: Get image paths from resource content. Check and save them.
+        $properties = $resource->get('properties');
 
-        // $tv_values = $modx->getCollection('modTemplateVarResource',array('contentid' => $id));
-        // foreach($tv_values as $value) {
-        //     $tv_template = $modx->getObject('modTemplateVarTemplate',array('tmplvarid' => $tv->get('tmplvarid')));
-        //     if($tv_template) {
-        //         $mm_relation = $modx->getObject('MediamanagerFilesContent',array('site_content_id' => $id,'mediamanager_files_id'));
-        //     }
-        // }
+        if (isset($properties['contentblocks'])) {
+            $contentblocks = $modx->getService('contentblocks', 'ContentBlocks', $modx->getOption('contentblocks.core_path', null, $modx->getOption('core_path') . 'components/contentblocks/') . 'model/contentblocks/');
+
+            if ($contentblocks instanceof ContentBlocks) {
+                if (isset($properties['contentblocks']['_isContentBlocks']) && (int) $properties['contentblocks']['_isContentBlocks'] === 1) {
+                    $layout = json_decode($properties['contentblocks']['content'], true);
+
+                    if ($layout) {
+                        foreach ($layout as $layoutValue) {
+                            $files = [];
+
+                            foreach ($layoutValue['content'] as $contentValue) {
+                                $mediamanager->cbCheckMMField($contentValue, $files);
+                            }
+
+                            foreach ($files as $file) {
+                                $mediamanager->saveFileContent($file, $resource->get('id'));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         break;
-
     case 'OnEmptyTrash':
         foreach ($ids as $id) {
             $modx->removeCollection('MediamanagerFilesContent', [

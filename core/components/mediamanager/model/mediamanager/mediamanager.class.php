@@ -201,4 +201,86 @@ class MediaManager
         }
         return $option;
     }
+
+    /**
+     * @access public
+     * @param int $fileId
+     * @param int $resourceId
+     * @param int $tvId
+     * @return boolean.
+     */
+    public function saveFileContent($fileId, $resourceId, $tvId = 0)
+    {
+        if ((int) $tvId !== 0) {
+            $object = $this->modx->getObject('MediamanagerFilesContent', [
+                'mediamanager_files_id' => $fileId,
+                'site_content_id'       => $resourceId,
+                'site_tmplvars_id'      => $tvId,
+                'is_tmplvar'            => 1
+            ]);
+        }
+
+        if (!$object) {
+            $object = $this->modx->newObject('MediamanagerFilesContent', [
+                'mediamanager_files_id' => $fileId,
+                'site_content_id'       => $resourceId
+            ]);
+        }
+
+        if ($object) {
+            if ((int) $tvId === 0) {
+                $object->fromArray([
+                    'is_tmplvar'        => 0
+                ]);
+            } else {
+                $object->fromArray([
+                    'site_tmplvars_id'  => $tvId,
+                    'is_tmplvar'        => 1
+                ]);
+            }
+
+            return $object->save();
+        }
+
+        return false;
+    }
+
+    /**
+     * @access public
+     * @param array $cbValues
+     * @param array $files
+     * @return array.
+     */
+    public function cbCheckMMField(array $cbValues = [], array &$files = [])
+    {
+        foreach ($cbValues as $cbValue) {
+            if (isset($cbValue['field'])) {
+                $cbField = $this->modx->getObject('cbField', [
+                    'id' => $cbValue['field']
+                ]);
+
+                if ($cbField) {
+                    if ($cbField->get('input') === 'cb_mediamanager_image_input') {
+                        if (isset($cbValue['file_id'])) {
+                            $files[] = $cbValue['file_id'];
+                        }
+                    } else if ($cbField->get('input') === 'cb_mediamanager_input') {
+                        if (isset($cbValue['file_id'])) {
+                            $files[] = $cbValue['file_id'];
+                        }
+                    } else if ($cbField->get('input') === 'repeater') {
+                        if (isset($cbValue['rows'])) {
+                            foreach ($cbValue['rows'] as $row) {
+                                $this->cbCheckMMField($row, $files);
+                            }
+                        }
+                    }
+                }
+            } else if (isset($cbValue['file_id'])) {
+                $files[] = $cbValue['file_id'];
+            }
+        }
+
+        return $files;
+    }
 }
