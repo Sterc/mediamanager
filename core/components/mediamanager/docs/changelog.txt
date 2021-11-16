@@ -1,5 +1,13 @@
 Changelog for MediaManager.
 
+MediaManager 0.2.5
+====================================
+- Fix after adding images to pages, no link reference getting shown in backend GUI (#24)
+- Fix MODX Resource / Elements visibility toggle button not working (#26)
+- Fix deleting an image was not successful (#27)
+- Fix when opening the preview window on an image, MODX logs some errors (#28)
+- Fix available sizes is not being populated with information (#29)
+
 MediaManager 0.2.4
 ====================================
 - Fix thumbnail generation (#15)
