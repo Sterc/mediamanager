@@ -1662,7 +1662,7 @@ class MediaManagerFilesHelper
             $old = $this->filePath($file->toArray());
             $new = $this->createUniqueFile($this->uploadDirectory . $this->archiveDirectory, time(), $file->get('file_type'), uniqid('-'));
 
-            if (!$this->renameFile($old, $this->uploadDirectory . $this->archiveDirectory . $new)) {
+            if (file_exists($old) && !$this->renameFile($old, $this->uploadDirectory . $this->archiveDirectory . $new)) {
                 $response['status'] = self::STATUS_ERROR;
                 $response['message'] .= $this->mediaManager->modx->lexicon('mediamanager.files.error.file_archive', array('id' => $id)) . '<br />';
                 continue;
@@ -1817,9 +1817,15 @@ class MediaManagerFilesHelper
             $old = $this->uploadDirectory . $file->get('archive_path');
             $new = $this->uploadDirectory . $file->get('path');
 
+            if (!file_exists($old)) {
+                $response['status'] = self::STATUS_ERROR;
+                $response['message'] .= $this->mediaManager->modx->lexicon('mediamanager.files.error.file_unarchive', array('id' => $id)) . '<br />';
+                continue;
+            }
+
             if (!$this->renameFile($old, $new)) {
                 $response['status'] = self::STATUS_ERROR;
-                $response['message'] .= $this->mediaManager->modx->lexicon('mediamanager.files.error.file_archive', array('id' => $id)) . '<br />';
+                $response['message'] .= $this->mediaManager->modx->lexicon('mediamanager.files.error.file_unarchive', array('id' => $id)) . '<br />';
                 continue;
             }
 

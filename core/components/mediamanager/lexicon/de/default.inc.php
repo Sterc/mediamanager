@@ -120,6 +120,7 @@ $_lang['mediamanager.files.error.file_upload'] = 'Die Datei `[[+file]]` konnte n
 $_lang['mediamanager.files.error.file_save'] = 'Die Datei `[[+file]]` konnte nicht in die Datenbank eingetragen werden.';
 $_lang['mediamanager.files.error.file_linked'] = 'Die Datei `[[+file]]` wird noch in einer Ressource genutzt.';
 $_lang['mediamanager.files.error.file_archive'] = 'Die Datei mit der ID `[[+id]]` konnte nicht archiviert werden.';
+$_lang['mediamanager.files.error.file_unarchive'] = 'Die Datei mit der ID `[[+id]]` konnte nicht wiederhergestellt werden.';
 $_lang['mediamanager.files.error.file_not_found'] = 'Datei nicht gefunden.';
 $_lang['mediamanager.files.error.image_not_saved'] = 'Das Bild konnte nicht gespeichert werden.';
 $_lang['mediamanager.files.error.file_copy'] = 'Die Datei `[[+file]]` konnte nicht kopiert werden.';

@@ -121,6 +121,7 @@ $_lang['mediamanager.files.error.file_upload'] = 'File `[[+file]]` could not be 
 $_lang['mediamanager.files.error.file_save'] = 'File `[[+file]]` not added to database.';
 $_lang['mediamanager.files.error.file_linked'] = 'File `[[+file]]` is used in resource.';
 $_lang['mediamanager.files.error.file_archive'] = 'Could not archive file with id `[[+id]]`.';
+$_lang['mediamanager.files.error.file_unarchive'] = 'Could not unarchive file with id `[[+id]]`.';
 $_lang['mediamanager.files.error.file_not_found'] = 'File not found.';
 $_lang['mediamanager.files.error.image_not_saved'] = 'Image not saved.';
 $_lang['mediamanager.files.error.file_copy'] = 'Could not copy file `[[+file]]` to own source.';
