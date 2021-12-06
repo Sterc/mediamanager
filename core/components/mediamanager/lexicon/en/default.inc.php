@@ -126,6 +126,7 @@ $_lang['mediamanager.files.error.file_not_found'] = 'File not found.';
 $_lang['mediamanager.files.error.image_not_saved'] = 'Image not saved.';
 $_lang['mediamanager.files.error.file_copy'] = 'Could not copy file `[[+file]]` to own source.';
 $_lang['mediamanager.files.error.filetoobig'] = 'The file you selected is too big.';
+$_lang['mediamanager.files.error.delete_dir'] = 'Could not delete directory `[[+dir]]`';
 $_lang['mediamanager.files.success.file_upload'] = 'File `[[+file]]` uploaded.';
 $_lang['mediamanager.files.success.files_moved'] = 'Successfully moved files.';
 $_lang['mediamanager.files.success.image_saved'] = 'Image saved.';

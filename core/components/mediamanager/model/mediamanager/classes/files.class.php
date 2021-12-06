@@ -1540,26 +1540,64 @@ class MediaManagerFilesHelper
         }
 
         foreach ($files as $file) {
-            $path = $file->get('path');
-            if ($file->get('is_archived')) {
-                $path = $file->get('archive_path');
+            $fileRow = $file;
+            $file    = $this->fileToArray($fileRow);
+            $path    = $file['path'];
+            if ($file['is_archived']) {
+                $path = $file['archive_path'];
+            }
+
+            $this->createUploadDirectory($file['media_sources_id']);
+
+            // Delete all versions from server
+            $versions = $this->mediaManager->modx->getIterator('MediamanagerFilesVersions', ['mediamanager_files_id' => $file['id']]);
+            foreach ($versions as $version) {
+                // Delete thumbnails for each version
+                $thumbPath = $this->getThumbnail($file, 'path', $version->get('file_hash'));
+                if (file_exists($thumbPath)) {
+                    unlink($thumbPath);
+                }
+
+                if (file_exists($this->uploadDirectory . $version->path)) {
+                    unlink($this->uploadDirectory . $version->path);
+                }
+                $version->remove();
+            }
+
+            // Delete versions directory
+            $dir = $this->versionDirectory . $file['id'];
+            if (file_exists($this->uploadDirectory . $dir)) {
+                try {
+                    rmdir($this->uploadDirectory . $dir);
+                } catch (Exception $exception) {
+                    $response['message'] .= $this->mediaManager->modx->lexicon('mediamanager.files.error.delete_dir', ['dir' => $dir]) . '<br />';
+                    $response['message'] .= $exception->getMessage() . '<hr />';
+                }
+            }
+
+            // Delete thumbnail from server
+            $thumbPath = $this->getThumbnail($file, 'path');
+            if (file_exists($thumbPath)) {
+                unlink($thumbPath);
             }
 
             // Delete file from server
-            unlink($this->uploadDirectory . $path);
+            if (file_exists($this->uploadDirectory . $path)) {
+                unlink($this->uploadDirectory . $path);
+            }
 
             // Delete file
-            $file->remove();
+            $fileRow->remove();
 
             // Delete file categories
-            $this->mediaManager->modx->removeCollection('MediamanagerFilesCategories', ['mediamanager_files_id' => $file->get('id')]);
+            $this->mediaManager->modx->removeCollection('MediamanagerFilesCategories', ['mediamanager_files_id' => $file['id']]);
 
             // Delete file tags
-            $this->mediaManager->modx->removeCollection('MediamanagerFilesTags', ['mediamanager_files_id' => $file->get('id')]);
+            $this->mediaManager->modx->removeCollection('MediamanagerFilesTags', ['mediamanager_files_id' => $file['id']]);
 
             // Delete file relations
-            $this->mediaManager->modx->removeCollection('MediamanagerFilesRelations', ['mediamanager_files_id' => $file->get('id')]);
-            $this->mediaManager->modx->removeCollection('MediamanagerFilesRelations', ['mediamanager_files_id_relation' => $file->get('id')]);
+            $this->mediaManager->modx->removeCollection('MediamanagerFilesRelations', ['mediamanager_files_id' => $file['id']]);
+            $this->mediaManager->modx->removeCollection('MediamanagerFilesRelations', ['mediamanager_files_id_relation' => $file['id']]);
         }
 
         return $response;

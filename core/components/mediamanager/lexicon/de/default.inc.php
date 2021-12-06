@@ -125,6 +125,7 @@ $_lang['mediamanager.files.error.file_not_found'] = 'Datei nicht gefunden.';
 $_lang['mediamanager.files.error.image_not_saved'] = 'Das Bild konnte nicht gespeichert werden.';
 $_lang['mediamanager.files.error.file_copy'] = 'Die Datei `[[+file]]` konnte nicht kopiert werden.';
 $_lang['mediamanager.files.error.filetoobig'] = 'Die ausgewählte Datei ist zu groß.';
+$_lang['mediamanager.files.error.delete_dir'] = 'Verzeichnis `[[+dir]]` konnte nicht gelöscht werden';
 $_lang['mediamanager.files.success.file_upload'] = 'Die Datei `[[+file]]` wurde hochgeladen.';
 $_lang['mediamanager.files.success.files_moved'] = 'Die Datei wurde erfolgreich verschoben.';
 $_lang['mediamanager.files.success.image_saved'] = 'Bild gespeichert.';
