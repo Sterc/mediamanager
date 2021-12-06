@@ -200,22 +200,8 @@ class MediaManagerFilesHelper
         ];
 
         $data                     = $this->getFile($fileId);
-        $file                     = $data['file']->toArray();
-        $source                   = $this->mediaManager->sources->getSource($file['media_sources_id']);
-
-        $file['file_size']        = $this->formatFileSize($file['file_size']);
+        $file                     = $this->fileToArray($data['file']);
         $file['uploaded_by_name'] = ($data['user'] !== null ? $data['user']->get('fullname') : $this->mediaManager->modx->lexicon('mediamanager.files.file_unknown_user'));
-        $file['is_archived']      = (int) $file['is_archived'];
-        $file['file_path']        = $file['path'];
-        $file['path']             = $this->fileUrl($file, $source);
-        $file['base_path']        = $source['basePath'];
-
-        if ($source['basePathRelative'] !== false) {
-            $file['base_path'] = $this->addTrailingSlash(MODX_BASE_PATH) .
-                $this->removeSlashes($source['basePath']) .
-                DIRECTORY_SEPARATOR;
-        }
-
         $bodyData['file']         = $file;
         $footerData['file']       = $file;
 
@@ -532,6 +518,42 @@ class MediaManagerFilesHelper
     }
 
     /**
+     * Return array from file row
+     *
+     * @param object $file
+     * @param null|object $source
+     *
+     * @return array
+     */
+    public function fileToArray(MediamanagerFiles $file = null, $source = null)
+    {
+        if ($file === null) {
+            return [];
+        }
+
+        $file = $file->toArray();
+
+        if ($source === null) {
+            $source = $this->mediaManager->sources->getSource($file['media_sources_id']);
+        }
+
+        $file['categories']  = [];
+        $file['file_size']   = $this->formatFileSize($file['file_size']);
+        $file['file_path']   = $file['path'];
+        $file['is_archived'] = (int) $file['is_archived'];
+        $file['path']        = $this->fileUrl($file, $source);
+        $file['base_path']   = $source['basePath'];
+
+        if ($source['basePathRelative'] !== false) {
+            $file['base_path'] = $this->addTrailingSlash(MODX_BASE_PATH) .
+                $this->removeSlashes($source['basePath']) .
+                DIRECTORY_SEPARATOR;
+        }
+
+        return $file;
+    }
+
+    /**
      * Get files.
      *
      * @param string $search
@@ -697,25 +719,9 @@ class MediaManagerFilesHelper
         $source = null;
 
         foreach ($files as $file) {
-            $file = $file->toArray();
+            $file = $this->fileToArray($file);
 
-            if ($source === null) {
-                $source = $this->mediaManager->sources->getSource($file['media_sources_id']);
-            }
-
-            $file['categories'] = [];
-            $file['selected']   = 0;
-            $file['file_size']  = $this->formatFileSize($file['file_size']);
-            $file['file_path']  = $file['path'];
-            $file['path']       = $this->fileUrl($file, $source);
-            $file['base_path']  = $source['basePath'];
-
-            if ($source['basePathRelative'] !== false) {
-                $file['base_path'] = $this->addTrailingSlash(MODX_BASE_PATH) .
-                    $this->removeSlashes($source['basePath']) .
-                    DIRECTORY_SEPARATOR;
-            }
-
+            $file['selected'] = 0;
             if (in_array($file['id'], $selectedFilesIds)) {
                 $file['selected'] = 1;
             }
