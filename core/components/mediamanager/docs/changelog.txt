@@ -1,5 +1,11 @@
 Changelog for MediaManager.
 
+MediaManager 0.2.6
+====================================
+- Check file existing on archive and unarchive (#27)
+- Delete versions and thumbnails for deleted files (#33)
+- Fix setting value if TV not found (#34)
+
 MediaManager 0.2.5
 ====================================
 - Fix after adding images to pages, no link reference getting shown in backend GUI (#24)
