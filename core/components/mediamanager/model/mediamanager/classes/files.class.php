@@ -1406,9 +1406,11 @@ class MediaManagerFilesHelper
 
         // If file type is image set dimensions
         if ($this->isImage($file['extension'])) {
-            $image = getimagesize($file['upload_dir'] . $file['unique_name']);
-            if ($image) {
-                $version->set('file_dimensions', $image[0] . 'x' . $image[1]);
+            if (file_exists($file['upload_dir'] . $file['unique_name'])) {
+                $image = getimagesize($file['upload_dir'] . $file['unique_name']);
+                if ($image) {
+                    $version->set('file_dimensions', $image[0] . 'x' . $image[1]);
+                }
             }
         }
 
@@ -1711,12 +1713,14 @@ class MediaManagerFilesHelper
         foreach ($linkedContent as $fileContent) {
             if ($fileContent->get('is_tmplvar')) {
                 // Replace template variable
-                $templateVariable = $this->mediaManager->modx->getObject('modTemplateVarResource',
-                    array(
-                        'tmplvarid' => $fileContent->get('site_tmplvars_id'),
-                        'contentid' => $fileContent->get('site_content_id')
-                    )
-                );
+                $tvData = [
+                    'tmplvarid' => $fileContent->get('site_tmplvars_id'),
+                    'contentid' => $fileContent->get('site_content_id')
+                ];
+                if (!$templateVariable = $this->mediaManager->modx->getObject('modTemplateVarResource', $tvData)) {
+                    $templateVariable = $this->mediaManager->modx->newObject('modTemplateVarResource');
+                    $templateVariable->fromArray($tvData);
+                }
                 $templateVariable->set('value', $newFile->get('path'));
                 $templateVariable->save();
             } else {
