@@ -200,55 +200,14 @@ class MediaManagerFilesHelper
         ];
 
         $data                     = $this->getFile($fileId);
-        $file                     = $data['file']->toArray();
-        $source                   = $this->mediaManager->sources->getSource($file['media_sources_id']);
-
-        $file['file_size']        = $this->formatFileSize($file['file_size']);
+        $file                     = $this->fileToArray($data['file']);
         $file['uploaded_by_name'] = ($data['user'] !== null ? $data['user']->get('fullname') : $this->mediaManager->modx->lexicon('mediamanager.files.file_unknown_user'));
-        $file['is_archived']      = (int) $file['is_archived'];
-        $file['file_path']        = $file['path'];
-        $file['path']             = $this->fileUrl($file, $source);
         $bodyData['file']         = $file;
         $footerData['file']       = $file;
 
         // Set file type
         if ($this->isImage($file['file_type'])) {
-            $fileBasePath = $source['basePath'];
-            if ($source['basePathRelative'] !== false) {
-                $fileBasePath = $this->addTrailingSlash(MODX_BASE_PATH) .
-                    $this->removeSlashes($source['basePath']) .
-                    DIRECTORY_SEPARATOR;
-            }
-
-            $thumbName = 'thumbs' . DIRECTORY_SEPARATOR . $file['file_hash'] . '.' . $file['file_type'];
-            $cacheFilenameAbsolute = str_replace(
-                $file['name'],
-                $thumbName,
-                $fileBasePath . $file['file_path']
-            );
-
-            $cacheFilename = str_replace(
-                $file['name'],
-                $thumbName,
-                $file['path']
-            );
-
-            if (file_exists($cacheFilenameAbsolute) && is_readable($cacheFilenameAbsolute)) {
-                $bodyData['preview'] = '<img src="' . str_replace(rtrim(MODX_BASE_PATH, '/'), '', $cacheFilename) . '" />';
-            } else {
-                $params = [
-                    'action' => 'mgr/thumbnail',
-                    'HTTP_MODAUTH' => $this->mediaManager->modx->user->getUserToken(
-                        $this->mediaManager->modx->context->get('key')
-                    ),
-                    'path' => $fileBasePath . $file['file_path'],
-                    'cache' => $cacheFilenameAbsolute,
-                ];
-
-                $bodyData['preview'] = '<img src="' . $this->mediaManager->config['connector_url'] . '?' .
-                    http_build_query($params) . '" />';
-            }
-
+            $bodyData['preview']  = sprintf('<img src="%s" />', $this->getThumbnail($file, 'url'));
             $bodyData['is_image'] = 1;
         } elseif ($file['file_type'] === 'pdf' && extension_loaded('Imagick') &&
             ($thumb = str_replace('.pdf', '_thumb.jpg', $file['path'])) &&
@@ -464,6 +423,55 @@ class MediaManagerFilesHelper
     }
 
     /**
+     * Get image thumbnail.
+     *
+     * @param array $file
+     * @param string $type Can be path or url
+     * @param string $hash - optional to find thumb for any version
+     *
+     * @return string
+     */
+    public function getThumbnail($file, $type = 'path', $hash = '')
+    {
+        if ($this->isImage($file['file_type'])) {
+            if (empty($hash)) {
+                $hash = $file['file_hash'];
+            }
+
+            $thumbName = 'thumbs' . DIRECTORY_SEPARATOR . $hash . '.' . $file['file_type'];
+
+            $thumbnail = [
+                'path' => str_replace(
+                    $file['name'],
+                    $thumbName,
+                    $file['base_path'] . $file['file_path']
+                ),
+                'url'  => str_replace(
+                    [$file['name'], rtrim(MODX_BASE_PATH, '/')],
+                    [$thumbName, ''],
+                    $file['path']
+                )
+            ];
+
+            if (!file_exists($thumbnail['path']) || !is_readable($thumbnail['path'])) {
+                $params = [
+                    'action' => 'mgr/thumbnail',
+                    'HTTP_MODAUTH' => $this->mediaManager->modx->user->getUserToken(
+                        $this->mediaManager->modx->context->get('key')
+                    ),
+                    'path' => $file['base_path'] . $file['file_path'],
+                    'cache' => $thumbnail['path'],
+                ];
+
+                $thumbnail['url'] = $this->mediaManager->config['connector_url'] . '?' .
+                    http_build_query($params);
+            }
+
+            return $thumbnail[$type];
+        }
+    }
+
+    /**
      * Get file path.
      *
      * @param array $file
@@ -507,6 +515,42 @@ class MediaManagerFilesHelper
         }
 
         return $filePath . $file[$type];
+    }
+
+    /**
+     * Return array from file row
+     *
+     * @param object $file
+     * @param null|object $source
+     *
+     * @return array
+     */
+    public function fileToArray(MediamanagerFiles $file = null, $source = null)
+    {
+        if ($file === null) {
+            return [];
+        }
+
+        $file = $file->toArray();
+
+        if ($source === null) {
+            $source = $this->mediaManager->sources->getSource($file['media_sources_id']);
+        }
+
+        $file['categories']  = [];
+        $file['file_size']   = $this->formatFileSize($file['file_size']);
+        $file['file_path']   = $file['path'];
+        $file['is_archived'] = (int) $file['is_archived'];
+        $file['path']        = $this->fileUrl($file, $source);
+        $file['base_path']   = $source['basePath'];
+
+        if ($source['basePathRelative'] !== false) {
+            $file['base_path'] = $this->addTrailingSlash(MODX_BASE_PATH) .
+                $this->removeSlashes($source['basePath']) .
+                DIRECTORY_SEPARATOR;
+        }
+
+        return $file;
     }
 
     /**
@@ -675,60 +719,16 @@ class MediaManagerFilesHelper
         $source = null;
 
         foreach ($files as $file) {
-            $file = $file->toArray();
+            $file = $this->fileToArray($file);
 
-            if ($source === null) {
-                $source = $this->mediaManager->sources->getSource($file['media_sources_id']);
-            }
-
-            $file['categories'] = [];
-            $file['selected']   = 0;
-            $file['file_size']  = $this->formatFileSize($file['file_size']);
-            $file['file_path']  = $file['path'];
-            $file['path']       = $this->fileUrl($file, $source);
-
-            $fileBasePath = $source['basePath'];
-            if ($source['basePathRelative'] !== false) {
-                $fileBasePath = $this->addTrailingSlash(MODX_BASE_PATH) .
-                    $this->removeSlashes($source['basePath']) .
-                    DIRECTORY_SEPARATOR;
-            }
-
+            $file['selected'] = 0;
             if (in_array($file['id'], $selectedFilesIds)) {
                 $file['selected'] = 1;
             }
 
             if ($viewMode === 'grid') {
                 if ($this->isImage($file['file_type'])) {
-                    $thumbName = 'thumbs' . DIRECTORY_SEPARATOR . $file['file_hash'] . '.' . $file['file_type'];
-                    $cacheFilenameAbsolute = str_replace(
-                        $file['name'],
-                        $thumbName,
-                        $fileBasePath . $file['file_path']
-                    );
-
-                    $cacheFilename = str_replace(
-                        $file['name'],
-                        $thumbName,
-                        $file['path']
-                    );
-
-                    if (file_exists($cacheFilenameAbsolute) && is_readable($cacheFilenameAbsolute)) {
-                        $file['preview_path'] = str_replace(rtrim(MODX_BASE_PATH, '/'), '', $cacheFilename);
-                    } else {
-                        $params = [
-                            'action' => 'mgr/thumbnail',
-                            'HTTP_MODAUTH' => $this->mediaManager->modx->user->getUserToken(
-                                $this->mediaManager->modx->context->get('key')
-                            ),
-                            'path' => $fileBasePath . $file['file_path'],
-                            'cache' => $cacheFilenameAbsolute,
-                        ];
-
-                        $file['preview_path'] = $this->mediaManager->config['connector_url'] . '?' .
-                            http_build_query($params);
-                    }
-
+                    $file['preview_path'] = $this->getThumbnail($file, 'url');
                     $file['preview'] = $this->mediaManager->getChunk('files/file_preview_img', $file);
                 } elseif ($imagickLoaded && $file['file_type'] === 'pdf' &&
                     ($thumb = str_replace('.pdf', '_thumb.jpg', $file['path'])) &&
@@ -1540,26 +1540,64 @@ class MediaManagerFilesHelper
         }
 
         foreach ($files as $file) {
-            $path = $file->get('path');
-            if ($file->get('is_archived')) {
-                $path = $file->get('archive_path');
+            $fileRow = $file;
+            $file    = $this->fileToArray($fileRow);
+            $path    = $file['path'];
+            if ($file['is_archived']) {
+                $path = $file['archive_path'];
+            }
+
+            $this->createUploadDirectory($file['media_sources_id']);
+
+            // Delete all versions from server
+            $versions = $this->mediaManager->modx->getIterator('MediamanagerFilesVersions', ['mediamanager_files_id' => $file['id']]);
+            foreach ($versions as $version) {
+                // Delete thumbnails for each version
+                $thumbPath = $this->getThumbnail($file, 'path', $version->get('file_hash'));
+                if (file_exists($thumbPath)) {
+                    unlink($thumbPath);
+                }
+
+                if (file_exists($this->uploadDirectory . $version->path)) {
+                    unlink($this->uploadDirectory . $version->path);
+                }
+                $version->remove();
+            }
+
+            // Delete versions directory
+            $dir = $this->versionDirectory . $file['id'];
+            if (file_exists($this->uploadDirectory . $dir)) {
+                try {
+                    rmdir($this->uploadDirectory . $dir);
+                } catch (Exception $exception) {
+                    $response['message'] .= $this->mediaManager->modx->lexicon('mediamanager.files.error.delete_dir', ['dir' => $dir]) . '<br />';
+                    $response['message'] .= $exception->getMessage() . '<hr />';
+                }
+            }
+
+            // Delete thumbnail from server
+            $thumbPath = $this->getThumbnail($file, 'path');
+            if (file_exists($thumbPath)) {
+                unlink($thumbPath);
             }
 
             // Delete file from server
-            unlink($this->uploadDirectory . $path);
+            if (file_exists($this->uploadDirectory . $path)) {
+                unlink($this->uploadDirectory . $path);
+            }
 
             // Delete file
-            $file->remove();
+            $fileRow->remove();
 
             // Delete file categories
-            $this->mediaManager->modx->removeCollection('MediamanagerFilesCategories', ['mediamanager_files_id' => $file->get('id')]);
+            $this->mediaManager->modx->removeCollection('MediamanagerFilesCategories', ['mediamanager_files_id' => $file['id']]);
 
             // Delete file tags
-            $this->mediaManager->modx->removeCollection('MediamanagerFilesTags', ['mediamanager_files_id' => $file->get('id')]);
+            $this->mediaManager->modx->removeCollection('MediamanagerFilesTags', ['mediamanager_files_id' => $file['id']]);
 
             // Delete file relations
-            $this->mediaManager->modx->removeCollection('MediamanagerFilesRelations', ['mediamanager_files_id' => $file->get('id')]);
-            $this->mediaManager->modx->removeCollection('MediamanagerFilesRelations', ['mediamanager_files_id_relation' => $file->get('id')]);
+            $this->mediaManager->modx->removeCollection('MediamanagerFilesRelations', ['mediamanager_files_id' => $file['id']]);
+            $this->mediaManager->modx->removeCollection('MediamanagerFilesRelations', ['mediamanager_files_id_relation' => $file['id']]);
         }
 
         return $response;
@@ -1662,7 +1700,7 @@ class MediaManagerFilesHelper
             $old = $this->filePath($file->toArray());
             $new = $this->createUniqueFile($this->uploadDirectory . $this->archiveDirectory, time(), $file->get('file_type'), uniqid('-'));
 
-            if (!$this->renameFile($old, $this->uploadDirectory . $this->archiveDirectory . $new)) {
+            if (file_exists($old) && !$this->renameFile($old, $this->uploadDirectory . $this->archiveDirectory . $new)) {
                 $response['status'] = self::STATUS_ERROR;
                 $response['message'] .= $this->mediaManager->modx->lexicon('mediamanager.files.error.file_archive', array('id' => $id)) . '<br />';
                 continue;
@@ -1817,9 +1855,15 @@ class MediaManagerFilesHelper
             $old = $this->uploadDirectory . $file->get('archive_path');
             $new = $this->uploadDirectory . $file->get('path');
 
+            if (!file_exists($old)) {
+                $response['status'] = self::STATUS_ERROR;
+                $response['message'] .= $this->mediaManager->modx->lexicon('mediamanager.files.error.file_unarchive', array('id' => $id)) . '<br />';
+                continue;
+            }
+
             if (!$this->renameFile($old, $new)) {
                 $response['status'] = self::STATUS_ERROR;
-                $response['message'] .= $this->mediaManager->modx->lexicon('mediamanager.files.error.file_archive', array('id' => $id)) . '<br />';
+                $response['message'] .= $this->mediaManager->modx->lexicon('mediamanager.files.error.file_unarchive', array('id' => $id)) . '<br />';
                 continue;
             }
 
