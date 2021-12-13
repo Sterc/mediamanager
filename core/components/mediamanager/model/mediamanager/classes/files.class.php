@@ -201,6 +201,7 @@ class MediaManagerFilesHelper
 
         $data                     = $this->getFile($fileId);
         $file                     = $this->fileToArray($data['file']);
+        $file['path']             = $this->addTrailingSlash($this->mediaManager->modx->getOption('site_url')) . $this->removeSlashes($file['path']);
         $file['uploaded_by_name'] = ($data['user'] !== null ? $data['user']->get('fullname') : $this->mediaManager->modx->lexicon('mediamanager.files.file_unknown_user'));
         $bodyData['file']         = $file;
         $footerData['file']       = $file;
@@ -449,7 +450,7 @@ class MediaManagerFilesHelper
                 'url'  => str_replace(
                     [$file['name'], rtrim(MODX_BASE_PATH, '/')],
                     [$thumbName, ''],
-                    $file['path']
+                    $file['base_path'] . $file['file_path']
                 )
             ];
 
@@ -511,7 +512,7 @@ class MediaManagerFilesHelper
 
         $filePath = $source['baseUrl'];
         if ($source['baseUrlRelative'] !== false) {
-            $filePath = $this->addTrailingSlash($this->mediaManager->modx->getOption('site_url')) . $this->removeSlashes($source['baseUrl']) . DIRECTORY_SEPARATOR;
+            $filePath = DIRECTORY_SEPARATOR . $this->removeSlashes($source['baseUrl']) . DIRECTORY_SEPARATOR;
         }
 
         return $filePath . $file[$type];
@@ -1762,11 +1763,40 @@ class MediaManagerFilesHelper
                 $templateVariable->set('value', $newFile->get('id'));
                 $templateVariable->save();
             } else {
-                // Replace resource content
-                $resource = $this->mediaManager->modx->getObject('modResource', array('id' => $fileContent->get('site_content_id')));
-                $content  = str_replace($newFile->get('path'), $fileContent->get('path'), $resource->get('content'));
-                $resource->set('content', $content);
-                $resource->save();
+                if ($oldFile  = $this->mediaManager->modx->getObject('MediamanagerFiles', $fileId)) {
+                    $oldUrl   = $this->fileUrl($oldFile->toArray());
+                    $newUrl   = $this->fileUrl($newFile->toArray());
+
+                    // Replace resource CB properties
+                    $resource      = $this->mediaManager->modx->getObject('modResource', $fileContent->get('site_content_id'));
+                    $properties    = $resource->getProperties('contentblocks');
+                    $corePath      = $this->mediaManager->modx->getOption('contentblocks.core_path', null, MODX_CORE_PATH . 'components/contentblocks/');
+                    $contentBlocks = $this->mediaManager->modx->getService('contentblocks', 'ContentBlocks', $corePath . 'model/contentblocks/');
+                    $content       = json_decode($properties['content'], true);
+
+                    foreach ($content as &$layout) {
+                        foreach ($layout['content'] as &$value) {
+                            foreach ($value as &$field) {
+                                if (!empty($field['file_id']) && $field['file_id'] == $oldFile->get('id') &&
+                                    !empty($field['url']) && $field['url'] == $oldUrl) {
+                                    $field['file_id'] = $newFile->get('id');
+                                    $field['url']     = $newUrl;
+                                }
+                            }
+                        }
+                    }
+
+                    $summary       = $contentBlocks->summarizeContent($content);
+                    $parsedContent = $contentBlocks->generateHtml($content);
+
+                    $resource->setProperties(array(
+                        'content'     => json_encode($content),
+                        'linear'      => $summary['linear'],
+                        'fieldcounts' => $summary['fieldcounts']
+                    ), 'contentblocks', true);
+                    $resource->setContent($parsedContent);
+                    $resource->save();
+                }
             }
         }
 
