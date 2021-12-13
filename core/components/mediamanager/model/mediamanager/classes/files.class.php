@@ -1759,7 +1759,7 @@ class MediaManagerFilesHelper
                     $templateVariable = $this->mediaManager->modx->newObject('modTemplateVarResource');
                     $templateVariable->fromArray($tvData);
                 }
-                $templateVariable->set('value', $newFile->get('path'));
+                $templateVariable->set('value', $newFile->get('id'));
                 $templateVariable->save();
             } else {
                 // Replace resource content
