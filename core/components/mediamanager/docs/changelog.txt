@@ -1,5 +1,9 @@
 Changelog for MediaManager.
 
+MediaManager 0.2.7
+====================================
+- Fix Archive & Replace feature for TV and ContentBlocks field
+
 MediaManager 0.2.6
 ====================================
 - Check file existing on archive and unarchive (#27)
