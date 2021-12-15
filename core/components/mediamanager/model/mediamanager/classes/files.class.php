@@ -251,10 +251,15 @@ class MediaManagerFilesHelper
         $bodyData['content'] = [];
 
         if (isset($data['content'])) {
+            $shown = [];
             foreach ($data['content'] as $content) {
-                $resource = $this->mediaManager->modx->getObject('modResource', $content->get('site_content_id'));
-                if ($resource) {
-                    $bodyData['content'][] = '<a href="?a=resource/update&id=' . $content->get('site_content_id') . '">' . $resource->get('pagetitle') . '</a>';
+                $resId = $content->get('site_content_id');
+                if (!in_array($resId, $shown)) {
+                    $resource = $this->mediaManager->modx->getObject('modResource', $resId);
+                    if ($resource) {
+                        $bodyData['content'][] = sprintf('<a href="?a=resource/update&id=%s">%s (%s)</a>', $resId, $resource->get('pagetitle'), $resId);
+                        $shown[] = $resId;
+                    }
                 }
             }
         }
@@ -1770,6 +1775,7 @@ class MediaManagerFilesHelper
                     // Replace resource CB properties
                     $resource      = $this->mediaManager->modx->getObject('modResource', $fileContent->get('site_content_id'));
                     $properties    = $resource->getProperties('contentblocks');
+                    $parser        = $this->mediaManager->modx->getService('modParser');
                     $corePath      = $this->mediaManager->modx->getOption('contentblocks.core_path', null, MODX_CORE_PATH . 'components/contentblocks/');
                     $contentBlocks = $this->mediaManager->modx->getService('contentblocks', 'ContentBlocks', $corePath . 'model/contentblocks/');
                     $content       = json_decode($properties['content'], true);

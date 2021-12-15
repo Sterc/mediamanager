@@ -1,5 +1,11 @@
 Changelog for MediaManager.
 
+MediaManager 0.2.8
+====================================
+- Fix load modPhpThumb for previews (#15)
+- Fix replacing images used in ContentBlocks fields (#31)
+- Add linked resource ID in preview popup (#24)
+
 MediaManager 0.2.7
 ====================================
 - Fix Archive & Replace feature for TV and ContentBlocks field
