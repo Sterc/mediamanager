@@ -24,11 +24,11 @@ class MediaManagerThumbnailProcessor extends modProcessor
             return '';
         }
 
-        $phpThumbPath = MODX_CORE_PATH . 'model/phpthumb/modphpthumb.class.php';
+        $phpThumbPath = $this->modx->getOption('core_path', null, MODX_CORE_PATH) . 'model/phpthumb/modphpthumb.class.php';
         if (file_exists($phpThumbPath)) {
             require_once $phpThumbPath;
         }
-        if (!$this->modx->getService('phpthumb', 'modPhpThumb', $this->modx->getOption('core_path', null, MODX_CORE_PATH) . 'model/phpthumb/')) {
+        if (!$this->modx->getService('phpthumb', 'modPhpThumb')) {
             $this->modx->log(modX::LOG_LEVEL_ERROR,'Could not load modPhpThumb class.');
             return false;
         }
