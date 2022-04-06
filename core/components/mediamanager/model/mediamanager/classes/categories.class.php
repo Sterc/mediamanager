@@ -269,7 +269,7 @@ class MediaManagerCategoriesHelper
             'media_sources_id' => $source
         ]);
         $q->sortby('parent_id', 'ASC');
-        $q->sortby('rank', 'ASC');
+        $q->sortby($this->mediaManager->modx->escape('rank'), 'ASC');
 
         return $this->mediaManager->modx->getCollection('MediamanagerCategories', $q);
     }
