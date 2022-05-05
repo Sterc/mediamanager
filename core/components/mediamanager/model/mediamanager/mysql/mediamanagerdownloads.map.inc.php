@@ -61,4 +61,23 @@ $xpdo_meta_map['MediamanagerDownloads']= array (
       'index' => 'index',
     ),
   ),
+  'indexes' => 
+  array (
+    'is_deleted' => 
+    array (
+      'alias' => 'is_deleted',
+      'primary' => false,
+      'unique' => false,
+      'type' => 'BTREE',
+      'columns' => 
+      array (
+        'is_deleted' => 
+        array (
+          'length' => '',
+          'collation' => 'A',
+          'null' => false,
+        ),
+      ),
+    ),
+  ),
 );

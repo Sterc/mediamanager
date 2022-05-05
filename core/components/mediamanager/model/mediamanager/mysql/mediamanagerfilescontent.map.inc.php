@@ -28,6 +28,7 @@ $xpdo_meta_map['MediamanagerFilesContent']= array (
       'phptype' => 'integer',
       'null' => false,
       'default' => 0,
+      'index' => 'index',
     ),
     'site_content_id' => 
     array (
@@ -56,6 +57,73 @@ $xpdo_meta_map['MediamanagerFilesContent']= array (
       'null' => false,
       'default' => 0,
       'index' => 'index',
+    ),
+  ),
+  'indexes' => 
+  array (
+    'mediamanager_files_id' => 
+    array (
+      'alias' => 'mediamanager_files_id',
+      'primary' => false,
+      'unique' => false,
+      'type' => 'BTREE',
+      'columns' => 
+      array (
+        'mediamanager_files_id' => 
+        array (
+          'length' => '',
+          'collation' => 'A',
+          'null' => false,
+        ),
+      ),
+    ),
+    'site_content_id' => 
+    array (
+      'alias' => 'site_content_id',
+      'primary' => false,
+      'unique' => false,
+      'type' => 'BTREE',
+      'columns' => 
+      array (
+        'site_content_id' => 
+        array (
+          'length' => '',
+          'collation' => 'A',
+          'null' => false,
+        ),
+      ),
+    ),
+    'site_tmplvars_id' => 
+    array (
+      'alias' => 'site_tmplvars_id',
+      'primary' => false,
+      'unique' => false,
+      'type' => 'BTREE',
+      'columns' => 
+      array (
+        'site_tmplvars_id' => 
+        array (
+          'length' => '',
+          'collation' => 'A',
+          'null' => false,
+        ),
+      ),
+    ),
+    'is_tmplvar' => 
+    array (
+      'alias' => 'is_tmplvar',
+      'primary' => false,
+      'unique' => false,
+      'type' => 'BTREE',
+      'columns' => 
+      array (
+        'is_tmplvar' => 
+        array (
+          'length' => '',
+          'collation' => 'A',
+          'null' => false,
+        ),
+      ),
     ),
   ),
   'aggregates' => 

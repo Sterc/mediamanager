@@ -39,6 +39,41 @@ $xpdo_meta_map['MediamanagerFilesRelations']= array (
       'index' => 'index',
     ),
   ),
+  'indexes' => 
+  array (
+    'mediamanager_files_id' => 
+    array (
+      'alias' => 'mediamanager_files_id',
+      'primary' => false,
+      'unique' => false,
+      'type' => 'BTREE',
+      'columns' => 
+      array (
+        'mediamanager_files_id' => 
+        array (
+          'length' => '',
+          'collation' => 'A',
+          'null' => false,
+        ),
+      ),
+    ),
+    'mediamanager_files_id_relation' => 
+    array (
+      'alias' => 'mediamanager_files_id_relation',
+      'primary' => false,
+      'unique' => false,
+      'type' => 'BTREE',
+      'columns' => 
+      array (
+        'mediamanager_files_id_relation' => 
+        array (
+          'length' => '',
+          'collation' => 'A',
+          'null' => false,
+        ),
+      ),
+    ),
+  ),
   'aggregates' => 
   array (
     'Files' => 

@@ -57,6 +57,25 @@ $xpdo_meta_map['MediamanagerCategories']= array (
       'default' => 0,
     ),
   ),
+  'indexes' => 
+  array (
+    'parent_id' => 
+    array (
+      'alias' => 'parent_id',
+      'primary' => false,
+      'unique' => false,
+      'type' => 'BTREE',
+      'columns' => 
+      array (
+        'parent_id' => 
+        array (
+          'length' => '',
+          'collation' => 'A',
+          'null' => false,
+        ),
+      ),
+    ),
+  ),
   'composites' => 
   array (
     'Files' => 
