@@ -1,4 +1,7 @@
 # Media Manager for MODX [BETA]
+![Media Manager version](https://img.shields.io/badge/version-0.2.9-brightgreen.svg)
+![MODX Extra by Sterc](https://img.shields.io/badge/extra%20by-sterc-ff69b4.svg)
+
 The Media Manager is a MODX Extra replacing the default Media Browser with an enterprise-grade media management solution, an initiative by [SEDA](https://seda.digital/) and [Sterc](https://www.sterc.com).
 
 ## Features
@@ -14,6 +17,7 @@ The Media Manager is a MODX Extra replacing the default Media Browser with an en
 - Meta data for images out of the box: id, version, filename, version, author, dimensions (original + cropped image size), category, tags)
 - Unlimited additional meta data (like TV's for images!)
 - MODX ACL for removing/archiving images
+- Attaching licenses to images including expiration dates
 
 ## Migrating from the default media browser
 A migration tool is not yet available. You will not loose your old images, but they also will not show up in the new media browser.
@@ -30,6 +34,33 @@ If you like to implement the mediamanager for Redactor 3.0, please take the foll
 * Add the following path to the system setting **redactor.js**: `/assets/components/mediamanager/js/inputs/redactor_mediamanager.js`
 * Go to the configuration set of redactor and add `mediamanager` under Miscellaneous --> Additional plugins
 * Add `mediamanager` in the Toolbar Buttons list in the Toolbar tab
+
+## Media Source settings
+
+The following settings can be defined on media source level.
+
+| Key                                | Description                                                                                                    | Example value                                                                                                                                                 |
+|------------------------------------|----------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| mediamanagerSource                 | Determine if media source should use MediaManager.                                                             | 1                                                                                                                                                             |
+| mediamanagerMeta                   | Set default meta fields and determine if fields should be marked as required or not.                           | [{"key":"author", "label":"Author", "required": true}, {"key":"photographer", "label":"Photographer", "required": true}, {"key": "editor", "label":"Editor"}] |
+| mediamanagerLicenseEnabled         | Determine if license fields should be used.                                                                    | 1                                                                                                                                                             |
+| mediamanagerLicenseSources         | Set available license sources with optionaly expiry date.                                                      | [{"key": "local", "label": "Local"},{"key": "getty_images", "label": "Getty Images", "expireson":  "24-03-2023"}]                                             |
+| mediamanagerLicenseTestFrequencies | Frequencies (in days) to send out a notification email before image sources and/or images are about to expire. | ["14 days", "5 days", "1 days"]                                                                                                                               |
+| mediamanagerLicenseTestRecipients  | Recipient emails that should receive image source/image license expiry notifications.                          | john@example.com,johndoe@example.com                                                                                                                          |
+
+
+## Cron jobs
+Run Cron jobs by calling the cron script and by specifying the jobs you'd like to run (comma delimited).
+
+```
+php /assets/components/mediamanager/cronjob/cron.php --jobs=TestImageSourceValidity,TestImageValidity
+```
+
+| Job                     | Description                                                                   |
+|-------------------------|-------------------------------------------------------------------------------|
+| TestImageValidity       | Job which checks image expiry and sends notification emails if needed.        |
+| TestImageSourceValidity | Job which checks image source expiry and sends notification emails if needed. |
+
 
 ## BETA BETA
 Please note that this manager is BETA. Please create your issues in Github or create Pull Requests. Any questions? Email us at modx@sterc.nl
