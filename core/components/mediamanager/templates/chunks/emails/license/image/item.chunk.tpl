@@ -7,7 +7,7 @@
             [[+expires_in]]
         </td>
     `]]
-    <td style="padding: 5px; width: 150px;">
+    <td style="padding: 5px; width: 150px; font-size: 12px; line-height: 15px;">
         [[+message]]
     </td>
 </tr>
