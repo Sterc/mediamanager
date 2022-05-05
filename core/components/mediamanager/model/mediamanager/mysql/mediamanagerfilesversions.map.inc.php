@@ -1,9 +1,16 @@
 <?php
+/**
+ * @package mediamanager
+ */
 $xpdo_meta_map['MediamanagerFilesVersions']= array (
   'package' => 'mediamanager',
   'version' => NULL,
   'table' => 'mediamanager_files_versions',
   'extends' => 'xPDOSimpleObject',
+  'tableMeta' => 
+  array (
+    'engine' => 'InnoDB',
+  ),
   'fields' => 
   array (
     'mediamanager_files_id' => 0,

@@ -9,10 +9,10 @@
                 <p><span data-dz-size></span></p>
             </div>
             <div class="col-sm-4">
-                <div class="form-control-wrapper">
+                <div class="form-group">
                     <select name="c[]" class="form-control" multiple="multiple" data-placeholder="[[%mediamanager.global.categories]]" data-file-categories></select>
                 </div>
-                <div class="form-control-wrapper">
+                <div class="form-group">
                     <select name="t[]" class="form-control" multiple="multiple" data-placeholder="[[%mediamanager.global.tags]]" data-file-tags></select>
                 </div>
 
@@ -21,6 +21,8 @@
                 <p>
                     <button type="button" class="btn btn-primary" data-copy-values>[[%mediamanager.files.copy_values]]</button>
                 </p>
+
+                [[+licensingFields]]
             </div>
             <div class="col-sm-2">
                 <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">

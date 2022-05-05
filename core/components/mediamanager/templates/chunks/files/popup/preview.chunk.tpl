@@ -88,6 +88,54 @@
             </table>
         `:isempty=``]]
 
+        [[+licensing.id:notempty=`
+            <h3>[[%mediamanager.files.licensing.title]]</h3>
+
+            <table class="table table-striped">
+                <tbody>
+                    <tr>
+                        <td width="150px">Image createdon</td>
+                        <td>
+                            [[+licensing.image_createdon]]
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="150px">Image source</td>
+                        <td>
+                            [[+licensing.image_source]]
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="150px">Image valid startdate</td>
+                        <td>
+                            [[+licensing.image_valid_startdate]]
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="150px">Image valid enddate</td>
+                        <td>
+                            [[+licensing.image_valid_enddate]]
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="150px">Consent of the persons depicted has been obtained?</td>
+                        <td>
+                            [[+licensing.license_depicted_consent:eq=`1`:then=`
+                                [[%mediamanager.global.yes]]
+                            `:else=`
+                                [[%mediamanager.global.no]]
+                            `]]
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="150px">License</td>
+                        <td>
+                            <a href="[[+licensing.license_path]]" class="previewpopup-link" target="_blank">[[+licensing.license_path]]</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        `:isempty=``]]
     </div>
 
     <div class="col-md-12">

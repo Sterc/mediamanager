@@ -14,7 +14,7 @@
 
     <div class="row">
         <div class="col-xs-12">
-            <form action="{$connector_url}" class="dropzone-form clickable" id="mediaManagerDropzone" data-dropzone-form>
+            <form action="{$connector_url}" class="dropzone-form clickable" id="mediaManagerDropzone" enctype="multipart/form-data" data-dropzone-form>
                 <input type="hidden" name="HTTP_MODAUTH" value="{$token}">
 
                 <div data-dropzone-trigger>

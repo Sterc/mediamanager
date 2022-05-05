@@ -1,9 +1,16 @@
 <?php
+/**
+ * @package mediamanager
+ */
 $xpdo_meta_map['MediamanagerTags']= array (
   'package' => 'mediamanager',
   'version' => NULL,
   'table' => 'mediamanager_tags',
   'extends' => 'xPDOSimpleObject',
+  'tableMeta' => 
+  array (
+    'engine' => 'InnoDB',
+  ),
   'fields' => 
   array (
     'media_sources_id' => 0,

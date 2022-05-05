@@ -37,6 +37,7 @@
         <field key="archive_path" dbtype="varchar" precision="255" phptype="string" null="true" default="NULL" />
 
         <aggregate alias="MediaSource" class="modMediaSource" local="media_sources_id" foreign="id" cardinality="one" owner="foreign" />
+        <composite alias="FileLicense" class="MediamanagerFilesLicenseFile" local="id" foreign="mediamanager_files_id" cardinality="one" owner="local" />
         <composite alias="Categories" class="MediamanagerFilesCategories" local="id" foreign="mediamanager_files_id" cardinality="many" owner="local" />
         <composite alias="Tags" class="MediamanagerFilesTags" local="id" foreign="mediamanager_files_id" cardinality="many" owner="local" />
         <composite alias="Content" class="MediamanagerFilesContent" local="id" foreign="mediamanager_files_id" cardinality="many" owner="local" />
@@ -110,5 +111,25 @@
         <field key="meta_value" dbtype="longtext" phptype="string" null="false" default="" />
 
         <aggregate alias="Files" class="MediamanagerFiles" local="mediamanager_files_id" foreign="id" cardinality="one" owner="foreign" />
+    </object>
+
+    <object class="MediamanagerFilesLicense" table="mediamanager_files_license" extends="xPDOSimpleObject">
+        <field key="image_createdon" dbtype="timestamp" phptype="timestamp" null="false" default="NULL"/>
+        <field key="image_source" dbtype="varchar" precision="255" phptype="string" null="false" default="" />
+        <field key="image_valid_startdate" dbtype="timestamp" phptype="timestamp" null="false" default="NULL"/>
+        <field key="image_valid_enddate" dbtype="timestamp" phptype="timestamp" null="false" default="NULL"/>
+        <field key="license_exists" dbtype="tinyint" precision="1" attributes="unsigned" phptype="boolean" null="false" default="0"/>
+        <field key="license_depicted_consent" dbtype="tinyint" precision="1" attributes="unsigned" phptype="boolean" null="false" default="0"/>
+        <field key="license_path" dbtype="varchar" precision="255" phptype="string" null="false" default="" />
+
+        <aggregate alias="LicenseFiles" class="MediamanagerFilesLicenseFile" local="id" foreign="license_id" cardinality="many" owner="foreign" />
+    </object>
+
+    <object class="MediamanagerFilesLicenseFile" table="mediamanager_files_license_file" extends="xPDOSimpleObject">
+        <field key="mediamanager_files_id" dbtype="int" precision="10" attributes="unsigned" phptype="integer" null="false" default="0" index="index"/>
+        <field key="license_id" dbtype="int" precision="10" attributes="unsigned" phptype="integer" null="false" default="0" index="index"/>
+
+        <aggregate alias="File" class="MediamanagerFiles" local="mediamanager_files_id" foreign="id" cardinality="one" owner="foreign" />
+        <aggregate alias="License" class="MediamanagerFilesLicense" local="license_id" foreign="id" cardinality="one" owner="foreign" />
     </object>
 </model>

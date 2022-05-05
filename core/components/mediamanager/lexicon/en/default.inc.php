@@ -30,6 +30,8 @@ $_lang['mediamanager.global.copy'] = 'Copy';
 $_lang['mediamanager.global.preview'] = 'Preview';
 $_lang['mediamanager.global.save'] = 'Save';
 $_lang['mediamanager.global.use'] = 'Use';
+$_lang['mediamanager.global.yes'] = 'Yes';
+$_lang['mediamanager.global.no'] = 'No';
 
 $_lang['mediamanager.global.error.mediasource'] = 'Your default mediasource (ID [[+mediasource_id]]) is not configured to use with the Media Manager. Please add a property \'mediamanagerSource\' with value \'1\' to this mediasource and all other mediasources you want to use with the Media Manager.';
 
@@ -81,6 +83,8 @@ $_lang['mediamanager.categories.minimum_categories_message'] = 'A file needs at 
 /* Files */
 $_lang['mediamanager.files.meta.title'] = 'File information';
 $_lang['mediamanager.files.custom_meta.title'] = 'Custom file information';
+$_lang['mediamanager.files.licensing.title'] = 'Image licensing';
+$_lang['mediamanager.files.image_validity.title'] = 'Image validity';
 $_lang['mediamanager.files.history'] = 'File history';
 $_lang['mediamanager.files.upload_media'] = 'Upload Media';
 $_lang['mediamanager.files.upload_selected_files'] = 'Upload Selected Files';
@@ -176,6 +180,18 @@ $_lang['mediamanager.files.save_image'] = 'Save image';
 $_lang['mediamanager.files.copy_categories_and_tags'] = 'Use categories and tags above for all files';
 $_lang['mediamanager.files.copy_values'] = 'Use the values above for all files';
 $_lang['mediamanager.files.source_tags'] = 'Source tags';
+$_lang['mediamanager.files.image_creation_date']                = 'Image creation date';
+$_lang['mediamanager.files.image_source']                       = 'Source';
+$_lang['mediamanager.files.image_source_select']                = 'Select a source';
+$_lang['mediamanager.files.image_source_help']                  = 'Select the image provider where the image was purchased from.';
+$_lang['mediamanager.files.image_valid_startdate']              = 'Start date';
+$_lang['mediamanager.files.image_valid_enddate']                = 'End date';
+$_lang['mediamanager.files.license_exists']                     = 'Licences exists?';
+$_lang['mediamanager.files.license_depicted_consent']           = 'Consent of the persons depicted has been obtained?';
+$_lang['mediamanager.files.source_valid_until']                 = 'Valid until [[+date]]';
+$_lang['mediamanager.files.license_file']                       = 'License or Consent file upload';
+$_lang['mediamanager.files.license_file_help']                  = 'Allowed file extensions are [[+extensions]].';
+$_lang['mediamanager.error.extension_not_allowed_for_field']    = 'File extension is not allowed for field "[[+field]]". Allowed file extensions are [[+extensions]].';
 
 /* Sources */
 $_lang['mediamanager.sources.root'] = 'None';
@@ -188,8 +204,36 @@ $_lang['mm_input_image'] = 'Media Manager Image';
 $_lang['mm_output_image'] = 'Media Manager Image';
 $_lang['mm_input_file'] = 'Media Manager File';
 
+/* Generic error messages. */
+$_lang['mediamanager.error.required_field'] = '"[[+field]]" is a required field.';
+$_lang['mediamanager.error.date_comparison'] = '[[+date1]] can not be earlier then [[+date2]].';
+
 /* Settings. */
 $_lang['setting_mediamanager.max_file_size']             = 'Max file size';
 $_lang['setting_mediamanager.max_file_size_desc']        = 'Maximum file size in MB.';
 $_lang['setting_mediamanager.max_file_size_images']      = 'Max file size for images';
 $_lang['setting_mediamanager.max_file_size_images_desc'] = 'Maximum file size for images in MB.';
+
+/* License email. */
+$_lang['mediamanager.license.email.image_source_validity.subject']          = 'Image source validity notice - [[+name]]';
+$_lang['mediamanager.license.email.image_source_validity.title']            = 'Image source validity';
+$_lang['mediamanager.license.email.image_source_validity.msg']              = 'The MediaManager found image sources that have expired or are about to expire. Please review the information below.';
+$_lang['mediamanager.license.email.image_validity.subject']                 = 'Image validity notice - [[+name]]';
+$_lang['mediamanager.license.email.image_validity.title']                   = 'Image validity';
+$_lang['mediamanager.license.email.image_validity.msg']                     = 'The MediaManager found images that have expired or are about to expire. Please review the information below.';
+$_lang['mediamanager.license.email.expired_sources.title']                  = 'Expired sources';
+$_lang['mediamanager.license.email.expired_sources.msg']                    = 'The image sources listed below have already expired.';
+$_lang['mediamanager.license.email.expired_images.title']                   = 'Expired images';
+$_lang['mediamanager.license.email.expired_images.msg']                     = 'The images listed below have already expired.';
+$_lang['mediamanager.license.email.about_to_expire_sources.title']          = 'Sources about to expire';
+$_lang['mediamanager.license.email.about_to_expire_sources.msg']            = 'The image sources listed below are about to expire.';
+$_lang['mediamanager.license.email.about_to_expire_images.title']           = 'Images about to expire';
+$_lang['mediamanager.license.email.about_to_expire_images.msg']             = 'The images listed below are about to expire.';
+$_lang['mediamanager.license.email.resources']                              = 'Resources';
+$_lang['mediamanager.license.email.source']                                 = 'Source';
+$_lang['mediamanager.license.email.expires_in']                             = 'Expires in';
+$_lang['mediamanager.license.email.image']                                  = 'Image';
+$_lang['mediamanager.license.email.message']                                = 'Message';
+$_lang['mediamanager.license.email.image_source_expired']                   = 'Image source expired.';
+$_lang['mediamanager.license.email.image_about_to_expire_by_image_source']  = 'Image is about to expire based on the image source expiry date.';
+$_lang['mediamanager.license.email.footer']                                 = 'This is an automated message sent by the <strong>MediaManager</strong> from <strong>[[++site_name]]</strong>.';

@@ -197,7 +197,7 @@ class MediaManagerFilesProcessor extends modProcessor
         return $this->outputArray(
             $this->mediaManager->files->saveFile(
                 (int)   $this->getProperty('fileId'),
-                (array) $this->getProperty('data')
+                (array) json_decode($this->getProperty('data'), true)
             )
         );
     }
