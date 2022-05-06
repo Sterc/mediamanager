@@ -1,21 +1,22 @@
-(function($) {
+(function ($) {
     var manager_url = '/manager/';
     if (MODx.config) {
         manager_url = MODx.config.manager_url;
     }
+
     var defaults = {
         url           : manager_url + '?a=home&namespace=mediamanager&tv_frame=1',
         width         : $(window).width() * 0.94,
         height        : $(window).height() * 0.94,
         wrapperId     : 'modal-wrapper',
         selectElement : '.mediamanager-browser .view-mode-grid .file .file-options .btn-success',
-        onSelect      : function() {}
+        onSelect      : function () {}
     }
 
-    $.MediaManagerModal = function(options) {
+    $.MediaManagerModal = function (options) {
         var settings = $.extend({}, defaults, options);
 
-        this.open = function() {
+        this.open = function () {
             $('body').append('<div id="' + settings.wrapperId + '"><iframe class="mediamanager-iframe" id="mediamanager" src=""></iframe></div>');
 
             var $dialogElement = $('#' + settings.wrapperId),
@@ -30,10 +31,10 @@
                 height    : settings.height,
                 modal     : true,
                 resizable : false,
-                close : function(event, ui) {
+                close : function (event, ui) {
                     $dialogElement.remove();
                 },
-                open : function(event, ui) {
+                open : function (event, ui) {
                     $iFrameElement.attr('src', settings.url);
                 }
             });
@@ -47,7 +48,7 @@
 
                     var $file       = $(this).parents('.file'),
                         filePreview = $file.find('.file-preview img, .file-preview svg').data('path'),
-                        filePath    = $file.find('.file-preview').data('path'),
+                        filePath    = $file.find('.file-preview img, .file-preview svg').data('path'),
                         fileId      = $file.data('id'),
                         fileName    = $.trim($file.find('.file-name').text());
 
