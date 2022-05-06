@@ -182,12 +182,12 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                     this.on('addedfile', function (file) {
                         var $file               = $(file.previewElement);
                         var data                = files[file.name] || {};
-                        
+
                         var $fieldCategories    = $(self.$fileCategories, $file).select2(self.$filterCategoriesOptions);
                         var $fieldTags          = $(self.$fileTags, $file).select2(self.$filterTagsOptions);
                         var $fieldsMeta         = $(self.$fileMeta, $file);
                         var $fieldsLicense      = $(self.$fileLicense, $file);
-                        
+
                         if (data[$fieldCategories.attr('name')]) {
                             $fieldCategories.val(data[$fieldCategories.attr('name')]).trigger('change');
                         } else {
@@ -220,7 +220,7 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                             var $fieldLicense = $(fieldLicense, $file);
                             var cleanedName   = $fieldLicense.attr('name').replace(/[0-9)]/g, '');
                             cleanedName       = 'license[' + cleanedName.replace(/^l\[([a-z_]+)\]$/gi, '$1') + ']';
-                        
+
                             if (data[cleanedName]) {
                                 if ($fieldLicense.is(':radio')) {
                                     $('[name="' + $fieldLicense.attr('name') + '"]', $file).each(function (index, radioItem) {
@@ -299,7 +299,7 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                             var append = false;
 
                             $fieldLicense.prop('disabled', true);
-                        
+
                             if (!$fieldLicense.is(':radio') || ($fieldLicense.is(':radio') && $fieldLicense.is(':checked'))) {
                                 append = true;
                             }
@@ -307,7 +307,7 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                             if (append) {
                                 var cleanedName = $fieldLicense.attr('name').replace(/[0-9)]/g, '');
                                 cleanedName         = 'license[' + cleanedName.replace(/^l\[([a-z_]+)\]$/gi, '$1') + ']';
-                                
+
                                 if (!$fieldLicense.is(':file')) {
                                     formData.append(cleanedName, $fieldLicense.val());
                                     data[cleanedName] = $fieldLicense.val();
@@ -319,7 +319,7 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                             }
                         });
 
-                        $(self.$fileRemoveButton, $file).prop('disabled', true); 
+                        $(self.$fileRemoveButton, $file).prop('disabled', true);
 
                         files[file.name] = data;
                     });
@@ -329,7 +329,7 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                         var success = null;
 
                         file.errors = null;
-                        
+
                         if (file.xhr.status === 413) {
                             success = false;
 
@@ -340,7 +340,7 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                             var response = JSON.parse(file.xhr.response);
 
                             $dropzoneFeedback.append(response.message);
-                            
+
                             if (response.status === 'success') {
                                 success = true;
                             } else {
@@ -457,7 +457,7 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
 
                 $(self.$dropzoneCopyButton, $(self.$dropzonePreviews)).first().show().on('click', function() {
                     self.onHandleCopyValues();
-                    
+
                     return false;
                 });
             }
@@ -1644,7 +1644,7 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                                 success: function (data) {
                                     if (data.results.status === 'error') {
                                         $('[data-alert-messages]', $form).html(data.results.message);
-                                        
+
                                         self.renderErrors($form, data.results.errors);
                                     } else {
                                         self.filePopup();
@@ -1705,7 +1705,7 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
         {
             this.$currentFile = fileId;
             this.filePopup();
-            
+
             $(this.$filePopup).modal('show');
         },
 
@@ -1752,13 +1752,13 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
             if (errors) {
                 $('.help-block', $group).remove();
                 $('.form-group', $group).removeClass('has-error');
-            
+
                 for (var key of Object.keys(errors)) {
                     $element = $('[name^="' + key + '"]', $group);
 
                     if ($element.length) {
                         $element.parents('.form-group').addClass('has-error');
-                        
+
                         $('<p/>', {
                             class   : 'help-block',
                             text    : errors[key]
