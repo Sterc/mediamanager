@@ -30,10 +30,10 @@
                 height    : settings.height,
                 modal     : true,
                 resizable : false,
-                close : function(event, ui) {
+                close : function (event, ui) {
                     $dialogElement.remove();
                 },
-                open : function(event, ui) {
+                open : function (event, ui) {
                     $iFrameElement.attr('src', settings.url);
                 }
             });
@@ -47,7 +47,7 @@
 
                     var $file       = $(this).parents('.file'),
                         filePreview = $file.find('.file-preview img, .file-preview svg').data('path'),
-                        filePath    = $file.find('.file-preview').data('path'),
+                        filePath    = $file.find('.file-preview img, .file-preview svg').data('path'),
                         fileId      = $file.data('id'),
                         fileName    = $.trim($file.find('.file-name').text());
 
@@ -58,6 +58,8 @@
                         'name'    : fileName
                     };
 
+                    console.log(settings);
+                    console.log(object);
                     settings.onSelect(object);
 
                     $dialogElement.dialog('close');
