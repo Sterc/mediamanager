@@ -94,31 +94,31 @@
             <table class="table table-striped">
                 <tbody>
                     <tr>
-                        <td width="150px">Image createdon</td>
+                        <td width="150px">[[%mediamanager.files.image_creation_date]]</td>
                         <td>
                             [[+licensing.image_createdon]]
                         </td>
                     </tr>
                     <tr>
-                        <td width="150px">Image source</td>
+                        <td width="150px">[[%mediamanager.files.image_source]]</td>
                         <td>
                             [[+licensing.image_source]]
                         </td>
                     </tr>
                     <tr>
-                        <td width="150px">Image valid startdate</td>
+                        <td width="150px">[[%mediamanager.files.image_valid_startdate]]</td>
                         <td>
                             [[+licensing.image_valid_startdate]]
                         </td>
                     </tr>
                     <tr>
-                        <td width="150px">Image valid enddate</td>
+                        <td width="150px">[[%mediamanager.files.image_valid_enddate]]</td>
                         <td>
                             [[+licensing.image_valid_enddate]]
                         </td>
                     </tr>
                     <tr>
-                        <td width="150px">Consent of the persons depicted has been obtained?</td>
+                        <td width="150px">[[%mediamanager.files.license_depicted_consent]]</td>
                         <td>
                             [[+licensing.license_depicted_consent:eq=`1`:then=`
                                 [[%mediamanager.global.yes]]
@@ -128,7 +128,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td width="150px">License</td>
+                        <td width="150px">[[%mediamanager.files.license]]</td>
                         <td>
                             <a href="[[+licensing.license_path]]" class="previewpopup-link" target="_blank">[[+licensing.license_path]]</a>
                         </td>
@@ -141,7 +141,7 @@
     <div class="col-md-12">
         <div style="display:none;" data-history-table>
             <br/>
-            <h3>File history</h3>
+            <h3>[[%mediamanager.files.history]]</h3>
 
             <table class="table table-striped">
                 <thead>

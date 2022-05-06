@@ -184,6 +184,7 @@ $_lang['mediamanager.files.image_source_select']                = 'Wählen Sie e
 $_lang['mediamanager.files.image_source_help']                  = 'Wählen Sie den Bildanbieter aus, bei dem das Bild gekauft wurde.';
 $_lang['mediamanager.files.image_valid_startdate']              = 'Startdatum';
 $_lang['mediamanager.files.image_valid_enddate']                = 'Endtermin';
+$_lang['mediamanager.files.license']                            = 'Lizenz';
 $_lang['mediamanager.files.license_exists']                     = 'Lizenz vorhanden?';
 $_lang['mediamanager.files.license_depicted_consent']           = 'Das Einverständnis der abgebildeten Personen wurde eingeholt?';
 $_lang['mediamanager.files.source_valid_until']                 = 'Gültig bis [[+date]]';

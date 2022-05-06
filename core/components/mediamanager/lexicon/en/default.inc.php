@@ -184,6 +184,7 @@ $_lang['mediamanager.files.image_source_select']                = 'Select a sour
 $_lang['mediamanager.files.image_source_help']                  = 'Select the image provider where the image was purchased from.';
 $_lang['mediamanager.files.image_valid_startdate']              = 'Start date';
 $_lang['mediamanager.files.image_valid_enddate']                = 'End date';
+$_lang['mediamanager.files.license']                            = 'License';
 $_lang['mediamanager.files.license_exists']                     = 'Licence exists?';
 $_lang['mediamanager.files.license_depicted_consent']           = 'Consent of the persons depicted has been obtained?';
 $_lang['mediamanager.files.source_valid_until']                 = 'Valid until [[+date]]';

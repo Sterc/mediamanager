@@ -5,8 +5,6 @@ namespace Sterc\MediaManager\Traits;
 use modX;
 use modMail;
 
-use function PHPSTORM_META\map;
-
 trait JobNotifierTrait
 {
     /**
@@ -119,7 +117,7 @@ trait JobNotifierTrait
         $this->modx->mail->setHTML(true);
 
         if (!$this->modx->mail->send()) {
-            $this->modx->log(modX::LOG_LEVEL_ERROR,'An error occurred while trying to send the email: ' . $this->modx->mail->mailer->ErrorInfo);
+            $this->modx->log(modX::LOG_LEVEL_ERROR, 'An error occurred while trying to send the email: ' . $this->modx->mail->mailer->ErrorInfo);
         }
 
         $this->modx->mail->reset();
