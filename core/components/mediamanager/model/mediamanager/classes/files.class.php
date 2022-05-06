@@ -243,6 +243,8 @@ class MediaManagerFilesHelper
 
         // File categories
         if (isset($data['categories'])) {
+            $bodyData['categories'] = '';
+
             foreach ($data['categories'] as $category) {
                 $bodyData['categories'] .= '<option value="' . $category->get('id') . '" selected="selected">' . $category->get('name') . '</option>';
             }
@@ -250,12 +252,12 @@ class MediaManagerFilesHelper
 
         // File tags
         if (isset($data['tags'])) {
+            $bodyData['tags']        = '';
+            $bodyData['source_tags'] = '';
+
             foreach ($data['tags'] as $tag) {
-                if ($tag->get('media_sources_id') === 0) {
-                    $tagSource = 'tags';
-                } else {
-                    $tagSource = 'source_tags';
-                }
+                $tagSource = $tag->get('media_sources_id') === 0 ? 'tags' : 'source_tags';
+
                 $bodyData[$tagSource] .= '<option value="' . $tag->get('id') . '" selected="selected">' . $tag->get('name') . '</option>';
             }
         }
@@ -401,7 +403,7 @@ class MediaManagerFilesHelper
 
                 $bodyData['meta'][$meta['key']] = $this->mediaManager->getChunk($metaChunk, [
                     'meta_key'      => $meta['key'],
-                    'meta_value'    => $meta['value'] ?: '',
+                    'meta_value'    => $meta['value'] ?? '',
                     'meta_label'    => $meta['label'] ?: $meta['key'],
                     'required'      => isset($meta['required']) && $meta['required'],
                     'disabled'      => true,
@@ -1092,7 +1094,7 @@ class MediaManagerFilesHelper
             if (isset($mediaSource['licensing']) && $mediaSource['licensing'] === true) {
                 /* Check required fields. */
                 foreach (['image_valid_startdate', 'image_valid_enddate', 'license_exists', 'license_depicted_consent'] as $requiredField) {
-                    if (empty($data['license'][$requiredField]) && $data['license'][$requiredField] !== '0') {
+                    if (!isset($data['license'][$requiredField]) || (empty($data['license'][$requiredField]) && $data['license'][$requiredField] !== '0')) {
                         $this->addError('l[' . $requiredField . ']', $this->mediaManager->modx->lexicon('mediamanager.error.required_field', [
                             'field' => $this->mediaManager->modx->lexicon('mediamanager.files.' . $requiredField)
                         ]));
@@ -1119,7 +1121,7 @@ class MediaManagerFilesHelper
                 if (strtotime($data['license']['image_valid_startdate']) > strtotime($data['license']['image_valid_enddate'])) {
                     $this->addError('l[image_valid_enddate]', $this->mediaManager->modx->lexicon('mediamanager.error.date_comparison', [
                         'date1' => $this->mediaManager->modx->lexicon('mediamanager.files.image_valid_enddate'),
-                        'date2' => $this->mediaManager->modx->lexicon('mediamanager.files.license_startdate')
+                        'date2' => $this->mediaManager->modx->lexicon('mediamanager.files.image_valid_startdate')
                     ]));
                 }
             }
@@ -1327,22 +1329,25 @@ class MediaManagerFilesHelper
             // Save license fields
             if (isset($data['license']) && is_array($data['license'])) {
                 $object             = $this->mediaManager->modx->newObject('MediamanagerFilesLicense', $data['license']);
-                $licenseFile        = $_FILES['license_file'];
-                $fileInformation    = pathinfo($licenseFile['name']);
-                $fileName           = $this->createUniqueFile($this->uploadDirectory . $this->licenseDirectory . $this->uploadDirectoryMonth, $this->sanitizeFileName($fileInformation['filename']), $fileInformation['extension']);
+                $licenseFile        = $_FILES['license_file'] ?? null;
 
-                $licenseFile['extension']   = strtolower($fileInformation['extension']);
-                $licenseFile['unique_name'] = $fileName;
-                
-                // Upload license file
-                if (!$this->uploadLicenseFile($licenseFile)) {
-                    return [
-                        'status'  => self::STATUS_ERROR,
-                        'message' => $this->alertMessageHtml($this->mediaManager->modx->lexicon('mediamanager.files.error.file_upload', array('file' => $licenseFile['name'])), 'danger')
-                    ];
+                if ($licenseFile) {
+                    $fileInformation    = pathinfo($licenseFile['name']);
+                    $fileName           = $this->createUniqueFile($this->uploadDirectory . $this->licenseDirectory . $this->uploadDirectoryMonth, $this->sanitizeFileName($fileInformation['filename']), $fileInformation['extension']);
+    
+                    $licenseFile['extension']   = strtolower($fileInformation['extension']);
+                    $licenseFile['unique_name'] = $fileName;
+                    
+                    // Upload license file
+                    if (!$this->uploadLicenseFile($licenseFile)) {
+                        return [
+                            'status'  => self::STATUS_ERROR,
+                            'message' => $this->alertMessageHtml($this->mediaManager->modx->lexicon('mediamanager.files.error.file_upload', array('file' => $licenseFile['name'])), 'danger')
+                        ];
+                    }
+
+                    $object->set('license_path', $this->uploadDirectoryMonth . $licenseFile['unique_name']);
                 }
-
-                $object->set('license_path', $this->uploadDirectoryMonth . $licenseFile['unique_name']);
                 
                 if ($object->save()) {
                     $objectRelation = $this->mediaManager->modx->newObject('MediamanagerFilesLicenseFile', [
@@ -1606,7 +1611,7 @@ class MediaManagerFilesHelper
         $fileInformation = pathinfo($file['unique_name']);
         $versionFileName = $this->sanitizeFileName($fileInformation['filename']) . '-v' . $file['version'] . '.' . $fileInformation['extension'];
 
-        if (!$file['extension']) {
+        if (empty($file['extension'])) {
             $file['extension'] = $fileInformation['extension'];
         }
 
