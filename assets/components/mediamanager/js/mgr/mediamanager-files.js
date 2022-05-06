@@ -31,6 +31,7 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
         $fileTags                : 'select[data-file-tags]',
         $fileSourceTags          : 'select[data-file-source-tags]',
         $fileMeta                : 'input[data-file-meta]',
+        $fileLicense             : 'input[data-file-license],select[data-file-license]',
         $fileRemoveButton        : 'button[data-dz-remove]',
 
         $fileHistoryTable        : 'div[data-history-table]',
@@ -143,6 +144,12 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
             self.setPopup();
             self.getCategories();
             self.getList();
+
+            var queryString = window.location.search;
+            var urlParams   = new URLSearchParams(queryString);
+            if (urlParams.get('file')) {
+                self.previewById(urlParams.get('file'))
+            }
         },
 
         /**
@@ -179,6 +186,7 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                         var $fieldCategories    = $(self.$fileCategories, $file).select2(self.$filterCategoriesOptions);
                         var $fieldTags          = $(self.$fileTags, $file).select2(self.$filterTagsOptions);
                         var $fieldsMeta         = $(self.$fileMeta, $file);
+                        var $fieldsLicense      = $(self.$fileLicense, $file);
 
                         if (data[$fieldCategories.attr('name')]) {
                             $fieldCategories.val(data[$fieldCategories.attr('name')]).trigger('change');
@@ -191,12 +199,44 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                         }
 
                         $fieldsMeta.each(function (index, fieldMeta) {
-                            var $fieldMeta = $(fieldMeta);
+                            var $fieldMeta = $(fieldMeta, $file);
 
                             if (data[$fieldMeta.attr('name')]) {
                                 $fieldMeta.val(data[$fieldMeta.attr('name')]);
                             }
                         });
+
+                        /* Make names of radio buttons unique to prevent issues. */
+                        $('.dz-file-preview').each(function (previewIndex, preview) {
+                            $('input[type="radio"]', $(preview)).each(function () {
+                                var name = $(this).attr('name').replace(/[0-9)]/g, '');
+                                name += previewIndex;
+
+                                $(this).attr('name', name);
+                            });
+                        });
+
+                        $fieldsLicense.each(function (index, fieldLicense) {
+                            var $fieldLicense = $(fieldLicense, $file);
+                            var cleanedName   = $fieldLicense.attr('name').replace(/[0-9)]/g, '');
+                            cleanedName       = 'license[' + cleanedName.replace(/^l\[([a-z_]+)\]$/gi, '$1') + ']';
+
+                            if (data[cleanedName]) {
+                                if ($fieldLicense.is(':radio')) {
+                                    $('[name="' + $fieldLicense.attr('name') + '"]', $file).each(function (index, radioItem) {
+                                        if ($(radioItem).val() == data[cleanedName]) {
+                                            $(radioItem).attr('checked', true);
+                                        } else {
+                                            $(radioItem).attr('checked', false);
+                                        }
+                                    });
+                                } else {
+                                    $fieldLicense.val(data[cleanedName]);
+                                }
+                            }
+                        });
+
+                        self.renderErrors($file, file.errors);
 
                         if (this.files.length >= 1) {
                             $dropzoneUploads.prop('disabled', true);
@@ -229,11 +269,12 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
 
                     this.on('sending', function(file, xhr, formData) {
                         var $file               = $(file.previewElement);
-                        var data                = {};
+                        var data = {};
 
                         var $fieldCategories    = $(self.$fileCategories, $file);
                         var $fieldTags          = $(self.$fileTags, $file);
                         var $fieldsMeta         = $(self.$fileMeta, $file);
+                        var $fieldsLicense      = $(self.$fileLicense, $file);
 
                         $fieldCategories.prop('disabled', true);
                         data[$fieldCategories.attr('name')] = $fieldCategories.val();
@@ -253,14 +294,41 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                             formData.append('meta[' + $fieldMeta.attr('name').replace(/^m\[([a-z]+)\]$/gi, '$1') + ']', $fieldMeta.val());
                         });
 
+                        $fieldsLicense.each(function (index, fieldLicense) {
+                            var $fieldLicense = $(fieldLicense);
+                            var append = false;
+
+                            $fieldLicense.prop('disabled', true);
+
+                            if (!$fieldLicense.is(':radio') || ($fieldLicense.is(':radio') && $fieldLicense.is(':checked'))) {
+                                append = true;
+                            }
+
+                            if (append) {
+                                var cleanedName = $fieldLicense.attr('name').replace(/[0-9)]/g, '');
+                                cleanedName         = 'license[' + cleanedName.replace(/^l\[([a-z_]+)\]$/gi, '$1') + ']';
+
+                                if (!$fieldLicense.is(':file')) {
+                                    formData.append(cleanedName, $fieldLicense.val());
+                                    data[cleanedName] = $fieldLicense.val();
+                                } else {
+                                    if ($fieldLicense.get(0).files[0]) {
+                                        formData.set('license_file', $fieldLicense.get(0).files[0]);
+                                    }
+                                }
+                            }
+                        });
+
                         $(self.$fileRemoveButton, $file).prop('disabled', true);
 
                         files[file.name] = data;
                     });
 
-                    this.on('complete', function(file) {
+                    this.on('complete', function (file) {
                         var $file   = $(file.previewElement);
                         var success = null;
+
+                        file.errors = null;
 
                         if (file.xhr.status === 413) {
                             success = false;
@@ -277,6 +345,10 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                                 success = true;
                             } else {
                                 success = false;
+                            }
+
+                            if (response.errors) {
+                                file.errors = response.errors;
                             }
                         }
 
@@ -385,7 +457,7 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
 
                 $(self.$dropzoneCopyButton, $(self.$dropzonePreviews)).first().show().on('click', function() {
                     self.onHandleCopyValues();
-                    
+
                     return false;
                 });
             }
@@ -734,7 +806,7 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
             var self = this,
                 search = e.target.value;
 
-            if ((search.length > 2 && self.$currentSearch !== search) || (self.$currentSearch.length > 2 && search.length == 0)) {
+            if ((self.$currentSearch !== search) || (search.length == 0)) {
                 self.$currentSearch = search;
                 self.getList();
             }
@@ -1540,21 +1612,40 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
 
                     if (template === 'edit') {
                         $(self.$fileEditSaveButton).on('click', function() {
-                            var $form = $(self.$editForm);
+                            var $form       = $(self.$editForm);
+                            var data        = new FormData();
+                            var formData    = $form.serializeArray();
+                            var nestedData  = {};
+
+                            $.each(formData, function (key, input) {
+                                nestedData[input.name] = input.value;
+                            });
+
+                            data.append('data', JSON.stringify(nestedData));
+
+                            if ($('input[name="license_file"]').length) {
+                                var fileData = $('input[name="license_file"]')[0].files;
+                                if (fileData.length > 0) {
+                                    data.append('license_file', fileData[0]);
+                                }
+                            }
+
+                            data.set('action', 'mgr/files');
+                            data.set('method', 'save');
+                            data.set('HTTP_MODAUTH', self.$httpModAuth);
+                            data.set('fileId', self.$currentFile);
 
                             $.ajax({
-                                type            : 'POST',
-                                url             : self.$connectorUrl,
-                                data            : {
-                                    action          : 'mgr/files',
-                                    method          : 'save',
-                                    HTTP_MODAUTH    : self.$httpModAuth,
-                                    fileId          : self.$currentFile,
-                                    data            : $form.serializeArray()
-                                },
-                                success         : function(data) {
+                                type        : 'POST',
+                                url         : self.$connectorUrl,
+                                contentType : false,
+                                processData : false,
+                                data        : data,
+                                success: function (data) {
                                     if (data.results.status === 'error') {
                                         $('[data-alert-messages]', $form).html(data.results.message);
+
+                                        self.renderErrors($form, data.results.errors);
                                     } else {
                                         self.filePopup();
                                     }
@@ -1610,7 +1701,15 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
             });
         },
 
-        previewLink: function(e) {
+        previewById: function (fileId)
+        {
+            this.$currentFile = fileId;
+            this.filePopup();
+
+            $(this.$filePopup).modal('show');
+        },
+
+        previewLink: function (e) {
             var self = this;
 
             self.$currentFile = e.target.dataset.fileId;
@@ -1625,7 +1724,7 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
             var $button = $(event.target);
 
             var index   = $button.parents('[data-edit-form]').find('input[type="text"]').filter(function() {
-                return $(this).attr('name').match(/^meta\[\d\]\[value\]/);
+                return $(this).attr('name').match(/^meta\[ \d \]\[value\]/);
             }).length;
 
             var $template   = $('[data-meta-template]');
@@ -1634,9 +1733,9 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
             $clone.removeClass('hide').removeAttr('data-meta-template');
 
             $clone
-                .find('[name="key"]').attr('name', 'meta[' + index + '][key]');
+                .find('[name="key"]').attr('name', 'meta[ ' + index + ' ][key]');
             $clone
-                .find('[name="value"]').attr('name', 'meta[' + index + '][value]');
+                .find('[name="value"]').attr('name', 'meta[ ' + index + ' ][value]');
 
             $clone.insertBefore($template);
         },
@@ -1646,6 +1745,27 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
          */
         removeMetaFields: function(event) {
              $(event.target).parents('.form-group').remove();
+        },
+
+        renderErrors: function ($group, errors)
+        {
+            if (errors) {
+                $('.help-block', $group).remove();
+                $('.form-group', $group).removeClass('has-error');
+
+                for (var key of Object.keys(errors)) {
+                    $element = $('[name^="' + key + '"]', $group);
+
+                    if ($element.length) {
+                        $element.parents('.form-group').addClass('has-error');
+
+                        $('<p/>', {
+                            class   : 'help-block',
+                            text    : errors[key]
+                        }).appendTo($element.parents('.form-group'));
+                    }
+                }
+            }
         }
     }
 
@@ -1656,7 +1776,6 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
             MediaManagerFiles.resizeFileContainer();
             MediaManagerFiles.setModxContentHeight();
         });
-
     });
 
     $(document).on({

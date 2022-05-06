@@ -1,9 +1,16 @@
 <?php
+/**
+ * @package mediamanager
+ */
 $xpdo_meta_map['MediamanagerTags']= array (
   'package' => 'mediamanager',
   'version' => NULL,
   'table' => 'mediamanager_tags',
   'extends' => 'xPDOSimpleObject',
+  'tableMeta' => 
+  array (
+    'engine' => 'InnoDB',
+  ),
   'fields' => 
   array (
     'media_sources_id' => 0,
@@ -20,6 +27,7 @@ $xpdo_meta_map['MediamanagerTags']= array (
       'phptype' => 'integer',
       'null' => true,
       'default' => 0,
+      'index' => 'index',
     ),
     'name' => 
     array (
@@ -38,6 +46,41 @@ $xpdo_meta_map['MediamanagerTags']= array (
       'null' => false,
       'default' => 0,
       'index' => 'index',
+    ),
+  ),
+  'indexes' => 
+  array (
+    'media_sources_id' => 
+    array (
+      'alias' => 'media_sources_id',
+      'primary' => false,
+      'unique' => false,
+      'type' => 'BTREE',
+      'columns' => 
+      array (
+        'media_sources_id' => 
+        array (
+          'length' => '',
+          'collation' => 'A',
+          'null' => false,
+        ),
+      ),
+    ),
+    'is_deleted' => 
+    array (
+      'alias' => 'is_deleted',
+      'primary' => false,
+      'unique' => false,
+      'type' => 'BTREE',
+      'columns' => 
+      array (
+        'is_deleted' => 
+        array (
+          'length' => '',
+          'collation' => 'A',
+          'null' => false,
+        ),
+      ),
     ),
   ),
   'composites' => 

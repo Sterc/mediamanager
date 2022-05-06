@@ -1,9 +1,16 @@
 <?php
+/**
+ * @package mediamanager
+ */
 $xpdo_meta_map['MediamanagerFiles']= array (
   'package' => 'mediamanager',
   'version' => NULL,
   'table' => 'mediamanager_files',
   'extends' => 'xPDOSimpleObject',
+  'tableMeta' => 
+  array (
+    'engine' => 'InnoDB',
+  ),
   'fields' => 
   array (
     'media_sources_id' => 0,
@@ -156,8 +163,179 @@ $xpdo_meta_map['MediamanagerFiles']= array (
       'default' => NULL,
     ),
   ),
+  'indexes' => 
+  array (
+    'media_sources_id' => 
+    array (
+      'alias' => 'media_sources_id',
+      'primary' => false,
+      'unique' => false,
+      'type' => 'BTREE',
+      'columns' => 
+      array (
+        'media_sources_id' => 
+        array (
+          'length' => '',
+          'collation' => 'A',
+          'null' => false,
+        ),
+      ),
+    ),
+    'name' => 
+    array (
+      'alias' => 'name',
+      'primary' => false,
+      'unique' => false,
+      'type' => 'BTREE',
+      'columns' => 
+      array (
+        'name' => 
+        array (
+          'length' => '',
+          'collation' => 'A',
+          'null' => false,
+        ),
+      ),
+    ),
+    'version' => 
+    array (
+      'alias' => 'version',
+      'primary' => false,
+      'unique' => false,
+      'type' => 'BTREE',
+      'columns' => 
+      array (
+        'version' => 
+        array (
+          'length' => '',
+          'collation' => 'A',
+          'null' => false,
+        ),
+      ),
+    ),
+    'file_type' => 
+    array (
+      'alias' => 'file_type',
+      'primary' => false,
+      'unique' => false,
+      'type' => 'BTREE',
+      'columns' => 
+      array (
+        'file_type' => 
+        array (
+          'length' => '',
+          'collation' => 'A',
+          'null' => false,
+        ),
+      ),
+    ),
+    'file_hash' => 
+    array (
+      'alias' => 'file_hash',
+      'primary' => false,
+      'unique' => false,
+      'type' => 'BTREE',
+      'columns' => 
+      array (
+        'file_hash' => 
+        array (
+          'length' => '',
+          'collation' => 'A',
+          'null' => false,
+        ),
+      ),
+    ),
+    'upload_date' => 
+    array (
+      'alias' => 'upload_date',
+      'primary' => false,
+      'unique' => false,
+      'type' => 'BTREE',
+      'columns' => 
+      array (
+        'upload_date' => 
+        array (
+          'length' => '',
+          'collation' => 'A',
+          'null' => false,
+        ),
+      ),
+    ),
+    'uploaded_by' => 
+    array (
+      'alias' => 'uploaded_by',
+      'primary' => false,
+      'unique' => false,
+      'type' => 'BTREE',
+      'columns' => 
+      array (
+        'uploaded_by' => 
+        array (
+          'length' => '',
+          'collation' => 'A',
+          'null' => false,
+        ),
+      ),
+    ),
+    'edited_on' => 
+    array (
+      'alias' => 'edited_on',
+      'primary' => false,
+      'unique' => false,
+      'type' => 'BTREE',
+      'columns' => 
+      array (
+        'edited_on' => 
+        array (
+          'length' => '',
+          'collation' => 'A',
+          'null' => false,
+        ),
+      ),
+    ),
+    'edited_by' => 
+    array (
+      'alias' => 'edited_by',
+      'primary' => false,
+      'unique' => false,
+      'type' => 'BTREE',
+      'columns' => 
+      array (
+        'edited_by' => 
+        array (
+          'length' => '',
+          'collation' => 'A',
+          'null' => false,
+        ),
+      ),
+    ),
+    'is_archived' => 
+    array (
+      'alias' => 'is_archived',
+      'primary' => false,
+      'unique' => false,
+      'type' => 'BTREE',
+      'columns' => 
+      array (
+        'is_archived' => 
+        array (
+          'length' => '',
+          'collation' => 'A',
+          'null' => false,
+        ),
+      ),
+    ),
+  ),
   'composites' => 
   array (
+    'FileLicense' => 
+    array (
+      'class' => 'MediamanagerFilesLicenseFile',
+      'local' => 'id',
+      'foreign' => 'mediamanager_files_id',
+      'cardinality' => 'one',
+      'owner' => 'local',
+    ),
     'Categories' => 
     array (
       'class' => 'MediamanagerFilesCategories',

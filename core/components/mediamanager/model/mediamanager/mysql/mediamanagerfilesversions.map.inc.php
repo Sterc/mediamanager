@@ -1,9 +1,16 @@
 <?php
+/**
+ * @package mediamanager
+ */
 $xpdo_meta_map['MediamanagerFilesVersions']= array (
   'package' => 'mediamanager',
   'version' => NULL,
   'table' => 'mediamanager_files_versions',
   'extends' => 'xPDOSimpleObject',
+  'tableMeta' => 
+  array (
+    'engine' => 'InnoDB',
+  ),
   'fields' => 
   array (
     'mediamanager_files_id' => 0,
@@ -115,6 +122,121 @@ $xpdo_meta_map['MediamanagerFilesVersions']= array (
       'phptype' => 'integer',
       'null' => false,
       'default' => 0,
+    ),
+  ),
+  'indexes' => 
+  array (
+    'mediamanager_files_id' => 
+    array (
+      'alias' => 'mediamanager_files_id',
+      'primary' => false,
+      'unique' => false,
+      'type' => 'BTREE',
+      'columns' => 
+      array (
+        'mediamanager_files_id' => 
+        array (
+          'length' => '',
+          'collation' => 'A',
+          'null' => false,
+        ),
+      ),
+    ),
+    'version' => 
+    array (
+      'alias' => 'version',
+      'primary' => false,
+      'unique' => false,
+      'type' => 'BTREE',
+      'columns' => 
+      array (
+        'version' => 
+        array (
+          'length' => '',
+          'collation' => 'A',
+          'null' => false,
+        ),
+      ),
+    ),
+    'file_name' => 
+    array (
+      'alias' => 'file_name',
+      'primary' => false,
+      'unique' => false,
+      'type' => 'BTREE',
+      'columns' => 
+      array (
+        'file_name' => 
+        array (
+          'length' => '',
+          'collation' => 'A',
+          'null' => false,
+        ),
+      ),
+    ),
+    'file_hash' => 
+    array (
+      'alias' => 'file_hash',
+      'primary' => false,
+      'unique' => false,
+      'type' => 'BTREE',
+      'columns' => 
+      array (
+        'file_hash' => 
+        array (
+          'length' => '',
+          'collation' => 'A',
+          'null' => false,
+        ),
+      ),
+    ),
+    'action' => 
+    array (
+      'alias' => 'action',
+      'primary' => false,
+      'unique' => false,
+      'type' => 'BTREE',
+      'columns' => 
+      array (
+        'action' => 
+        array (
+          'length' => '',
+          'collation' => 'A',
+          'null' => false,
+        ),
+      ),
+    ),
+    'replaced_file_id' => 
+    array (
+      'alias' => 'replaced_file_id',
+      'primary' => false,
+      'unique' => false,
+      'type' => 'BTREE',
+      'columns' => 
+      array (
+        'replaced_file_id' => 
+        array (
+          'length' => '',
+          'collation' => 'A',
+          'null' => false,
+        ),
+      ),
+    ),
+    'created' => 
+    array (
+      'alias' => 'created',
+      'primary' => false,
+      'unique' => false,
+      'type' => 'BTREE',
+      'columns' => 
+      array (
+        'created' => 
+        array (
+          'length' => '',
+          'collation' => 'A',
+          'null' => false,
+        ),
+      ),
     ),
   ),
   'aggregates' => 

@@ -6,14 +6,25 @@
         <field key="name" dbtype="varchar" precision="50" phptype="string" null="false" default="" />
         <field key="rank" dbtype="mediumint" precision="6" attributes="unsigned" phptype="integer" null="false" default="0" />
 
+        <index alias="parent_id" name="parent_id" primary="false" unique="false" type="BTREE">
+            <column key="parent_id" length="" collation="A" null="false" />
+        </index>
+
         <aggregate alias="MediaSource" class="modMediaSource" local="media_sources_id" foreign="id" cardinality="one" owner="foreign" />
         <composite alias="Files" class="MediamanagerFilesCategories" local="id" foreign="mediamanager_categories_id" cardinality="many" owner="local" />
     </object>
 
     <object class="MediamanagerTags" table="mediamanager_tags" extends="xPDOSimpleObject">
-        <field key="media_sources_id" dbtype="int" precision="10" attributes="unsigned" phptype="integer" null="true" default="NULL" />
+        <field key="media_sources_id" dbtype="int" precision="10" attributes="unsigned" phptype="integer" null="true" default="NULL" index="index"/>
         <field key="name" dbtype="varchar" precision="50" phptype="string" null="false" default="" />
         <field key="is_deleted" dbtype="tinyint" precision="1" attributes="unsigned" phptype="boolean" null="false" default="0" index="index" />
+
+        <index alias="media_sources_id" name="media_sources_id" primary="false" unique="false" type="BTREE">
+            <column key="media_sources_id" length="" collation="A" null="false" />
+        </index>
+        <index alias="is_deleted" name="is_deleted" primary="false" unique="false" type="BTREE">
+            <column key="is_deleted" length="" collation="A" null="false" />
+        </index>
 
         <aggregate alias="MediaSource" class="modMediaSource" local="media_sources_id" foreign="id" cardinality="one" owner="foreign" />
         <composite alias="Files" class="MediamanagerFilesTags" local="id" foreign="mediamanager_tags_id" cardinality="many" owner="local" />
@@ -36,7 +47,39 @@
         <field key="archive_date" dbtype="timestamp" phptype="timestamp" null="true" default="NULL" />
         <field key="archive_path" dbtype="varchar" precision="255" phptype="string" null="true" default="NULL" />
 
+        <index alias="media_sources_id" name="media_sources_id" primary="false" unique="false" type="BTREE">
+            <column key="media_sources_id" length="" collation="A" null="false" />
+        </index>
+        <index alias="name" name="name" primary="false" unique="false" type="BTREE">
+            <column key="name" length="" collation="A" null="false" />
+        </index>
+        <index alias="version" name="version" primary="false" unique="false" type="BTREE">
+            <column key="version" length="" collation="A" null="false" />
+        </index>
+        <index alias="file_type" name="file_type" primary="false" unique="false" type="BTREE">
+            <column key="file_type" length="" collation="A" null="false" />
+        </index>
+        <index alias="file_hash" name="file_hash" primary="false" unique="false" type="BTREE">
+            <column key="file_hash" length="" collation="A" null="false" />
+        </index>
+        <index alias="upload_date" name="upload_date" primary="false" unique="false" type="BTREE">
+            <column key="upload_date" length="" collation="A" null="false" />
+        </index>
+        <index alias="uploaded_by" name="uploaded_by" primary="false" unique="false" type="BTREE">
+            <column key="uploaded_by" length="" collation="A" null="false" />
+        </index>
+        <index alias="edited_on" name="edited_on" primary="false" unique="false" type="BTREE">
+            <column key="edited_on" length="" collation="A" null="false" />
+        </index>
+        <index alias="edited_by" name="edited_by" primary="false" unique="false" type="BTREE">
+            <column key="edited_by" length="" collation="A" null="false" />
+        </index>
+        <index alias="is_archived" name="is_archived" primary="false" unique="false" type="BTREE">
+            <column key="is_archived" length="" collation="A" null="false" />
+        </index>
+
         <aggregate alias="MediaSource" class="modMediaSource" local="media_sources_id" foreign="id" cardinality="one" owner="foreign" />
+        <composite alias="FileLicense" class="MediamanagerFilesLicenseFile" local="id" foreign="mediamanager_files_id" cardinality="one" owner="local" />
         <composite alias="Categories" class="MediamanagerFilesCategories" local="id" foreign="mediamanager_files_id" cardinality="many" owner="local" />
         <composite alias="Tags" class="MediamanagerFilesTags" local="id" foreign="mediamanager_files_id" cardinality="many" owner="local" />
         <composite alias="Content" class="MediamanagerFilesContent" local="id" foreign="mediamanager_files_id" cardinality="many" owner="local" />
@@ -51,11 +94,22 @@
         <field key="path" dbtype="varchar" precision="255" phptype="string" null="false" default="" />
         <field key="hash" dbtype="varchar" precision="32" phptype="string" null="false" default="" />
         <field key="is_deleted" dbtype="tinyint" precision="1" attributes="unsigned" phptype="boolean" null="false" default="0" index="index" />
+
+        <index alias="is_deleted" name="is_deleted" primary="false" unique="false" type="BTREE">
+            <column key="is_deleted" length="" collation="A" null="false" />
+        </index>
     </object>
 
     <object class="MediamanagerFilesCategories" table="mediamanager_files_categories" extends="xPDOSimpleObject">
         <field key="mediamanager_files_id" dbtype="int" precision="10" attributes="unsigned" phptype="integer" null="false" default="0" index="index" />
         <field key="mediamanager_categories_id" dbtype="int" precision="10" attributes="unsigned" phptype="integer" null="false" default="0" index="index" />
+
+        <index alias="mediamanager_files_id" name="mediamanager_files_id" primary="false" unique="false" type="BTREE">
+            <column key="mediamanager_files_id" length="" collation="A" null="false" />
+        </index>
+        <index alias="mediamanager_categories_id" name="mediamanager_categories_id" primary="false" unique="false" type="BTREE">
+            <column key="mediamanager_categories_id" length="" collation="A" null="false" />
+        </index>
 
         <aggregate alias="Files" class="MediamanagerFiles" local="mediamanager_files_id" foreign="id" cardinality="one" owner="foreign" />
         <aggregate alias="Categories" class="MediamanagerCategories" local="mediamanager_categories_id" foreign="id" cardinality="one" owner="foreign" />
@@ -65,15 +119,35 @@
         <field key="mediamanager_files_id" dbtype="int" precision="10" attributes="unsigned" phptype="integer" null="false" default="0" index="index" />
         <field key="mediamanager_tags_id" dbtype="int" precision="10" attributes="unsigned" phptype="integer" null="false" default="0" index="index" />
 
+        <index alias="mediamanager_files_id" name="mediamanager_files_id" primary="false" unique="false" type="BTREE">
+            <column key="mediamanager_files_id" length="" collation="A" null="false" />
+        </index>
+        <index alias="mediamanager_tags_id" name="mediamanager_tags_id" primary="false" unique="false" type="BTREE">
+            <column key="mediamanager_tags_id" length="" collation="A" null="false" />
+        </index>
+
         <aggregate alias="Files" class="MediamanagerFiles" local="mediamanager_files_id" foreign="id" cardinality="one" owner="foreign" />
         <aggregate alias="Tags" class="MediamanagerTagsFiles" local="mediamanager_tags_id" foreign="id" cardinality="one" owner="foreign" />
     </object>
 
     <object class="MediamanagerFilesContent" table="mediamanager_files_content" extends="xPDOSimpleObject">
-        <field key="mediamanager_files_id" dbtype="int" precision="10" attributes="unsigned" phptype="integer" null="false" default="0"  />
+        <field key="mediamanager_files_id" dbtype="int" precision="10" attributes="unsigned" phptype="integer" null="false" default="0"  index="index"/>
         <field key="site_content_id" dbtype="int" precision="10" phptype="integer" null="false" default="0" index="index" />
         <field key="site_tmplvars_id" dbtype="int" precision="10" phptype="integer" null="false" default="0" index="index" />
         <field key="is_tmplvar" dbtype="tinyint" precision="1" attributes="unsigned" phptype="boolean" null="false" default="0" index="index" />
+
+        <index alias="mediamanager_files_id" name="mediamanager_files_id" primary="false" unique="false" type="BTREE">
+            <column key="mediamanager_files_id" length="" collation="A" null="false" />
+        </index>
+        <index alias="site_content_id" name="site_content_id" primary="false" unique="false" type="BTREE">
+            <column key="site_content_id" length="" collation="A" null="false" />
+        </index>
+        <index alias="site_tmplvars_id" name="site_tmplvars_id" primary="false" unique="false" type="BTREE">
+            <column key="site_tmplvars_id" length="" collation="A" null="false" />
+        </index>
+        <index alias="is_tmplvar" name="is_tmplvar" primary="false" unique="false" type="BTREE">
+            <column key="is_tmplvar" length="" collation="A" null="false" />
+        </index>
 
         <aggregate alias="Files" class="MediamanagerFiles" local="mediamanager_files_id" foreign="id" cardinality="one" owner="foreign" />
         <aggregate alias="modResource" class="modResource" local="site_content_id" foreign="id" cardinality="one" owner="foreign" />
@@ -83,6 +157,13 @@
     <object class="MediamanagerFilesRelations" table="mediamanager_files_relations" extends="xPDOSimpleObject">
         <field key="mediamanager_files_id" dbtype="int" precision="10" attributes="unsigned" phptype="integer" null="false" default="0" index="index" />
         <field key="mediamanager_files_id_relation" dbtype="int" precision="10" attributes="unsigned" phptype="integer" null="false" default="0" index="index" />
+
+        <index alias="mediamanager_files_id" name="mediamanager_files_id" primary="false" unique="false" type="BTREE">
+            <column key="mediamanager_files_id" length="" collation="A" null="false" />
+        </index>
+        <index alias="mediamanager_files_id_relation" name="mediamanager_files_id_relation" primary="false" unique="false" type="BTREE">
+            <column key="mediamanager_files_id_relation" length="" collation="A" null="false" />
+        </index>
 
         <aggregate alias="Files" class="MediamanagerFiles" local="mediamanager_files_id" foreign="id" cardinality="one" owner="foreign" />
         <aggregate alias="Files2" class="MediamanagerFiles" local="mediamanager_files_id_relation" foreign="id" cardinality="one" owner="foreign" />
@@ -101,6 +182,28 @@
         <field key="created" dbtype="timestamp" phptype="timestamp" null="false" default="CURRENT_TIMESTAMP" index="index" />
         <field key="created_by" dbtype="int" precision="11" phptype="integer" null="false" default="" />
 
+        <index alias="mediamanager_files_id" name="mediamanager_files_id" primary="false" unique="false" type="BTREE">
+            <column key="mediamanager_files_id" length="" collation="A" null="false" />
+        </index>
+        <index alias="version" name="version" primary="false" unique="false" type="BTREE">
+            <column key="version" length="" collation="A" null="false" />
+        </index>
+        <index alias="file_name" name="file_name" primary="false" unique="false" type="BTREE">
+            <column key="file_name" length="" collation="A" null="false" />
+        </index>
+        <index alias="file_hash" name="file_hash" primary="false" unique="false" type="BTREE">
+            <column key="file_hash" length="" collation="A" null="false" />
+        </index>
+        <index alias="action" name="action" primary="false" unique="false" type="BTREE">
+            <column key="action" length="" collation="A" null="false" />
+        </index>
+        <index alias="replaced_file_id" name="replaced_file_id" primary="false" unique="false" type="BTREE">
+            <column key="replaced_file_id" length="" collation="A" null="false" />
+        </index>
+        <index alias="created" name="created" primary="false" unique="false" type="BTREE">
+            <column key="created" length="" collation="A" null="false" />
+        </index>
+
         <aggregate alias="Files" class="MediamanagerFiles" local="mediamanager_files_id" foreign="id" cardinality="one" owner="foreign" />
     </object>
 
@@ -109,6 +212,37 @@
         <field key="meta_key" dbtype="varchar" precision="255" phptype="string" null="false" default="" />
         <field key="meta_value" dbtype="longtext" phptype="string" null="false" default="" />
 
+        <index alias="mediamanager_files_id" name="mediamanager_files_id" primary="false" unique="false" type="BTREE">
+            <column key="mediamanager_files_id" length="" collation="A" null="false" />
+        </index>
+
         <aggregate alias="Files" class="MediamanagerFiles" local="mediamanager_files_id" foreign="id" cardinality="one" owner="foreign" />
+    </object>
+
+    <object class="MediamanagerFilesLicense" table="mediamanager_files_license" extends="xPDOSimpleObject">
+        <field key="image_createdon" dbtype="timestamp" phptype="timestamp" null="false" default="NULL"/>
+        <field key="image_source" dbtype="varchar" precision="255" phptype="string" null="false" default="" />
+        <field key="image_valid_startdate" dbtype="timestamp" phptype="timestamp" null="false" default="NULL"/>
+        <field key="image_valid_enddate" dbtype="timestamp" phptype="timestamp" null="false" default="NULL"/>
+        <field key="license_exists" dbtype="tinyint" precision="1" attributes="unsigned" phptype="boolean" null="false" default="0"/>
+        <field key="license_depicted_consent" dbtype="tinyint" precision="1" attributes="unsigned" phptype="boolean" null="false" default="0"/>
+        <field key="license_path" dbtype="varchar" precision="255" phptype="string" null="false" default="" />
+
+        <aggregate alias="LicenseFiles" class="MediamanagerFilesLicenseFile" local="id" foreign="license_id" cardinality="many" owner="foreign" />
+    </object>
+
+    <object class="MediamanagerFilesLicenseFile" table="mediamanager_files_license_file" extends="xPDOSimpleObject">
+        <field key="mediamanager_files_id" dbtype="int" precision="10" attributes="unsigned" phptype="integer" null="false" default="0" index="index"/>
+        <field key="license_id" dbtype="int" precision="10" attributes="unsigned" phptype="integer" null="false" default="0" index="index"/>
+
+        <index alias="mediamanager_files_id" name="mediamanager_files_id" primary="false" unique="false" type="BTREE">
+            <column key="mediamanager_files_id" length="" collation="A" null="false" />
+        </index>
+        <index alias="license_id" name="license_id" primary="false" unique="false" type="BTREE">
+            <column key="license_id" length="" collation="A" null="false" />
+        </index>
+
+        <aggregate alias="File" class="MediamanagerFiles" local="mediamanager_files_id" foreign="id" cardinality="one" owner="foreign" />
+        <aggregate alias="License" class="MediamanagerFilesLicense" local="license_id" foreign="id" cardinality="one" owner="foreign" />
     </object>
 </model>

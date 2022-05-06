@@ -220,13 +220,64 @@ class MediaManagerSourcesHelper
         if (isset($source['meta']) && is_array($source['meta'])) {
             foreach ($source['meta'] as $meta) {
                 $output[] = $this->mediaManager->getChunk('files/dropzone_file_meta', array_merge([
-                    'value'     => '',
-                    'required'  => false
+                    'value'      => '',
+                    'required'   => false,
+                    'input_name' => 'm[' . $meta['key'] . ']'
                 ], $meta));
             }
         }
 
         return implode(PHP_EOL, $output);
+    }
+
+    /**
+     * Retrieve license options.
+     *
+     * @param array $source
+     * @param string $selected
+     * @return void
+     */
+    public function getLicenseOptions(array $source = [], $selected = '')
+    {
+        $options = [];
+
+        if (isset($source['licensing']) && $source['licensing'] === true && is_array($source['licensing_sources']) && count($source['licensing_sources']) > 0) {
+            foreach ($source['licensing_sources'] as $source) {
+                $validUntilLabel    = '';
+                $selectedAttribute  = $source['key'] === $selected ? 'selected="selected"' : '';
+
+                if (!empty($source['expireson'])) {
+                    $validUntilLabel = ' (' . $this->mediaManager->modx->lexicon('mediamanager.files.source_valid_until', [
+                        'date' => date($this->mediaManager->modx->getOption('manager_date_format'), strtotime($source['expireson']))
+                    ]) . ')';
+                }
+
+                $options[] = sprintf('<option value="%s" %s>%s%s</value>', $source['key'], $selectedAttribute, $source['label'], $validUntilLabel);
+            }
+        }
+    
+        return $options;
+    }
+
+    /**
+     * Get media source licensing fields html.
+     *
+     * @param array $source
+     * @return string
+     */
+    public function getLicensingFieldsHtml(array $source = [])
+    {
+        $output = '';
+
+        if (isset($source['licensing']) && $source['licensing'] === true) {
+            $output = $this->mediaManager->getChunk('files/dropzone_file_licensing', [
+                'date_today'              => date('Y-m-d'),
+                'source_options'          => implode('', $this->getLicenseOptions($source)),
+                'license_file_extensions' => implode(', ', $source['licensing_file_allowed_extensions'])
+            ]);
+        }
+
+        return $output;
     }
 
     /**
@@ -252,14 +303,17 @@ class MediaManagerSourcesHelper
         }
 
         $source = [
-            'id'                => $source->get('id'),
-            'name'              => $source->get('name'),
-            'basePath'          => isset($properties['basePath']['value']) ? $properties['basePath']['value'] : '',
-            'basePathRelative'  => isset($properties['basePathRelative']['value']) ? $properties['basePathRelative']['value'] : true,
-            'baseUrl'           => isset($properties['baseUrl']['value']) ? $properties['baseUrl']['value'] : '',
-            'baseUrlRelative'   => isset($properties['baseUrlRelative']['value']) ? $properties['baseUrlRelative']['value'] : true,
-            'allowedFileTypes'  => isset($properties['allowedFileTypes']['value']) ? $properties['allowedFileTypes']['value'] : '',
-            'meta'              => isset($properties['mediamanagerMeta']['value']) ? (array) json_decode($properties['mediamanagerMeta']['value'], true) : []
+            'id'                                => $source->get('id'),
+            'name'                              => $source->get('name'),
+            'basePath'                          => isset($properties['basePath']['value']) ? $properties['basePath']['value'] : '',
+            'basePathRelative'                  => isset($properties['basePathRelative']['value']) ? $properties['basePathRelative']['value'] : true,
+            'baseUrl'                           => isset($properties['baseUrl']['value']) ? $properties['baseUrl']['value'] : '',
+            'baseUrlRelative'                   => isset($properties['baseUrlRelative']['value']) ? $properties['baseUrlRelative']['value'] : true,
+            'allowedFileTypes'                  => isset($properties['allowedFileTypes']['value']) ? $properties['allowedFileTypes']['value'] : '',
+            'meta'                              => isset($properties['mediamanagerMeta']['value']) ? (array) json_decode($properties['mediamanagerMeta']['value'], true) : [],
+            'licensing'                         => isset($properties['mediamanagerLicenseEnabled']['value']) ? $properties['mediamanagerLicenseEnabled']['value'] : false,
+            'licensing_sources'                 => isset($properties['mediamanagerLicenseSources']['value']) ? json_decode($properties['mediamanagerLicenseSources']['value'], true) : [],
+            'licensing_file_allowed_extensions' => isset($properties['mediamanagerLicenseFileAllowedExtensions']['value']) ? explode(',', $properties['mediamanagerLicenseFileAllowedExtensions']['value']) : ['.pdf', '.jpg', '.png', '.eml', '.msg'],
         ];
 
         return $source;

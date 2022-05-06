@@ -1,0 +1,8 @@
+{
+    "name": "sterc/mediamanager",
+    "autoload": {
+        "psr-4": {
+            "Sterc\\MediaManager\\": "src/"
+        }
+    }
+}

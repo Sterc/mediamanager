@@ -88,12 +88,60 @@
             </table>
         `:isempty=``]]
 
+        [[+licensing.id:notempty=`
+            <h3>[[%mediamanager.files.licensing.title]]</h3>
+
+            <table class="table table-striped">
+                <tbody>
+                    <tr>
+                        <td width="150px">[[%mediamanager.files.image_creation_date]]</td>
+                        <td>
+                            [[+licensing.image_createdon]]
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="150px">[[%mediamanager.files.image_source]]</td>
+                        <td>
+                            [[+licensing.image_source]]
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="150px">[[%mediamanager.files.image_valid_startdate]]</td>
+                        <td>
+                            [[+licensing.image_valid_startdate]]
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="150px">[[%mediamanager.files.image_valid_enddate]]</td>
+                        <td>
+                            [[+licensing.image_valid_enddate]]
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="150px">[[%mediamanager.files.license_depicted_consent]]</td>
+                        <td>
+                            [[+licensing.license_depicted_consent:eq=`1`:then=`
+                                [[%mediamanager.global.yes]]
+                            `:else=`
+                                [[%mediamanager.global.no]]
+                            `]]
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="150px">[[%mediamanager.files.license]]</td>
+                        <td>
+                            <a href="[[+licensing.license_path]]" class="previewpopup-link" target="_blank">[[+licensing.license_path]]</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        `:isempty=``]]
     </div>
 
     <div class="col-md-12">
         <div style="display:none;" data-history-table>
             <br/>
-            <h3>File history</h3>
+            <h3>[[%mediamanager.files.history]]</h3>
 
             <table class="table table-striped">
                 <thead>

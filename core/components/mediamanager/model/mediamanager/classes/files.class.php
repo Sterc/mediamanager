@@ -7,14 +7,21 @@ require_once __DIR__ . '/../../../libs/tinify/lib/Tinify/Source.php';
 require_once __DIR__ . '/../../../libs/tinify/lib/Tinify/Client.php';
 require_once __DIR__ . '/../../../libs/tinify/lib/Tinify.php';
 
+require_once dirname(__DIR__, 3) . '/vendor/autoload.php';
+
+use Sterc\MediaManager\Traits\ErrorTrait;
+
 class MediaManagerFilesHelper
 {
+    use ErrorTrait;
+
     const STATUS_SUCCESS = 'success';
-    const STATUS_ERROR = 'error';
+    const STATUS_ERROR  = 'error';
 
     const ARCHIVE_DIRECTORY = 'archive';
     const DOWNLOAD_DIRECTORY = 'download';
     const VERSION_DIRECTORY = 'version';
+    const LICENSE_DIRECTORY = 'license';
 
     const DOWNLOAD_EXPIRATION = 14;
 
@@ -54,6 +61,12 @@ class MediaManagerFilesHelper
      */
     private $versionUrl = null;
     private $versionDirectory = null;
+
+    /**
+     * License paths.
+     */
+    private $licenseUrl;
+    private $licenseDirectory;
 
     /**
      * Image types.
@@ -188,15 +201,15 @@ class MediaManagerFilesHelper
         $footerData = [];
 
         $footerData['button'] = [
-            'edit'     => 1,
-            'crop'     => 1,
-            'share'    => 1,
-            'download' => 1,
-            'archive'  => 1,
-            'archive_replace' => 1,
-            'delete'   => 1,
-            'history'  => 1,
-            'copy'     => 0
+            'edit'              => 1,
+            'crop'              => 1,
+            'share'             => 1,
+            'download'          => 1,
+            'archive'           => 1,
+            'archive_replace'   => 1,
+            'delete'            => 1,
+            'history'           => 1,
+            'copy'              => 0
         ];
 
         $data                     = $this->getFile($fileId);
@@ -230,6 +243,8 @@ class MediaManagerFilesHelper
 
         // File categories
         if (isset($data['categories'])) {
+            $bodyData['categories'] = '';
+
             foreach ($data['categories'] as $category) {
                 $bodyData['categories'] .= '<option value="' . $category->get('id') . '" selected="selected">' . $category->get('name') . '</option>';
             }
@@ -237,12 +252,12 @@ class MediaManagerFilesHelper
 
         // File tags
         if (isset($data['tags'])) {
+            $bodyData['tags']        = '';
+            $bodyData['source_tags'] = '';
+
             foreach ($data['tags'] as $tag) {
-                if ($tag->get('media_sources_id') === 0) {
-                    $tagSource = 'tags';
-                } else {
-                    $tagSource = 'source_tags';
-                }
+                $tagSource = $tag->get('media_sources_id') === 0 ? 'tags' : 'source_tags';
+
                 $bodyData[$tagSource] .= '<option value="' . $tag->get('id') . '" selected="selected">' . $tag->get('name') . '</option>';
             }
         }
@@ -364,18 +379,10 @@ class MediaManagerFilesHelper
 
         $i = 0;
 
-        if ($template == 'edit') {
-            $metaChunk = 'files/formgroup_filemeta';
-        } else {
-            $metaChunk = 'files/filemeta_row';
-        }
-
+        $metaChunk        = $template === 'edit' ? 'files/formgroup_filemeta' : 'files/filemeta_row';
         $bodyData['meta'] = [];
 
-        $metaValues = $this->mediaManager->modx->getCollection('MediamanagerFilesMeta', [
-            'mediamanager_files_id'  => $fileId
-        ]);
-
+        $metaValues = $this->mediaManager->modx->getCollection('MediamanagerFilesMeta', ['mediamanager_files_id' => $fileId]);
         foreach ($metaValues as $metaKey => $metaValue) {
             $metaValues[$metaValue->get('meta_key')] = [
                 'key'   => $metaValue->get('meta_key'),
@@ -385,8 +392,9 @@ class MediaManagerFilesHelper
             unset($metaValues[$metaKey]);
         }
 
-        if (isset($source['meta']) && is_array($source['meta'])) {
-            foreach ($source['meta'] as $meta) {
+        $sourceArray = $this->mediaManager->sources->getSource($file['media_sources_id']);
+        if (isset($sourceArray['meta']) && is_array($sourceArray['meta'])) {
+            foreach ($sourceArray['meta'] as $meta) {
                 if (isset($metaValues[$meta['key']])) {
                     $meta['value']  = $metaValues[$meta['key']]['value'];
 
@@ -395,7 +403,7 @@ class MediaManagerFilesHelper
 
                 $bodyData['meta'][$meta['key']] = $this->mediaManager->getChunk($metaChunk, [
                     'meta_key'      => $meta['key'],
-                    'meta_value'    => $meta['value'] ?: '',
+                    'meta_value'    => $meta['value'] ?? '',
                     'meta_label'    => $meta['label'] ?: $meta['key'],
                     'required'      => isset($meta['required']) && $meta['required'],
                     'disabled'      => true,
@@ -418,6 +426,46 @@ class MediaManagerFilesHelper
 
             $i++;
         }
+
+        $bodyData['licensing.license_file_extensions'] = implode(', ', $sourceArray['licensing_file_allowed_extensions']);
+        if ($licenseInfo = $data['file']->getLicense()) {
+            foreach ($licenseInfo->toArray() as $key => $value) {
+                if ($key === 'license_path' && !empty($value)) {
+                    $value = $this->uploadUrl . $this->licenseDirectory . $value;
+                } elseif ($key === 'image_source') {
+                    if (!empty($sourceArray['licensing_sources'])) {
+                        foreach ($sourceArray['licensing_sources'] as $source) {
+                            if ($source['key'] === $value) {
+                                $value = $source['label'];
+                                
+                                if (!empty($source['expireson'])) {
+                                    $value .= ' - Expires on: ' . $source['expireson'];
+                                }
+                            }
+                        }
+                    }
+                }
+
+                $bodyData['licensing.' . $key] = $value;
+            }
+        } else {
+            /* Set default empty placeholders. */
+            foreach ($this->mediaManager->modx->newObject('MediamanagerFilesLicense')->toArray() as $key => $value) {
+                $bodyData['licensing.' . $key] = $value;
+            }
+
+            $bodyData['licensing.id'] = '';
+        }
+
+        if ($template === 'edit') {
+            $bodyData['licenseFields'] = '';
+
+            if (isset($sourceArray['licensing']) && $sourceArray['licensing'] === true) {
+                $bodyData['licenseFields'] = $this->mediaManager->getChunk('files/formgroup_filelicense', $bodyData);
+            }
+        }
+
+        $bodyData['licensing.source_options'] = implode('', $this->mediaManager->sources->getLicenseOptions($sourceArray, $licenseInfo ? $licenseInfo->get('image_source') : ''));
 
         $bodyData['meta']       = implode(PHP_EOL, $bodyData['meta']);
         $bodyData['metaCount']  = $i;
@@ -1041,21 +1089,61 @@ class MediaManagerFilesHelper
         }
 
         $mediaSource = $this->mediaManager->sources->getSource($data['source']);
-
         if ($mediaSource) {
+            /* Handle licensing validation. */
+            if (isset($mediaSource['licensing']) && $mediaSource['licensing'] === true) {
+                /* Check required fields. */
+                foreach (['image_valid_startdate', 'image_valid_enddate', 'license_exists', 'license_depicted_consent'] as $requiredField) {
+                    if (!isset($data['license'][$requiredField]) || (empty($data['license'][$requiredField]) && $data['license'][$requiredField] !== '0')) {
+                        $this->addError('l[' . $requiredField . ']', $this->mediaManager->modx->lexicon('mediamanager.error.required_field', [
+                            'field' => $this->mediaManager->modx->lexicon('mediamanager.files.' . $requiredField)
+                        ]));
+                    }
+                }
+
+                /* Check conditional required field. */
+                if (!empty($data['license']['license_exists']) && (int) $data['license']['license_exists'] === 1 && empty($_FILES['license_file'])) {
+                    $this->addError('l[license_file]', $this->mediaManager->modx->lexicon('mediamanager.error.required_field', ['field' => $this->mediaManager->modx->lexicon('mediamanager.files.license_file')]));
+                }
+                
+                if (!empty($_FILES['license_file'])) {
+                    if (!in_array(pathinfo($_FILES['license_file']['name'], PATHINFO_EXTENSION), array_map(function ($value) {
+                        return ltrim($value, '.');
+                    }, $mediaSource['licensing_file_allowed_extensions']), true)) {
+                        $this->addError('l[license_file]', $this->mediaManager->modx->lexicon('mediamanager.error.extension_not_allowed_for_field', [
+                            'field'         => $this->mediaManager->modx->lexicon('mediamanager.files.license_file'),
+                            'extensions'    => implode(', ', $mediaSource['licensing_file_allowed_extensions'])
+                        ]));
+                    }
+                }
+
+                /* Check if enddate is not before startdate. */
+                if (strtotime($data['license']['image_valid_startdate']) > strtotime($data['license']['image_valid_enddate'])) {
+                    $this->addError('l[image_valid_enddate]', $this->mediaManager->modx->lexicon('mediamanager.error.date_comparison', [
+                        'date1' => $this->mediaManager->modx->lexicon('mediamanager.files.image_valid_enddate'),
+                        'date2' => $this->mediaManager->modx->lexicon('mediamanager.files.image_valid_startdate')
+                    ]));
+                }
+            }
+
             if (isset($mediaSource['meta']) && is_array($mediaSource['meta'])) {
                 foreach ($mediaSource['meta'] as $meta) {
                     if (isset($meta['required']) && $meta['required']) {
                         if (empty($data['meta'][$meta['key']])) {
-                            return [
-                                'status'  => self::STATUS_ERROR,
-                                'message' => $this->alertMessageHtml($this->mediaManager->modx->lexicon('mediamanager.files.error.required_field', [
-                                    'file'  => $file['name']
-                                ]))
-                            ];
+                            $this->addError('m[' . $meta['key'] . ']',  $this->mediaManager->modx->lexicon('mediamanager.error.required_field', [
+                                'field'  => ucfirst($meta['key'])
+                            ]));
                         }
                     }
                 }
+            }
+
+            if ($this->hasErrors()) {
+                return [
+                    'status'  => self::STATUS_ERROR,
+                    'message' => $this->alertMessageHtml(implode('<br/>', $this->getErrors())),
+                    'errors'  => $this->getErrors()
+                ];
             }
         }
 
@@ -1237,6 +1325,39 @@ class MediaManagerFilesHelper
                     }
                 }
             }
+
+            // Save license fields
+            if (isset($data['license']) && is_array($data['license'])) {
+                $object             = $this->mediaManager->modx->newObject('MediamanagerFilesLicense', $data['license']);
+                $licenseFile        = $_FILES['license_file'] ?? null;
+
+                if ($licenseFile) {
+                    $fileInformation    = pathinfo($licenseFile['name']);
+                    $fileName           = $this->createUniqueFile($this->uploadDirectory . $this->licenseDirectory . $this->uploadDirectoryMonth, $this->sanitizeFileName($fileInformation['filename']), $fileInformation['extension']);
+    
+                    $licenseFile['extension']   = strtolower($fileInformation['extension']);
+                    $licenseFile['unique_name'] = $fileName;
+                    
+                    // Upload license file
+                    if (!$this->uploadLicenseFile($licenseFile)) {
+                        return [
+                            'status'  => self::STATUS_ERROR,
+                            'message' => $this->alertMessageHtml($this->mediaManager->modx->lexicon('mediamanager.files.error.file_upload', array('file' => $licenseFile['name'])), 'danger')
+                        ];
+                    }
+
+                    $object->set('license_path', $this->uploadDirectoryMonth . $licenseFile['unique_name']);
+                }
+                
+                if ($object->save()) {
+                    $objectRelation = $this->mediaManager->modx->newObject('MediamanagerFilesLicenseFile', [
+                        'mediamanager_files_id' => $file->get('id'),
+                        'license_id'            => $object->get('id')
+                    ]);
+
+                    $objectRelation->save();
+                }
+            }
         }
 
         return $file->get('id');
@@ -1257,18 +1378,27 @@ class MediaManagerFilesHelper
             'meta'      => []
         ];
 
-        $meta = [];
+        $meta    = [];
+        $license = [];
 
-        foreach ($rawData as $row) {
-            if (preg_match('/^meta\[([\d]+)\]\[(key|value)\]$/', $row['name'], $matches)) {
-                $meta[$matches[1]][$matches[2]] = $row['value'];
-            } else if ($row['name'] === 'filename') {
-                $data['name'] = $row['value'];
+        foreach ($rawData as $key => $value) {
+            $key = preg_replace('/\s+/', '', $key);
+            
+            if (preg_match('/^meta\[([\d]+)\]\[(key|value)\]$/', $key, $matches)) {
+                $meta[$matches[1]][$matches[2]] = $value;
+            } elseif (preg_match('/^license\[(.*)\]$/', $key, $matches)) {
+                $license[$matches[1]] = $value;
+            } else if ($key === 'filename') {
+                $data['name'] = $value;
             }
         }
+    
+        foreach ($meta as $index => $row) {
+            $data['meta'][$row['key']] = array_merge($row, ['index' => $index]);
+        }
 
-        foreach ($meta as $row) {
-            $data['meta'][$row['key']] = $row;
+        foreach ($license as $key => $row) {
+            $data['license'][$key] = $row;
         }
 
         $file = $this->mediaManager->modx->getObject('MediamanagerFiles', [
@@ -1276,25 +1406,75 @@ class MediaManagerFilesHelper
         ]);
 
         $mediaSource = $this->mediaManager->sources->getSource($file->get('media_sources_id'));
-
         if ($mediaSource) {
             if (isset($mediaSource['meta']) && is_array($mediaSource['meta'])) {
                 foreach ($mediaSource['meta'] as $meta) {
                     if (isset($meta['required']) && $meta['required']) {
                         if (empty($data['meta'][$meta['key']]['value'])) {
-                            return [
-                                'status'  => self::STATUS_ERROR,
-                                'message' => $this->alertMessageHtml($this->mediaManager->modx->lexicon('mediamanager.files.error.required_field_update'), 'danger')
-                            ];
+                            $this->addError(
+                                'meta[ ' . $data['meta'][$meta['key']]['index'] . ' ][value]',
+                                $this->mediaManager->modx->lexicon('mediamanager.error.required_field', [
+                                    'field' => ucfirst($data['meta'][$meta['key']]['key'])
+                                ])
+                            );
                         }
                     }
                 }
             }
         }
 
-        /**
-         * Check whether or not a file version should be created.
-         */
+        /* Handle licensing validation. */
+        if (isset($mediaSource['licensing']) && $mediaSource['licensing'] === true) {
+            $license = $file->getLicense();
+
+            if (!$license) {
+                $license = $this->mediaManager->modx->newObject('MediamanagerFilesLicense');
+            }
+
+            /* Check required fields. */
+            foreach (['image_valid_startdate', 'image_valid_enddate', 'license_exists', 'license_depicted_consent'] as $requiredField) {
+                if (empty($data['license'][$requiredField]) && $data['license'][$requiredField] !== '0') {
+                    $this->addError('license[' . $requiredField . ']', $this->mediaManager->modx->lexicon('mediamanager.error.required_field', [
+                        'field' => $this->mediaManager->modx->lexicon('mediamanager.files.' . $requiredField)
+                    ]));
+                }
+            }
+
+            /* Check conditional required field. */
+            if (!empty($data['license']['license_exists']) && (int) $data['license']['license_exists'] === 1 && (empty($_FILES['license_file']) && empty($license->get('license_path')))) {
+                $this->addError('license_file', $this->mediaManager->modx->lexicon('mediamanager.error.required_field', ['field' => $this->mediaManager->modx->lexicon('mediamanager.files.license_file')]));
+            }
+
+            if (!empty($_FILES['license_file'])) {
+                if (!in_array(pathinfo($_FILES['license_file']['name'], PATHINFO_EXTENSION), array_map(function ($value) {
+                        return ltrim($value, '.');
+                    }, $mediaSource['licensing_file_allowed_extensions']), true)
+                ) {
+                    $this->addError('license_file', $this->mediaManager->modx->lexicon('mediamanager.error.extension_not_allowed_for_field', [
+                        'field'         => $this->mediaManager->modx->lexicon('mediamanager.files.license_file'),
+                        'extensions'    => implode(', ', $mediaSource['licensing_file_allowed_extensions'])
+                    ]));
+                }
+            }
+
+            /* Check if enddate is not before startdate. */
+            if (strtotime($data['license']['image_valid_startdate']) > strtotime($data['license']['image_valid_enddate'])) {
+                $this->addError('license[image_valid_enddate]', $this->mediaManager->modx->lexicon('mediamanager.error.date_comparison', [
+                    'date1' => $this->mediaManager->modx->lexicon('mediamanager.files.image_valid_enddate'),
+                    'date2' => $this->mediaManager->modx->lexicon('mediamanager.files.image_valid_startdate')
+                ]));
+            }
+        }
+
+        if ($this->hasErrors()) {
+            return [
+                'status'  => self::STATUS_ERROR,
+                'message' => $this->alertMessageHtml(implode('<br/>', $this->getErrors()), 'danger'),
+                'errors'  => $this->getErrors()
+            ];
+        }
+
+        // Check whether or not a file version should be created.
         $createFileVersion = false;
         $actionName        = '';
         if ($file->get('name') !== $data['name']) {
@@ -1351,6 +1531,51 @@ class MediaManagerFilesHelper
             }
         }
 
+        /* Handle license file. */
+        if (isset($mediaSource['licensing']) && $mediaSource['licensing'] === true) {
+            if (!empty($_FILES['license_file'])) {
+                /* Remove current file. */
+                if (!empty($license->get('license_path'))) {
+                    unlink($this->uploadDirectory . $this->licenseDirectory . $license->get('license_path'));
+                }
+
+                /* Upload new file. */
+                $licenseFile                = $_FILES['license_file'];
+                $fileInformation            = pathinfo($licenseFile['name']);
+                $fileName                   = $this->createUniqueFile($this->uploadDirectory . $this->uploadDirectoryMonth, $this->sanitizeFileName($fileInformation['filename']), $fileInformation['extension']);
+                $licenseFile['unique_name'] = $fileName;
+                
+                /* Upload license file. */
+                if (!$this->uploadLicenseFile($licenseFile)) {
+                    return [
+                        'status'  => self::STATUS_ERROR,
+                        'message' => $this->alertMessageHtml($this->mediaManager->modx->lexicon('mediamanager.files.error.file_upload', array('file' => $licenseFile['name'])), 'danger')
+                    ];
+                } else {
+                    $license->set('license_path', $this->uploadDirectoryMonth . $licenseFile['unique_name']);
+                    $license->save();
+                }
+            }
+
+            if (isset($data['license']) && is_array($data['license'])) {
+                $license->fromArray($data['license']);
+                $license->save();
+
+                /* Store connection between file and license. */
+                if (!$this->mediaManager->modx->getObject('MediamanagerFilesLicenseFile', [
+                    'mediamanager_files_id' => $file->get('id'),
+                    'license_id'            => $license->get('id')
+                ])) {
+                    $licenseRelation = $this->mediaManager->modx->newObject('MediamanagerFilesLicenseFile', [
+                        'mediamanager_files_id' => $file->get('id'),
+                        'license_id'            => $license->get('id')
+                    ]);
+
+                    $licenseRelation->save();
+                }
+            }
+        }
+
         if ($createFileVersion) {
             $this->saveFileVersion($file->get('id'), $data, $actionName);
         }
@@ -1386,7 +1611,7 @@ class MediaManagerFilesHelper
         $fileInformation = pathinfo($file['unique_name']);
         $versionFileName = $this->sanitizeFileName($fileInformation['filename']) . '-v' . $file['version'] . '.' . $fileInformation['extension'];
 
-        if (!$file['extension']) {
+        if (empty($file['extension'])) {
             $file['extension'] = $fileInformation['extension'];
         }
 
@@ -2098,8 +2323,9 @@ class MediaManagerFilesHelper
      */
     public function duplicateFile($file, $imageData)
     {
-        $file = $file->toArray();
-        $data = [];
+        $originalFile = $file;
+        $file         = $file->toArray();
+        $data         = [];
 
         // Create upload directory
         if (!$this->createUploadDirectory($file['media_sources_id'])) {
@@ -2129,26 +2355,30 @@ class MediaManagerFilesHelper
 
         // Get file categories
         $categories = $this->mediaManager->modx->getIterator('MediamanagerFilesCategories', array('mediamanager_files_id' => $file['id']));
-
         foreach ($categories as $category) {
             $data['categories'][] = $category->get('mediamanager_categories_id');
         }
 
         // Get file tags
         $tags = $this->mediaManager->modx->getIterator('MediamanagerFilesTags', array('mediamanager_files_id' => $file['id']));
-
         foreach ($tags as $tag) {
             $data['tags'][] = $tag->get('mediamanager_tags_id');
         }
 
+        // Get file meta
+        if ($meta = $originalFile->getMany('Meta')) {
+            foreach ($meta as $item) {
+                $data['meta'][$item->get('meta_key')] = $item->get('meta_value');
+            }
+        }
+        
         // Set source
-        $data['source'] = $file['media_sources_id'];
-
+        $data['source']     = $file['media_sources_id'];
         $file['version']    = $this->createVersionNumber();
         $file['upload_dir'] = $this->uploadDirectory . $this->uploadDirectoryMonth;
 
         // Add file to database
-        $fileId = $this->insertFile($file, $data);
+        $fileId         = $this->insertFile($file, $data);
         $versionCreated = $this->saveFileVersion($fileId, $file, 'create');
         if (!$fileId || !$versionCreated) {
             // Remove file from server if saving failed
@@ -2161,6 +2391,15 @@ class MediaManagerFilesHelper
         }
 
         $this->addFileRelation($file['id'], $fileId);
+
+        if ($license = $originalFile->getLicense()) {
+            $licenseRelation = $this->mediaManager->modx->newObject('MediamanagerFilesLicenseFile', [
+                'mediamanager_files_id' => $fileId,
+                'license_id'            => $license->get('id')
+            ]);
+
+            $licenseRelation->save();
+        }
 
         return [
             'status'  => self::STATUS_SUCCESS,
@@ -2503,6 +2742,9 @@ class MediaManagerFilesHelper
         // Version url and path
         $this->versionUrl            = self::VERSION_DIRECTORY . DIRECTORY_SEPARATOR;
         $this->versionDirectory      = self::VERSION_DIRECTORY . DIRECTORY_SEPARATOR;
+
+        $this->licenseUrl            = self::LICENSE_DIRECTORY . DIRECTORY_SEPARATOR;
+        $this->licenseDirectory      = self::LICENSE_DIRECTORY . DIRECTORY_SEPARATOR;
     }
 
     /**
@@ -2537,6 +2779,10 @@ class MediaManagerFilesHelper
 
         if (!file_exists($this->uploadDirectory . $this->versionDirectory)) {
             if (!$this->createDirectory($this->uploadDirectory . $this->versionDirectory)) return false;
+        }
+
+        if (!file_exists($this->uploadDirectory . $this->licenseDirectory)) {
+            if (!$this->createDirectory($this->uploadDirectory . $this->licenseDirectory)) return false;
         }
 
         return true;
@@ -2577,6 +2823,52 @@ class MediaManagerFilesHelper
         }
 
         return false;
+    }
+
+    /**
+     * Upload license.
+     *
+     * @param array $file
+     *
+     * @return bool
+     */
+    private function uploadLicenseFile($file)
+    {
+        $path       = rtrim($this->uploadDirectory, '/') . '/' . trim($this->licenseDirectory, '/') . '/' . trim($this->uploadDirectoryMonth, '/') . '/';
+        $target     = $path . $file['unique_name'];
+        $uploadFile = move_uploaded_file($file['tmp_name'], $target);
+
+        if (!file_exists($path)) {
+            $this->createDirectory($path);
+        }
+
+        if (!$uploadFile) {
+            $uploadFile = copy($file['tmp_name'], $target);
+        }
+
+        if ($uploadFile) {
+            chmod($target, 0644);
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Remove license file.
+     *
+     * @param MediamanagerFilesLicenseFile $license
+     * @return bool
+     */
+    public function removeLicenseFile($license)
+    {
+        if (!$this->uploadDirectory) {
+            $this->setUploadPaths();
+        }
+
+        $target = $this->uploadDirectory . $this->licenseDirectory . $license->get('license_path');
+
+        return unlink($target);
     }
 
     /**
