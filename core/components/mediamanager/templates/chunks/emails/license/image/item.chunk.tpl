@@ -15,8 +15,15 @@
 [[+resources:notempty=`
     <tr style="background: [[+even:is=`1`:then=`#f3f3f3`:else=`#fff`]];" valign="top">
         <td colspan="[[+expires_in:notempty=`3`:empty=`2`]]" style="padding:5px;">
-            <strong>[[%mediamanager.license.email.resources]]</strong><br/>
-            [[+resources]]
+            <table width="100%" style="border-collapse: collapse; border: 1px solid [[+even:is=`1`:then=`#fff`:else=`#f3f3f3`]];">
+                <tr>
+                    <th style="border-bottom: 1px solid [[+even:is=`1`:then=`#fff`:else=`#f3f3f3`]]; padding: 5px;">[[%mediamanager.license.email.resources]]</th>
+                </tr>
+
+                [[+resources]]
+            </table>
+
+            [[-+resources]]
         </td>
     </tr>
 `:isempty=``]]

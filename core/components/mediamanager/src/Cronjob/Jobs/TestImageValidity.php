@@ -68,16 +68,34 @@ class TestImageValidity extends Job
                     $messages        = [];
                     $resources       = [];
 
+                    $query = $this->modx->newQuery('modResource');
+                    $query->select(['modResource.*', '`modContext`.`name` as context_name']);
+                    $query->leftJoin('MediamanagerFilesContent', 'MediamanagerFilesContent', '`MediamanagerFilesContent`.`site_content_id` = `modResource`.`id`');
+                    $query->leftJoin('MediamanagerFiles', 'MediamanagerFiles', '`MediamanagerFiles`.`id` = `MediamanagerFilesContent`.`mediamanager_files_id`');
+                    $query->leftJoin('modContext', 'modContext', '`modResource`.`context_key` = `modContext`.`key`');
+
+                    $query->where(['MediamanagerFiles.id' => $image->get('id')]);
+                    $query->sortby('modResource.context_key', 'asc');
+
                     /* Collect linked resources. */
-                    foreach ($image->getMany('Content') as $content) {
-                        if ($modResource = $content->getOne('modResource')) {
-                            $resources[] = sprintf(
-                                '<a href="%s">%s</a> (%s)',
-                                $this->makeManagerUrl(['a'  => 'resource/update', 'id' => $modResource->get('id')]),
-                                $modResource->get('pagetitle'),
-                                $modResource->get('id')
-                            );
+                    $contextKey = null;
+                    $contextIdx = 0;
+                    foreach ($this->modx->getIterator('modResource', $query) as $modResource) {
+                        $phs                    = $modResource->toArray();
+                        $phs['contextHeading']  = '';
+                        $phs['manager_url']     = $this->makeManagerUrl(['a' => 'resource/update', 'id' => $modResource->get('id')]);
+
+                        if ($contextKey !== $modResource->get('context_key')) {
+                            $phs['contextHeading'] = $this->mediamanager->getChunk('emails/license/image/context', [
+                                'name'       => $modResource->get('context_name'),
+                                'contextIdx' => $contextIdx
+                            ]);
+
+                            $contextKey = $modResource->get('context_key');
+                            $contextIdx++;
                         }
+
+                        $resources[] = $this->mediamanager->getChunk('emails/license/image/resource', $phs);
                     }
 
                     $license = $image->getLicense();
@@ -96,7 +114,7 @@ class TestImageValidity extends Job
                             'item'          => $image->toArray(),
                             'link'          => $this->makeManagerUrl(['a' => 'home', 'namespace' => 'mediamanager', 'file' => $image->get('id'), 'source' => $mediaSource->get('id')]),
                             'message'       => implode('<br/>', $messages),
-                            'resources'     => implode('<br/>', $resources)
+                            'resources'     => implode('', $resources)
                         ];
                     } else {
                         $expireDate = new DateTime($license->get('image_valid_enddate'), new DateTimeZone('UTC'));
