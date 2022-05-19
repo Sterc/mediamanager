@@ -10,9 +10,8 @@
         <select name="license[image_source]" id="image_source" class="form-control">
             <option value="">[[%mediamanager.files.image_source_select]]</option>
             [[+licensing.source_options]]
-
-            <small>[[%mediamanager.files.image_source_help]]</small>
         </select>
+        <small>[[%mediamanager.files.image_source_help]]</small>
     </div>
 
     <h3 class="section-title">[[%mediamanager.files.image_validity.title]]</h3>
