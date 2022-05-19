@@ -22,8 +22,6 @@
 
                 [[+resources]]
             </table>
-
-            [[-+resources]]
         </td>
     </tr>
 `:isempty=``]]
