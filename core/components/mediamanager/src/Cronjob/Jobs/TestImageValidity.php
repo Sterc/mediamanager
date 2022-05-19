@@ -60,7 +60,10 @@ class TestImageValidity extends Job
                 }
 
                 $query->where($where, xPDOQuery::SQL_OR);
-                $query->where(['media_sources_id' => $mediaSource->get('id')]);
+                $query->where([
+                    'media_sources_id' => $mediaSource->get('id'),
+                    'is_archived'      => false
+                ]);
 
                 foreach ($this->modx->getIterator('MediamanagerFiles', $query) as $image) {
                     $expired         = false;
