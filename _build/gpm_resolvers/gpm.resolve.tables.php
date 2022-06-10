@@ -29,6 +29,8 @@ if ($object->xpdo) {
             $manager->createObjectContainer('MediamanagerFiles');
             $manager->createObjectContainer('MediamanagerDownloads');
             $manager->createObjectContainer('MediamanagerFilesCategories');
+            $manager->createObjectContainer('MediamanagerFilesLicense');
+            $manager->createObjectContainer('MediamanagerFilesLicenseFile');
             $manager->createObjectContainer('MediamanagerFilesTags');
             $manager->createObjectContainer('MediamanagerFilesContent');
             $manager->createObjectContainer('MediamanagerFilesRelations');

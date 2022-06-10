@@ -214,10 +214,10 @@ $_lang['setting_mediamanager.max_file_size_images']                         = 'M
 $_lang['setting_mediamanager.max_file_size_images_desc']                    = 'Maximum file size for images in MB.';
 
 /* License email. */
-$_lang['mediamanager.license.email.image_source_validity.subject']          = 'Image source validity notice - [[+name]]';
+$_lang['mediamanager.license.email.image_source_validity.subject']          = 'Image source validity notice for media source "[[+mediasource]]" - [[+name]]';
 $_lang['mediamanager.license.email.image_source_validity.title']            = 'Image source validity';
 $_lang['mediamanager.license.email.image_source_validity.msg']              = 'The MediaManager found image sources that have expired or are about to expire. Please review the information below.';
-$_lang['mediamanager.license.email.image_validity.subject']                 = 'Image validity notice - [[+name]]';
+$_lang['mediamanager.license.email.image_validity.subject']                 = 'Image validity notice for media source "[[+mediasource]]" - [[+name]]';
 $_lang['mediamanager.license.email.image_validity.title']                   = 'Image validity';
 $_lang['mediamanager.license.email.image_validity.msg']                     = 'The MediaManager found images that have expired or are about to expire. Please review the information below.';
 $_lang['mediamanager.license.email.expired_sources.title']                  = 'Expired sources';

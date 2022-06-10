@@ -5,6 +5,7 @@ namespace Sterc\MediaManager\Cronjob\Jobs;
 use Sterc\MediaManager\Traits\JobNotifierTrait;
 use DateTime;
 use DateTimeZone;
+use modMediaSource;
 
 class TestImageSourceValidity extends Job
 {
@@ -17,6 +18,9 @@ class TestImageSourceValidity extends Job
     {
         if (count($this->getMediaSources()) > 0) {
             foreach ($this->getMediaSources() as $mediaSource) {
+                /* Reset expired and notify items for every media source. */
+                $this->resetItems();
+
                 $frequencies = !empty($mediaSource->getPropertyList()['mediamanagerLicenseTestFrequencies']) ? json_decode($mediaSource->getPropertyList()['mediamanagerLicenseTestFrequencies'], true) : [];
 
                 /* Set test frequencies. */
@@ -24,15 +28,21 @@ class TestImageSourceValidity extends Job
 
                 $imageSources = !empty($mediaSource->getPropertyList()['mediamanagerLicenseSources']) ? json_decode($mediaSource->getPropertyList()['mediamanagerLicenseSources'], true) : [];
                 if (count($imageSources) > 0) {
-                    $this->validateImageSources($imageSources, $mediaSource->get('id'));
+                    $this->validateImageSources($imageSources, $mediaSource);
                 }
 
                 if ($this->shouldSendNotification()) {
-                    $recipients = !empty($mediaSource->getPropertyList()['mediamanagerLicenseTestRecipients']) ? explode(',', $mediaSource->getPropertyList()['mediamanagerLicenseTestRecipients']) : []; 
+                    $recipients = !empty($mediaSource->getPropertyList()['mediamanagerLicenseTestRecipients']) ? explode(',', $mediaSource->getPropertyList()['mediamanagerLicenseTestRecipients']) : [];
 
                     /* Set properties used in email. */
                     $this->setProperties([
-                        'subject'    => $this->modx->lexicon('mediamanager.license.email.image_source_validity.subject', ['name' => $this->modx->getOption('site_name')]),
+                        'subject'    => $this->modx->lexicon(
+                            'mediamanager.license.email.image_source_validity.subject',
+                            [
+                                'name'        => $this->modx->getOption('site_name'),
+                                'mediasource' => $mediaSource->get('name')
+                            ]
+                        ),
                         'tpl'        => 'emails/license/sources-notification',
                         'itemTpl'    => 'emails/license/source/item',
                         'recipients' => $recipients
@@ -50,10 +60,10 @@ class TestImageSourceValidity extends Job
      * Validate image sources and list expired or about to expire image sources.
      *
      * @param array $imageSources
-     * @param integer $mediaSourceId
+     * @param modMediaSource $modMediaSource
      * @return void
      */
-    protected function validateImageSources(array $imageSources, int $mediaSourceId)
+    protected function validateImageSources(array $imageSources, modMediaSource $modMediaSource)
     {
         foreach ($imageSources as $imageSource) {
             if (!isset($imageSource['expireson'])) {
@@ -68,7 +78,7 @@ class TestImageSourceValidity extends Job
             if ($expireDate->getTimestamp() < $curDate->getTimestamp()) {
                 $this->expiredItems[] = [
                     'item' => $imageSource,
-                    'link' => $this->makeManagerUrl(['a'  => 'source/update', 'id' => $mediaSourceId])
+                    'link' => $this->makeManagerUrl(['a'  => 'source/update', 'id' => $modMediaSource->get('id')])
                 ];
 
                 continue;
@@ -81,7 +91,7 @@ class TestImageSourceValidity extends Job
                 $this->notifyItems[] = [
                     'item'          => $imageSource,
                     'expires_in'    => $diff,
-                    'link'          => $this->makeManagerUrl(['a'  => 'source/update', 'id' => $mediaSourceId])
+                    'link'          => $this->makeManagerUrl(['a'  => 'source/update', 'id' => $modMediaSource->get('id')])
                 ];
             }
         }

@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>[[++site_name]]</title>
+    <meta charset="UTF-8">
 </head>
 <body style="padding: 20px; margin: 0; background-color: #f3f3f3;">
     <table cellpadding="0" cellspacing="0" border="0" width="100%">
@@ -42,7 +43,7 @@
                                     </tbody>
                                 </table>
                             `:isempty=``]]
-                        
+
                             <p>
                                 <small>[[%mediamanager.license.email.footer]]</small>
                             </p>

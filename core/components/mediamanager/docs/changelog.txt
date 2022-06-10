@@ -1,5 +1,15 @@
 Changelog for MediaManager.
 
+MediaManager 0.3.0
+====================================
+- Escape new reserved words for MySQL 8+ (#38)
+- Added indexes on database columns
+- Improved error handling during file upload and file edit
+- Added option to add predefined set of meta fields
+- Added optional image licensing feature
+- PHP 8 compatibility fixes
+- Fixed compatibility with recent version of TinyMCE RTE using the callback
+
 MediaManager 0.2.9
 ====================================
 - Fix load modPhpThumb for previews (#15)
