@@ -149,7 +149,14 @@ class MediaManagerSourcesHelper
      */
     public function getList()
     {
-        $mediaSources = $this->mediaManager->modx->getIterator('modMediaSource');
+        $query = $this->mediaManager->modx->newQuery('sources.modMediaSource');
+        $query->leftJoin('sources.modAccessMediaSource', 'modAccessMediaSource', 'modAccessMediaSource.target = modMediaSource.id');
+        $query->where([
+            'modAccessMediaSource.principal_class' => 'modUserGroup',
+            'modAccessMediaSource.principal:IN'    => $this->mediaManager->modx->getUser()->getUserGroups()
+        ]);
+
+        $mediaSources = $this->mediaManager->modx->getIterator('sources.modMediaSource', $query);
 
         $sources = [];
         foreach ($mediaSources as $source) {
@@ -255,7 +262,7 @@ class MediaManagerSourcesHelper
                 $options[] = sprintf('<option value="%s" %s>%s%s</value>', $source['key'], $selectedAttribute, $source['label'], $validUntilLabel);
             }
         }
-    
+
         return $options;
     }
 
