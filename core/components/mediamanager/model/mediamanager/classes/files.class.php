@@ -437,7 +437,7 @@ class MediaManagerFilesHelper
                         foreach ($sourceArray['licensing_sources'] as $source) {
                             if ($source['key'] === $value) {
                                 $value = $source['label'];
-                                
+
                                 if (!empty($source['expireson'])) {
                                     $value .= ' - Expires on: ' . $source['expireson'];
                                 }
@@ -1105,7 +1105,7 @@ class MediaManagerFilesHelper
                 if (!empty($data['license']['license_exists']) && (int) $data['license']['license_exists'] === 1 && empty($_FILES['license_file'])) {
                     $this->addError('l[license_file]', $this->mediaManager->modx->lexicon('mediamanager.error.required_field', ['field' => $this->mediaManager->modx->lexicon('mediamanager.files.license_file')]));
                 }
-                
+
                 if (!empty($_FILES['license_file'])) {
                     if (!in_array(pathinfo($_FILES['license_file']['name'], PATHINFO_EXTENSION), array_map(function ($value) {
                         return ltrim($value, '.');
@@ -1131,7 +1131,7 @@ class MediaManagerFilesHelper
                     if (isset($meta['required']) && $meta['required']) {
                         if (empty($data['meta'][$meta['key']])) {
                             $this->addError('m[' . $meta['key'] . ']',  $this->mediaManager->modx->lexicon('mediamanager.error.required_field', [
-                                'field'  => ucfirst($meta['key'])
+                                'field'  => $meta['label']
                             ]));
                         }
                     }
@@ -1334,10 +1334,10 @@ class MediaManagerFilesHelper
                 if ($licenseFile) {
                     $fileInformation    = pathinfo($licenseFile['name']);
                     $fileName           = $this->createUniqueFile($this->uploadDirectory . $this->licenseDirectory . $this->uploadDirectoryMonth, $this->sanitizeFileName($fileInformation['filename']), $fileInformation['extension']);
-    
+
                     $licenseFile['extension']   = strtolower($fileInformation['extension']);
                     $licenseFile['unique_name'] = $fileName;
-                    
+
                     // Upload license file
                     if (!$this->uploadLicenseFile($licenseFile)) {
                         return [
@@ -1348,7 +1348,7 @@ class MediaManagerFilesHelper
 
                     $object->set('license_path', $this->uploadDirectoryMonth . $licenseFile['unique_name']);
                 }
-                
+
                 if ($object->save()) {
                     $objectRelation = $this->mediaManager->modx->newObject('MediamanagerFilesLicenseFile', [
                         'mediamanager_files_id' => $file->get('id'),
@@ -1383,7 +1383,7 @@ class MediaManagerFilesHelper
 
         foreach ($rawData as $key => $value) {
             $key = preg_replace('/\s+/', '', $key);
-            
+
             if (preg_match('/^meta\[([\d]+)\]\[(key|value)\]$/', $key, $matches)) {
                 $meta[$matches[1]][$matches[2]] = $value;
             } elseif (preg_match('/^license\[(.*)\]$/', $key, $matches)) {
@@ -1392,7 +1392,7 @@ class MediaManagerFilesHelper
                 $data['name'] = $value;
             }
         }
-    
+
         foreach ($meta as $index => $row) {
             $data['meta'][$row['key']] = array_merge($row, ['index' => $index]);
         }
@@ -1414,7 +1414,7 @@ class MediaManagerFilesHelper
                             $this->addError(
                                 'meta[ ' . $data['meta'][$meta['key']]['index'] . ' ][value]',
                                 $this->mediaManager->modx->lexicon('mediamanager.error.required_field', [
-                                    'field' => ucfirst($data['meta'][$meta['key']]['key'])
+                                    'field' => $meta['label']
                                 ])
                             );
                         }
@@ -1544,7 +1544,7 @@ class MediaManagerFilesHelper
                 $fileInformation            = pathinfo($licenseFile['name']);
                 $fileName                   = $this->createUniqueFile($this->uploadDirectory . $this->uploadDirectoryMonth, $this->sanitizeFileName($fileInformation['filename']), $fileInformation['extension']);
                 $licenseFile['unique_name'] = $fileName;
-                
+
                 /* Upload license file. */
                 if (!$this->uploadLicenseFile($licenseFile)) {
                     return [
@@ -2371,7 +2371,7 @@ class MediaManagerFilesHelper
                 $data['meta'][$item->get('meta_key')] = $item->get('meta_value');
             }
         }
-        
+
         // Set source
         $data['source']     = $file['media_sources_id'];
         $file['version']    = $this->createVersionNumber();
