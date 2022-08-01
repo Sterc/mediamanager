@@ -214,10 +214,10 @@ $_lang['setting_mediamanager.max_file_size_images']                         = 'M
 $_lang['setting_mediamanager.max_file_size_images_desc']                    = 'Maximale Dateigröße für Bilder in MB.';
 
 /* License email. */
-$_lang['mediamanager.license.email.image_source_validity.subject']          = 'Hinweis zur Gültigkeit der Bildquelle - [[+name]]';
+$_lang['mediamanager.license.email.image_source_validity.subject']          = 'Hinweis zur Gültigkeit der Bildquelle für Medienquelle "[[+mediasource]]" - [[+name]]';
 $_lang['mediamanager.license.email.image_source_validity.title']            = 'Gültigkeit der Bildquelle';
 $_lang['mediamanager.license.email.image_source_validity.msg']              = 'Der MediaManager hat Bildquellen gefunden, die abgelaufen sind oder kurz vor dem Ablauf stehen. Bitte überprüfen Sie die Informationen unten.';
-$_lang['mediamanager.license.email.image_validity.subject']                 = 'Bildgültigkeitshinweis - [[+name]]';
+$_lang['mediamanager.license.email.image_validity.subject']                 = 'Bildgültigkeitshinweis für Medienquelle "[[+mediasource]]" - [[+name]]';
 $_lang['mediamanager.license.email.image_validity.title']                   = 'Bildgültigkeit';
 $_lang['mediamanager.license.email.image_validity.msg']                     = 'Der MediaManager hat Bilder gefunden, die abgelaufen sind oder kurz vor dem Ablauf stehen. Bitte überprüfen Sie die Informationen unten.';
 $_lang['mediamanager.license.email.expired_sources.title']                  = 'Abgelaufene Quellen';

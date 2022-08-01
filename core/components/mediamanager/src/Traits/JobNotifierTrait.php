@@ -69,6 +69,17 @@ trait JobNotifierTrait
     }
 
     /**
+     * Reset expired and notifyItems.
+     *
+     * @return void
+     */
+    public function resetItems()
+    {
+        $this->expiredItems = [];
+        $this->notifyItems = [];
+    }
+
+    /**
      * Determine if the passed difference is listed in the notify frequencies list.
      *
      * @param string $frequency
@@ -96,7 +107,7 @@ trait JobNotifierTrait
     public function sendNotification()
     {
         $this->mediamanager = $this->modx->getService('mediamanager', 'MediaManager', $this->modx->getOption('mediamanager.core_path', '', MODX_CORE_PATH . '/components/mediamanager/') . 'model/mediamanager/');
-    
+
         $message = $this->mediamanager->getChunk($this->getProperty('tpl'), [
             'expiredItems' => $this->getItemHTML($this->expiredItems),
             'notifyItems'  => $this->getItemHTML($this->notifyItems)
@@ -113,7 +124,7 @@ trait JobNotifierTrait
                 $this->modx->mail->address('to', $recipient);
             }
         }
-        
+
         $this->modx->mail->setHTML(true);
 
         if (!$this->modx->mail->send()) {

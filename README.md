@@ -1,5 +1,5 @@
 # Media Manager for MODX [BETA]
-![Media Manager version](https://img.shields.io/badge/version-0.2.9-brightgreen.svg)
+![Media Manager version](https://img.shields.io/badge/version-0.3.0-brightgreen.svg)
 ![MODX Extra by Sterc](https://img.shields.io/badge/extra%20by-sterc-ff69b4.svg)
 
 The Media Manager is a MODX Extra replacing the default Media Browser with an enterprise-grade media management solution, an initiative by [SEDA](https://seda.digital/) and [Sterc](https://www.sterc.com).
