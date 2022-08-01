@@ -142,6 +142,7 @@ $_lang['mediamanager.files.archive_and_replace_title']          = 'Archive & Rep
 $_lang['mediamanager.files.archive_and_replace_message']        = 'Are you sure you want to archive and replace this file?';
 $_lang['mediamanager.files.archive_and_replace_select_message'] = 'Please select a file you want to replace.';
 $_lang['mediamanager.files.archive_and_replace_select_confirm'] = 'Are you sure you want to use this file?';
+$_lang['mediamanager.files.archive_and_replace.success']        = 'The selected file has been archived and replaced.';
 $_lang['mediamanager.files.share_title']                        = 'Share file';
 $_lang['mediamanager.files.share_message']                      = 'Press the `Share` button to generate a link for this file.';
 $_lang['mediamanager.files.share_download']                     = 'Your share link: [[+link]] The share link will expire in [[+expiration]] days.';

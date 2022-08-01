@@ -467,8 +467,8 @@ class MediaManagerFilesHelper
 
         $bodyData['licensing.source_options'] = implode('', $this->mediaManager->sources->getLicenseOptions($sourceArray, $licenseInfo ? $licenseInfo->get('image_source') : ''));
 
-        $bodyData['meta']       = implode(PHP_EOL, $bodyData['meta']);
-        $bodyData['metaCount']  = $i;
+        $bodyData['meta']      = implode(PHP_EOL, $bodyData['meta']);
+        $bodyData['metaCount'] = $i;
 
         return [
             'body'   => $this->mediaManager->getChunk('files/popup/' . $template, $bodyData),
@@ -724,7 +724,7 @@ class MediaManagerFilesHelper
      *
      * @return string
      */
-    public function getListHtml($category = 0, $search = '', $filters = [], $sorting = [], $viewMode = 'grid', $selectedFiles = [], $limit = 50, $offset = 0)
+    public function getListHtml($category = 0, $search = '', $filters = [], $sorting = [], $viewMode = 'grid', $selectedFiles = [], $limit = 50, $offset = 0, $message = '')
     {
         $html = '';
         $viewMode = ($viewMode === 'grid' ? 'grid' : 'list');
@@ -2051,7 +2051,9 @@ class MediaManagerFilesHelper
         // Archive old file
         $this->archiveFiles($fileId);
 
-        return [];
+        return [
+            'message' => $this->mediaManager->modx->lexicon('mediamanager.files.archive_and_replace.success')
+        ];
     }
 
     /**

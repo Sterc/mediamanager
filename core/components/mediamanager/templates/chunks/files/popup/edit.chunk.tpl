@@ -19,7 +19,7 @@
                 <label class="col-md-5 control-label">[[%mediamanager.files.meta.key]]</label>
                 <label class="col-md-7 control-label">[[%mediamanager.files.meta.value]]</label>
             </div>
-            
+
             <div class="row">
                 <div class="col-md-5">
                     <input type="text" class="form-control" name="key" placeholder="[[%mediamanager.files.meta.key]]" />

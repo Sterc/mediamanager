@@ -950,13 +950,18 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                                     fileId       : self.$archiveReplaceFileId,
                                     newFileId    : fileId
                                 },
-                                complete: function(data) {
+                                complete: function (data) {
                                     self.$currentFile = fileId;
-                                    self.filePopup();
                                     self.getList();
-                                    $(self.$filePopup).modal('show');
 
                                     $dialog.dialog('close');
+
+                                    var alert = '<div class="alert alert-success alert-dismissible fade in move-alert" role="alert">';
+                                    alert = alert + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>';
+                                    alert = alert + data.responseJSON.results.message;
+                                    alert = alert + '</div>';
+
+                                    $(alert).appendTo('[data-alert-messages]');
                                 }
                             });
                         }
@@ -1501,11 +1506,11 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
          *
          * @param e
          */
-        filePopup: function(e) {
+        filePopup: function(e, successMessage) {
             var self = this,
                 template;
 
-            if (typeof e !== 'undefined') {
+            if (typeof e !== 'undefined' && e !== null) {
                 template = e.target.dataset.template;
             }
 
@@ -1521,11 +1526,11 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                 type: 'POST',
                 url: self.$connectorUrl,
                 data: {
-                    action       : 'mgr/files',
-                    method       : 'file',
-                    HTTP_MODAUTH : self.$httpModAuth,
-                    id           : self.$currentFile,
-                    template     : template
+                    action          : 'mgr/files',
+                    HTTP_MODAUTH    : self.$httpModAuth,
+                    method          : 'file',
+                    id              : self.$currentFile,
+                    template        : template
                 },
                 success: function(data) {
                     var $body   = $(self.$filePopupBody),

@@ -142,6 +142,7 @@ $_lang['mediamanager.files.archive_and_replace_title']          = 'Archivieren &
 $_lang['mediamanager.files.archive_and_replace_message']        = 'Sind Sie sicher, dass Sie diese Datei archivieren und ersetzen möchten?';
 $_lang['mediamanager.files.archive_and_replace_select_message'] = 'Bitte wählen Sie die Datei aus, die Sie ersetzen möchten.';
 $_lang['mediamanager.files.archive_and_replace_select_confirm'] = 'Sind Sie sicher das Sie diese Datei wählen möchten?';
+$_lang['mediamanager.files.archive_and_replace.success']        = 'Die ausgewählte Datei wurde archiviert und ersetzt.';
 $_lang['mediamanager.files.share_title']                        = 'Datei teilen';
 $_lang['mediamanager.files.share_message']                      = 'Klicken Sie auf den `Teilen` Button um einen öffenltichen Link für die Datei zu generieren.';
 $_lang['mediamanager.files.share_download']                     = 'Ihr öffentlicher Link für diese Datei: [[+link]] Der Link läuft in [[+expiration]] Tagen ab.';
