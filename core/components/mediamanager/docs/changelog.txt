@@ -1,5 +1,12 @@
 Changelog for MediaManager.
 
+MediaManager 0.3.1
+====================================
+- Fixed Metadata required fields validation message shows key instead of label value #52
+- Fixed ACLs - Mediasource and User Permissions #51
+- Improved Archiving and Replacing visual interface confusing #50
+- Fixed Content Blocks Image Gallery type not saving link in database #47
+
 MediaManager 0.3.0
 ====================================
 - Escape new reserved words for MySQL 8+ (#38)
