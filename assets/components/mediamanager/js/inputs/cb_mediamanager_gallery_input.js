@@ -1,10 +1,10 @@
 (function (jQuery, ContentBlocks) {
     ContentBlocks.fieldTypes.cb_mediamanager_gallery_input = function(dom, data) {
         var input = {
-            imageCount: 0,
-            fileBrowser: false,
-            source: data.properties.source > 0 ? data.properties.source : ContentBlocksConfig['image.source'],
-            directory: data.properties.directory
+            imageCount  : 0,
+            fileBrowser : false,
+            source      : data.properties.source > 0 ? data.properties.source : ContentBlocksConfig['image.source'],
+            directory   : data.properties.directory
         };
 
         input.init = function () {
@@ -20,27 +20,32 @@
             dom.find('.contentblocks-field-upload').on('click', function() {
                 dom.find('.contentblocks-field-upload-field').click();
             });
+
             dom.find('.contentblocks-field-gallery-choose').on('click', $.proxy(function(event) {
                 event.preventDefault();
+
                 this.chooseImage();
             }, this));
 
             if ($.isArray(data.images)) {
                 $.each(data.images, function(idx, img) {
                     input.imageCount++;
-                    img.id = data.generated_id + '-image' + input.imageCount;
-                    img.width = img.width || 0;
-                    img.height = img.height || 0;
+
+                    img.id      = data.generated_id + '-image' + input.imageCount;
+                    img.width   = img.width || 0;
+                    img.height  = img.height || 0;
+
                     input.addImage(img, 'init');
                 });
             }
+
             dom.find('.gallery-image-holder').sortable({
-                connectWith: '.gallery-image-holder',
-                forceHelperSize: true,
-                forcePlaceholderSize: true,
-                placeholder: 'contentblocks-gallery-placeholder',
-                tolerance: 'pointer',
-                cursor: 'move',
+                connectWith             : '.gallery-image-holder',
+                forceHelperSize         : true,
+                forcePlaceholderSize    : true,
+                placeholder             : 'contentblocks-gallery-placeholder',
+                tolerance               : 'pointer',
+                cursor                  : 'move',
 
                 update: function() {
                     ContentBlocks.fixColumnHeights();
@@ -66,7 +71,7 @@
                 numImages = dom.find('.gallery-image-holder').find('li').length;
 
             if (maxImages > 0 && numImages >= maxImages) {
-                ContentBlocks.alert(_('contentblocks.max_images_reached', {max: maxImages}));
+                ContentBlocks.alert(_('contentblocks.max_images_reached', { max: maxImages }));
                 return false;
             }
 
@@ -109,14 +114,14 @@
             var holder = dom.find('.gallery-image-holder'),
                 urls = ContentBlocks.utilities.normaliseUrls(values.url);
 
-            values.url = urls.cleanedSrc;
-            values.description = values.description || '';
-            values.link = values.link || '';
+            values.url          = urls.cleanedSrc;
+            values.description  = values.description || '';
+            values.link         = values.link || '';
             values.thumbDisplay = (data.properties.thumbnail_size)
                 ? ContentBlocks.utilities.getThumbnailUrl(values.url, data.properties.thumbnail_size)
                 : urls.displaySrc;
 
-            holder.append(tmpl('contentblocks-field-gallery-item', values));
+            holder.append(tmpl('mediamanager-field-gallery-item', values));
             var inserted = $('#' + values.id);
             inserted.find('.contentblocks-gallery-image-delete').on('click', function() {
                 inserted.fadeOut(function() {
@@ -156,7 +161,7 @@
                     // Check if we're not at the limit already
                     var numImages = dom.find('.gallery-image-holder').find('li').length;
                     if (maxImages > 0 && numImages >= maxImages) {
-                        ContentBlocks.alert(_('contentblocks.max_images_reached', {max: maxImages}));
+                        ContentBlocks.alert(_('contentblocks.max_images_reached', { max: maxImages }));
                         return false;
                     }
 
@@ -166,12 +171,12 @@
 
                     // Add image to the page
                     input.addImage({
-                        title: data.files[0].name,
-                        url: '',
-                        id: imageId,
-                        size: data.files[0].size,
-                        extension: data.files[0].ext,
-                        file_id: data.files[0].file_id
+                        title       : data.files[0].name,
+                        url         : '',
+                        id          : imageId,
+                        size        : data.files[0].size,
+                        extension   : data.files[0].ext,
+                        file_id     : data.files[0].file_id
                     }, 'upload');
                     data.domId = '#' + imageId;
 
@@ -281,16 +286,16 @@
                 var $img = $(img),
                     $link = $img.find('input[id].linkfield'),
                     data = {
-                        url: $img.find('.url').val(),
-                        title: $img.find('.title').val(),
-                        description: $img.find('.description').val(),
-                        link: $link.val(),
-                        linkType: ContentBlocks.getLinkFieldDataType($link.val()),
-                        size: $img.find('.size').val(),
-                        width: $img.find('.width').val(),
-                        height: $img.find('.height').val(),
-                        extension: $img.find('.extension').val(),
-                        file_id: $img.find('.file_id').val()
+                        url         : $img.find('.url').val(),
+                        title       : $img.find('.title').val(),
+                        description : $img.find('.description').val(),
+                        link        : $link.val(),
+                        linkType    : ContentBlocks.getLinkFieldDataType($link.val()),
+                        size        : $img.find('.size').val(),
+                        width       : $img.find('.width').val(),
+                        height      : $img.find('.height').val(),
+                        extension   : $img.find('.extension').val(),
+                        file_id     : $img.find('.file_id').val()
                     };
                 images.push(data);
             });

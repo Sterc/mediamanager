@@ -260,13 +260,19 @@ class MediaManager
                 ]);
 
                 if ($cbField) {
-                    if ($cbField->get('input') === 'cb_mediamanager_image_input') {
+                    if (in_array($cbField->get('input'), ['cb_mediamanager_image_input', 'cb_mediamanager_input', 'cb_mediamanager_gallery_input'], true)) {
+                        /* When cb_mediamanager_image_input or cb_mediamanager_input. */
                         if (isset($cbValue['file_id'])) {
                             $files[] = $cbValue['file_id'];
                         }
-                    } else if ($cbField->get('input') === 'cb_mediamanager_input') {
-                        if (isset($cbValue['file_id'])) {
-                            $files[] = $cbValue['file_id'];
+
+                        /* When input type is cb_mediamanager_gallery_input. */
+                        if (isset($cbValue['images'])) {
+                            foreach ($cbValue['images'] as $image) {
+                                if (!empty($image['file_id'])) {
+                                    $files[] = $image['file_id'];
+                                }
+                            }
                         }
                     } else if ($cbField->get('input') === 'repeater') {
                         if (isset($cbValue['rows'])) {

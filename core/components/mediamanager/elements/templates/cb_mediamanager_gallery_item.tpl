@@ -14,7 +14,7 @@
     <div class="contentblocks-field-text contentblocks-field-link-input">
         <input type="text" id="{%=o.id%}_linkfield" class="linkfield" value="{%#o.link%}" data-link-type="{%=o.linkType%}" data-limit-to-current-context="{%=o.limit_to_current_context%}" placeholder="{%=_('contentblocks.link.placeholder')%}">
     </div>
-    
+
     <div class="contentblocks-field-gallery-uploading">
         <div class="upload-progress">
             <div class="bar"></div>
@@ -22,6 +22,6 @@
     </div>
 
     <div class="contentblocks-gallery-image-actions">
-        <a href="javascript:void(0);" class="contentblocks-field-button contentblocks-gallery-image-delete">&times; {%=_('contentblocks.delete')%}</a>
+        <button type="button" class="contentblocks-field-button contentblocks-gallery-image-delete contentblocks-field-button-destructive">&times; {%=_('contentblocks.delete')%}</button>
     </div>
 </li>

@@ -42,12 +42,12 @@ class cbMediaManagerGalleryInput extends cbBaseInput
         $tpls = [];
 
         // Grab the template from a .tpl file
-        $corePath = $this->modx->getOption('mediamanager.core_path', null, MODX_CORE_PATH . 'components/mediamanager/');
-        $template = file_get_contents($corePath . 'elements/templates/cb_mediamanager_gallery_input.tpl');
-        $template_item = file_get_contents($corePath . 'elements/templates/cb_mediamanager_gallery_item.tpl');
+        $corePath      = $this->modx->getOption('mediamanager.core_path', null, MODX_CORE_PATH . 'components/mediamanager/');
+        $template      = file_get_contents($corePath . 'elements/templates/cb_mediamanager_gallery_input.tpl');
+        $templateItem  = file_get_contents($corePath . 'elements/templates/cb_mediamanager_gallery_item.tpl');
 
         $tpls[] = $this->contentBlocks->wrapInputTpl('cb_mediamanager_gallery_input', $template);
-        $tpls[] = $this->contentBlocks->wrapTpl('contentblocks-field-gallery-item', $template_item);
+        $tpls[] = $this->contentBlocks->wrapTpl('mediamanager-field-gallery-item', $templateItem);
 
         return $tpls;
     }
@@ -143,11 +143,11 @@ class cbMediaManagerGalleryInput extends cbBaseInput
         $settings = $data;
         unset($settings['images']);
 
-        $rowTpl = $field->get('template');
+        $rowTpl     = $field->get('template');
         $wrapperTpl = $field->get('wrapper_template');
+        $output     = array();
+        $idx        = 1;
 
-        $output = array();
-        $idx = 1;
         foreach ($data['images'] as $img) {
             $img = array_merge($settings, $img);
             $img['idx'] = $idx;

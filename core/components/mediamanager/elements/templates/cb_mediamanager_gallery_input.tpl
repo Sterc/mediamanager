@@ -1,4 +1,5 @@
 <div class="contentblocks-field contentblocks-field-gallery contentblocks-field-gallery_with_title contentblocks-drop-target">
+    <input type="hidden" class="file_id" />
     <input type="hidden" class="url" />
     <input type="hidden" class="size" />
     <input type="hidden" class="extension" />
