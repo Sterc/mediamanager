@@ -44,7 +44,7 @@ class MediaManagerSourcesHelper
      */
     private function setDefaultSource()
     {
-        $source = $this->mediaManager->modx->getObject('modMediaSource', [
+        $source = $this->mediaManager->modx->getObject('sources.modMediaSource', [
             'id' => $this->mediaManager->modx->getOption('mediamanager.default_media_source')
         ]);
 
@@ -73,7 +73,7 @@ class MediaManagerSourcesHelper
         }
 
         if ($sourceId) {
-            $source = $this->mediaManager->modx->getObject('modMediaSource', [
+            $source = $this->mediaManager->modx->getObject('sources.modMediaSource', [
                 'id' => $sourceId
             ]);
 
@@ -152,7 +152,7 @@ class MediaManagerSourcesHelper
         $query = $this->mediaManager->modx->newQuery('sources.modMediaSource');
         $query->leftJoin('sources.modAccessMediaSource', 'modAccessMediaSource', 'modAccessMediaSource.target = modMediaSource.id');
         $query->where([
-            'modAccessMediaSource.principal_class' => 'modUserGroup',
+            'modAccessMediaSource.principal_class:IN' => ['modUserGroup', 'MODX\Revolution\modUserGroup'],
             'modAccessMediaSource.principal:IN'    => $this->mediaManager->modx->getUser()->getUserGroups()
         ]);
 
@@ -295,7 +295,7 @@ class MediaManagerSourcesHelper
      */
     public function getSource($sourceId)
     {
-        $source = $this->mediaManager->modx->getObject('modMediaSource', [
+        $source = $this->mediaManager->modx->getObject('sources.modMediaSource', [
             'id' => $sourceId
         ]);
 
