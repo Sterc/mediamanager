@@ -71,7 +71,7 @@ abstract class MediaManagerManagerController extends modExtraManagerController
                 },
                 categories          : ' . (isset($categoriesAndTags['categories']) ? json_encode($categoriesAndTags['categories']) : '""') . ',
                 tags                : ' . (isset($categoriesAndTags['tags']) ? json_encode($categoriesAndTags['tags']) : '""'). ',
-                contextTags         : ' . (isset($categoriesAndTags['contextTags']) ? json_encode($categoriesAndTags['contextTags']) : '""') . ', 
+                contextTags         : ' . (isset($categoriesAndTags['contextTags']) ? json_encode($categoriesAndTags['contextTags']) : '""') . ',
                 metaFields          : ' . json_encode($metaData) . '
             }
 
@@ -81,6 +81,7 @@ abstract class MediaManagerManagerController extends modExtraManagerController
         </script>');
 
         if (isset($_REQUEST['tv_frame']) && $_REQUEST['tv_frame'] == '1') {
+            // Add some custom styling when mediamanager is loaded inside iframe (for example in TVs / ContentBlocks)
             $this->addHtml('<style type="text/css">
                 #modx-header,
                 #modx-leftbar,
@@ -90,6 +91,7 @@ abstract class MediaManagerManagerController extends modExtraManagerController
                 }
                 #modx-content {
                     top: 0;
+                    left: 0 !important;
                 }
                 .mediamanager-browser .view-mode-grid .file:hover .file-options .btn-success {
                     display: block;
