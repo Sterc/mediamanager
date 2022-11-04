@@ -1,6 +1,6 @@
 Changelog for MediaManager.
 
-MediaManager 0.3.1
+MediaManager 0.3.2
 ====================================
 - Replace acute symbols with single quotes in lexicon files (fixes #54)
 - Fix mediamanager styling when used in popup (fixes #55)
