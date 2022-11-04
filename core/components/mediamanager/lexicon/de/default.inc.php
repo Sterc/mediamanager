@@ -1,6 +1,6 @@
 <?php
 /**
- * Default English Lexicon Entries for Media Manager
+ * Default German lexicon entries for Media Manager
  *
  * @package mediamanager
  * @subpackage lexicon
