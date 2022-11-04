@@ -2,6 +2,10 @@ Changelog for MediaManager.
 
 MediaManager 0.3.1
 ====================================
+- Replace acute symbols with single quotes in lexicon files (fixes #54)
+
+MediaManager 0.3.1
+====================================
 - Fixed Metadata required fields validation message shows key instead of label value #52
 - Fixed ACLs - Mediasource and User Permissions #51
 - Improved Archiving and Replacing visual interface confusing #50
