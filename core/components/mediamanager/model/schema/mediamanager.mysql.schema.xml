@@ -10,7 +10,7 @@
             <column key="parent_id" length="" collation="A" null="false" />
         </index>
 
-        <aggregate alias="MediaSource" class="modMediaSource" local="media_sources_id" foreign="id" cardinality="one" owner="foreign" />
+        <aggregate alias="MediaSource" class="sources.modMediaSource" local="media_sources_id" foreign="id" cardinality="one" owner="foreign" />
         <composite alias="Files" class="MediamanagerFilesCategories" local="id" foreign="mediamanager_categories_id" cardinality="many" owner="local" />
     </object>
 
@@ -26,7 +26,7 @@
             <column key="is_deleted" length="" collation="A" null="false" />
         </index>
 
-        <aggregate alias="MediaSource" class="modMediaSource" local="media_sources_id" foreign="id" cardinality="one" owner="foreign" />
+        <aggregate alias="MediaSource" class="sources.modMediaSource" local="media_sources_id" foreign="id" cardinality="one" owner="foreign" />
         <composite alias="Files" class="MediamanagerFilesTags" local="id" foreign="mediamanager_tags_id" cardinality="many" owner="local" />
     </object>
 
@@ -78,7 +78,7 @@
             <column key="is_archived" length="" collation="A" null="false" />
         </index>
 
-        <aggregate alias="MediaSource" class="modMediaSource" local="media_sources_id" foreign="id" cardinality="one" owner="foreign" />
+        <aggregate alias="MediaSource" class="sources.modMediaSource" local="media_sources_id" foreign="id" cardinality="one" owner="foreign" />
         <composite alias="FileLicense" class="MediamanagerFilesLicenseFile" local="id" foreign="mediamanager_files_id" cardinality="one" owner="local" />
         <composite alias="Categories" class="MediamanagerFilesCategories" local="id" foreign="mediamanager_files_id" cardinality="many" owner="local" />
         <composite alias="Tags" class="MediamanagerFilesTags" local="id" foreign="mediamanager_files_id" cardinality="many" owner="local" />
