@@ -380,19 +380,36 @@ class MediaManagerCategoriesHelper
      */
     public function getAllCategories()
     {
-        $categories = $this->mediaManager->modx->getIterator('MediamanagerCategories', [
-            'media_sources_id' => $this->mediaManager->sources->getCurrentSource()
-        ]);
+        $query = $this->mediaManager->modx->newQuery('MediamanagerCategories');
+        $query->where(['media_sources_id' => $this->mediaManager->sources->getCurrentSource()]);
+
+        $query->sortby('parent_id', 'asc');
+
+        $categories = $this->mediaManager->modx->getIterator('MediamanagerCategories', $query);
 
         $result = [];
         foreach ($categories as $category) {
             $result[] = [
-                'id'   => $category->get('id'),
-                'text' => $category->get('name')
+                'id'        => $category->get('id'),
+                'text'      => $this->getParents($category->get('parent_id')) . $category->get('name'),
+                'parents'   => $this->getParents($category->get('parent_id')) // TODO
             ];
         }
 
         return $result;
     }
 
+    /**
+     * Get list of parent category names as string.
+     *
+     * @return string
+     */
+    private function getParents($categoryId, $list = [], $separator = ' > ') {
+        if ($object = $this->mediaManager->modx->getObject('MediamanagerCategories', $categoryId)) {
+            $list[] = $object->get('name');
+            return $this->getParents($object->get('parent_id'), $list);
+        }
+
+        return count($list) ? implode($separator, array_reverse($list)) . $separator : '';
+    }
 }
