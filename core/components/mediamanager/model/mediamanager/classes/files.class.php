@@ -1432,7 +1432,7 @@ class MediaManagerFilesHelper
             }
 
             /* Check required fields. */
-            foreach (['image_valid_startdate', 'image_valid_enddate', 'license_exists', 'license_depicted_consent'] as $requiredField) {
+            foreach (['image_valid_startdate', 'image_valid_enddate', 'license_exists', 'license_depicted_consent', 'image_source'] as $requiredField) {
                 if (empty($data['license'][$requiredField]) && $data['license'][$requiredField] !== '0') {
                     $this->addError('license[' . $requiredField . ']', $this->mediaManager->modx->lexicon('mediamanager.error.required_field', [
                         'field' => $this->mediaManager->modx->lexicon('mediamanager.files.' . $requiredField)
