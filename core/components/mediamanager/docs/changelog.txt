@@ -5,6 +5,7 @@ MediaManager 0.3.2
 - Replace acute symbols with single quotes in lexicon files (fixes #54)
 - Fix mediamanager styling when used in popup (fixes #55)
 - Add support for MODX3 (PR #53, thanks to rtripault)
+- Fix category parents visibility in categories dropdown (fixes #57)
 
 MediaManager 0.3.1
 ====================================

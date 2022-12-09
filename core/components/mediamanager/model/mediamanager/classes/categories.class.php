@@ -391,8 +391,8 @@ class MediaManagerCategoriesHelper
         foreach ($categories as $category) {
             $result[] = [
                 'id'        => $category->get('id'),
-                'text'      => $this->getParents($category->get('parent_id')) . $category->get('name'),
-                'parents'   => $this->getParents($category->get('parent_id')) // TODO
+                'text'      => $category->get('name'),
+                'parents'   => $this->getParents($category->get('parent_id'))
             ];
         }
 

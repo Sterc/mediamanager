@@ -490,7 +490,8 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
 
             self.$filterCategoriesOptions = {
                 data: self.$options.categories,
-                theme: 'default select2-container--categories'
+                theme: 'default select2-container--categories',
+                templateResult: self.categoryParentsPrefix
             };
 
             self.$filterTagsOptions = {
@@ -564,6 +565,17 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                 self.$currentFilters['date']['to'] = '';
                 self.getList();
             });
+        },
+
+        /**
+         * Format the search result dropdown, used to prefix the category name with parents if available.
+         */
+        categoryParentsPrefix: function(state) {
+            if (state.parents) {
+                return state.parents + state.text;
+            }
+
+            return state.text;
         },
 
         /**
