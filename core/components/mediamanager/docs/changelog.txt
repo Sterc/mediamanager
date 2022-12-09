@@ -6,6 +6,7 @@ MediaManager 0.3.2
 - Fix mediamanager styling when used in popup (fixes #55)
 - Add support for MODX3 (PR #53, thanks to rtripault)
 - Fix category parents visibility in categories dropdown (fixes #57)
+- Add image_source as required field for licensing (fixes #58)
 
 MediaManager 0.3.1
 ====================================

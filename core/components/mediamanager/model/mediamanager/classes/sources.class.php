@@ -318,7 +318,7 @@ class MediaManagerSourcesHelper
             'baseUrlRelative'                   => isset($properties['baseUrlRelative']['value']) ? $properties['baseUrlRelative']['value'] : true,
             'allowedFileTypes'                  => isset($properties['allowedFileTypes']['value']) ? $properties['allowedFileTypes']['value'] : '',
             'meta'                              => isset($properties['mediamanagerMeta']['value']) ? (array) json_decode($properties['mediamanagerMeta']['value'], true) : [],
-            'licensing'                         => isset($properties['mediamanagerLicenseEnabled']['value']) ? $properties['mediamanagerLicenseEnabled']['value'] : false,
+            'licensing'                         => isset($properties['mediamanagerLicenseEnabled']['value']) ? (bool) $properties['mediamanagerLicenseEnabled']['value'] : false,
             'licensing_sources'                 => isset($properties['mediamanagerLicenseSources']['value']) ? json_decode($properties['mediamanagerLicenseSources']['value'], true) : [],
             'licensing_file_allowed_extensions' => isset($properties['mediamanagerLicenseFileAllowedExtensions']['value']) ? explode(',', $properties['mediamanagerLicenseFileAllowedExtensions']['value']) : ['.pdf', '.jpg', '.png', '.eml', '.msg'],
         ];

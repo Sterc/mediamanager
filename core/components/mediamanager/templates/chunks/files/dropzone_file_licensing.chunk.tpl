@@ -6,7 +6,7 @@
     </div>
 
     <div class="form-group">
-        <label for="image_source">[[%mediamanager.files.image_source]]</label>
+        <label for="image_source">[[%mediamanager.files.image_source]] *</label>
         <select name="l[image_source]" id="image_source" class="form-control" data-file-license>
             <option value="">[[%mediamanager.files.image_source_select]]</option>
             [[+source_options]]
@@ -17,17 +17,17 @@
 
     <h3 class="section-title">[[%mediamanager.files.image_validity.title]]</h3>
     <div class="form-group">
-        <label for="image_valid_startdate">[[%mediamanager.files.image_valid_startdate]]</label>
+        <label for="image_valid_startdate">[[%mediamanager.files.image_valid_startdate]] *</label>
         <input type="date" name="l[image_valid_startdate]" id="image_valid_startdate" value="[[+date_today]]" class="form-control" data-file-license/>
     </div>
 
     <div class="form-group">
-        <label for="image_valid_enddate">[[%mediamanager.files.image_valid_enddate]]</label>
+        <label for="image_valid_enddate">[[%mediamanager.files.image_valid_enddate]] *</label>
         <input type="date" name="l[image_valid_enddate]" id="image_valid_enddate" value="[[+date_today]]" class="form-control" data-file-license/>
     </div>
 
     <div class="form-group">
-        <label>[[%mediamanager.files.license_exists]]</label>
+        <label>[[%mediamanager.files.license_exists]] *</label>
         <div class="radio">
             <label>
                 <input type="radio" name="l[license_exists]" value="0" data-file-license>
@@ -43,7 +43,7 @@
     </div>
 
     <div class="form-group">
-        <label>[[%mediamanager.files.license_depicted_consent]]</label>
+        <label>[[%mediamanager.files.license_depicted_consent]] *</label>
         <div class="radio">
             <label>
                 <input type="radio" name="l[license_depicted_consent]" value="0" data-file-license>
