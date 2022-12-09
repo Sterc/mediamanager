@@ -512,7 +512,6 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
             $(self.$filterCategories).on('select2:select', function(e) {
                 self.$currentFilters.categories.push(e.params.data.id);
                 self.getList();
-                console.log(e.params.data.id);
             });
 
             // Remove tag from filter
