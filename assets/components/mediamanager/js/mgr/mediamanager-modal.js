@@ -10,7 +10,9 @@
         height        : $(window).height() * 0.94,
         wrapperId     : 'modal-wrapper',
         selectElement : '.mediamanager-browser .view-mode-grid .file .file-options .btn-success',
-        onSelect      : function () {}
+        selectMultiElement : '.use-multi',
+        onSelect      : function () {},
+        onSelectMulti : function() {}
     }
 
     $.MediaManagerModal = function (options) {
@@ -39,6 +41,15 @@
                 }
             });
 
+            function buildObject($file) {
+                return {
+                    preview: $file.find('.file-preview img, .file-preview svg').data('path'),
+                    path: $file.find('.file-preview img, .file-preview svg').data('path'),
+                    id: $file.data('id'),
+                    name: $.trim($file.find('.file-name').text())
+                };
+            }
+
             $iFrameElement.on('load', function() {
                 var $iFrame = $(this).contents();
 
@@ -46,23 +57,40 @@
                 $iFrame.on('click', settings.selectElement, function(e) {
                     e.preventDefault();
 
-                    var $file       = $(this).parents('.file'),
-                        filePreview = $file.find('.file-preview img, .file-preview svg').data('path'),
-                        filePath    = $file.find('.file-preview img, .file-preview svg').data('path'),
-                        fileId      = $file.data('id'),
-                        fileName    = $.trim($file.find('.file-name').text());
-
-                    var object = {
-                        'preview' : filePreview,
-                        'path'    : filePath,
-                        'id'      : fileId,
-                        'name'    : fileName
-                    };
+                    let $file = $(this).parents('.file');
+                    let object = buildObject($file)
 
                     settings.onSelect(object);
 
                     $dialogElement.dialog('close');
                 });
+
+                if (settings.onSelectMulti !== function() {}) {
+                    const batchUseButtons = $iFrame.find(settings.selectMultiElement);
+                    if (batchUseButtons.length !== 1) {
+                        return
+                    }
+                    batchUseButtons[0].classList.remove('hidden')
+                    batchUseButtons[0].addEventListener(
+                        'files_selected',
+                        function (event) {
+                            let objects = []
+                            event.detail.files.forEach(function (file) {
+                                let $file = $iFrame.find("[data-id='"+ file.id + "']")
+                                if ($file.length === 0) {
+                                    return
+                                }
+                                objects.push(buildObject($file))
+                            })
+
+                            if (objects.length === 0) {
+                                return
+                            }
+                            settings.onSelectMulti(objects)
+                            $dialogElement.dialog('close');
+                        }
+                    )
+                }
             });
 
             $dialogElement.dialog('open');
