@@ -10,6 +10,7 @@ if ($object->xpdo instanceof modX) {
     $events = [
         'MediaManagerFileArchived',
         'MediaManagerFileDeleted',
+        'MediaManagerFileSaved',
 
         'MediaManagerFileVersionChanged',
 
