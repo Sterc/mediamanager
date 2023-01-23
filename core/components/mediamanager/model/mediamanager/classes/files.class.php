@@ -2433,8 +2433,11 @@ class MediaManagerFilesHelper
         $fileName = explode('.', $file['name']); // @TODO: Need better solution (what if a filename contains multiple dots?)
         $fileName = $this->createUniqueFile($this->uploadDirectory . $this->uploadDirectoryMonth, $fileName[0], $file['file_type']);
 
+        $destinationPath = $this->uploadDirectoryMonth . $fileName;
+        $destinationAbsolute = $this->uploadDirectory . $destinationPath;
+
         // Create new file
-        $fileCreated = file_put_contents($this->uploadDirectory . $this->uploadDirectoryMonth . $fileName, $imageData);
+        $fileCreated = file_put_contents($destinationAbsolute, $imageData);
         if ($fileCreated === false) {
             return [
                 'status'  => self::STATUS_ERROR,
@@ -2442,8 +2445,8 @@ class MediaManagerFilesHelper
             ];
         }
 
-        $file['size']        = filesize($this->uploadDirectory . $this->uploadDirectoryMonth . $fileName);
-        $file['hash']        = $this->getFileHashByPath($this->uploadDirectory . $this->uploadDirectoryMonth . $fileName);
+        $file['size']        = filesize($destinationAbsolute);
+        $file['hash']        = $this->getFileHashByPath($destinationAbsolute);
         $file['extension']   = $file['file_type'];
         $file['unique_name'] = $fileName;
 
@@ -2473,6 +2476,8 @@ class MediaManagerFilesHelper
 
         // Add file to database
         $fileId         = $this->insertFile($file, $data);
+        // we update the path here so that "version" file uses the newly created image and not the source duplicated
+        $file['path'] = $destinationPath;
         $versionCreated = $this->saveFileVersion($fileId, $file, 'create');
         if (!$fileId || !$versionCreated) {
             // Remove file from server if saving failed
