@@ -5,7 +5,10 @@
     // and the data variable contains field information, properties etc.
     ContentBlocks.fieldTypes.cb_mediamanager_image_input = function(dom, data) {
         var input = {
-            fieldDom: dom.find('.contentblocks-field')
+            fieldDom: dom.find('.contentblocks-field'),
+            cropData: data.crops || {},
+            cropPreviews: dom.find('.contentblocks-field-image-crop-previews'),
+            openCropperAutomatically: ContentBlocks.toBoolean(data.properties.open_crops_automatically)
         };
 
         // Do something when the input is being loaded
@@ -20,8 +23,20 @@
                 dom.find('.contentblocks-field-image-title-input').val(data.title);
                 dom.find('.contentblocks-field-image-preview img').attr('src', urls.displaySrc);
                 dom.addClass('preview');
+                input.initCropPreviews();
             }
 
+            if (!data.properties.crops || data.properties.crops.length === 0) {
+                input.fieldDom.find('.contentblocks-field-crop-image').hide();
+            }
+            else {
+                input.fieldDom.find('.contentblocks-field-crop-image').on('click', input.openCropper);
+                input.fieldDom.on('click', '.contentblocks-field-image-crop-preview', function(e) {
+                    var crop = $(this),
+                        cropKey = crop.data('key');
+                    input.openCropper(e, cropKey);
+                });
+            }
             dom.find('.contentblocks-field-delete-image').on('click', function() {
                 input.fieldDom.removeClass('preview');
                 dom.removeClass('preview');
@@ -31,6 +46,8 @@
                 dom.find('.file_id').val('');
                 dom.find('.contentblocks-field-image-title-input').val('');
                 dom.find('.contentblocks-field-file-preview').html('');
+                input.cropData = data.crops = {};
+                input.cropPreviews.empty();
 
                 ContentBlocks.fixColumnHeights();
                 ContentBlocks.fireChange();
@@ -49,7 +66,8 @@
                 width       : dom.find('.width').val(),
                 height      : dom.find('.height').val(),
                 file_id     : dom.find('.file_id').val(),
-                title       : dom.find('.contentblocks-field-image-title-input').val()
+                title       : dom.find('.contentblocks-field-image-title-input').val(),
+                crops       : input.cropData || {}
             };
         };
 
@@ -69,10 +87,53 @@
                     dom.find('.contentblocks-field-image-preview img').attr('src', file.preview);
 
                     input.fieldDom.addClass('preview');
+
+                    if (input.openCropperAutomatically) {
+                        input.openCropper();
+                    }
                 }
             });
 
             mediaManager.open();
+        };
+
+        input.initCropPreviews = function() {
+            $.each(input.cropData, function(key, cropData) {
+                if (cropData.url && data.properties.crops && data.properties.crops.indexOf(key) !== -1) {
+                    var cd = $.extend({cropKey: key}, cropData);
+                    input.cropPreviews.append(tmpl('contentblocks-field-image-crop', cd));
+                }
+            });
+        };
+
+        input.openCropper = function(e, crop) {
+            var imgData = $.extend(true, {}, data, input.getData());
+            crop = crop || false;
+            var cropper = ContentBlocks.Cropper(imgData, {
+                configurations: data.properties.crops || '',
+                initialCrop: crop
+            });
+            cropper.onChange(function(cropperData) {
+                input.cropData = $.extend(true, {}, cropperData, true);
+                $.each(cropperData, function(cropKey, cropData) {
+                    if (!cropData.url) {
+                        return;
+                    }
+                    var preview = input.cropPreviews.find('.image-crop-' + cropKey + ' img');
+                    if (preview && preview.length) {
+                        preview.attr('src', cropData.url)
+                    }
+                    else {
+                        var cd = $.extend({cropKey: cropKey}, cropData);
+                        input.cropPreviews.append(tmpl('contentblocks-field-image-crop', cd));
+                    }
+                });
+                if (data.properties.thumbnail_crop
+                    && input.cropData[data.properties.thumbnail_crop]
+                    && input.cropData[data.properties.thumbnail_crop].url) {
+                    input.fieldDom.find('img.contentblocks-field-image-preview-img').attr('src', input.cropData[data.properties.thumbnail_crop].url);
+                }
+            });
         };
 
         // Always return the input variable.
