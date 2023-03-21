@@ -32,7 +32,7 @@ class cbMediaManagerImageInput extends cbBaseInput
      */
     public function getTemplates()
     {
-        $tpls = array();
+        $tpls = [];
 
         // Grab the template from a .tpl file
         $corePath = $this->modx->getOption('mediamanager.core_path', null, MODX_CORE_PATH . 'components/mediamanager/');
@@ -41,6 +41,11 @@ class cbMediaManagerImageInput extends cbBaseInput
         // Wrap the template, giving the input a reference of "my_awesome_input", and
         // add it to the returned array.
         $tpls[] = $this->contentBlocks->wrapInputTpl('cb_mediamanager_image_input', $template);
+
+        $tpls[] = $this->contentBlocks->getCoreTpl('inputs/partials/image_crop', 'contentblocks-field-image-crop');
+        $tpls[] = $this->contentBlocks->getCoreTpl('inputs/modals/image_cropper', 'contentblocks-field-image-cropper');
+        $tpls[] = $this->contentBlocks->getCoreTpl('inputs/modals/image_cropper_configuration', 'contentblocks-field-image-cropper-configuration');
+
         return $tpls;
     }
 
@@ -68,5 +73,38 @@ class cbMediaManagerImageInput extends cbBaseInput
         }
 
         return parent::process($field, $data);
+    }
+
+    /**
+     * Return an array of field properties. Properties are used in the component for defining
+     * additional templates or other settings the site admin can define for the field.
+     *
+     * @return array
+     */
+    public function getFieldProperties()
+    {
+        return [
+            [
+                'key' => 'crop_directory',
+                'fieldLabel' => $this->modx->lexicon('contentblocks.crop_directory'),
+                'xtype' => 'textfield',
+                'default' => $this->contentBlocks->getOption('contentblocks.image.crop_path', null, 'assets/crops/'),
+                'description' => $this->modx->lexicon('contentblocks.crop_directory.description')
+            ],
+            [
+                'key' => 'crops',
+                'fieldLabel' => $this->modx->lexicon('contentblocks.crops'),
+                'xtype' => 'textfield',
+                'default' => '',
+                'description' => $this->modx->lexicon('contentblocks.crops.description')
+            ],
+            [
+                'key' => 'open_crops_automatically',
+                'fieldLabel' => $this->modx->lexicon('contentblocks.open_crops_automatically'),
+                'xtype' => 'contentblocks-combo-boolean',
+                'default' => false,
+                'description' => $this->modx->lexicon('contentblocks.open_crops_automatically.description')
+            ]
+        ];
     }
 }
