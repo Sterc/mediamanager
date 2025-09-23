@@ -33,6 +33,7 @@ $_lang['mediamanager.global.use']               = 'Use';
 $_lang['mediamanager.global.yes']               = 'Yes';
 $_lang['mediamanager.global.no']                = 'No';
 $_lang['mediamanager.global.error.mediasource'] = 'Your default mediasource (ID [[+mediasource_id]]) is not configured to use with the Media Manager. Please add a property \'mediamanagerSource\' with value \'1\' to this mediasource and all other mediasources you want to use with the Media Manager.';
+$_lang['mediamanager.global.ai.button']         = 'Generate with AI';
 
 /* Tags */
 $_lang['mediamanager.tags']                                 = 'Media Tags';
@@ -192,6 +193,9 @@ $_lang['mediamanager.files.source_valid_until']                 = 'Valid until [
 $_lang['mediamanager.files.license_file']                       = 'License or Consent file upload';
 $_lang['mediamanager.files.license_file_help']                  = 'Allowed file extensions are [[+extensions]].';
 $_lang['mediamanager.error.extension_not_allowed_for_field']    = 'File extension is not allowed for field "[[+field]]". Allowed file extensions are [[+extensions]].';
+$_lang['mediamanager.files.ai.button']                          = $_lang['mediamanager.global.ai.button'];
+$_lang['mediamanager.files.ai.apply.button']                    = 'Apply';
+$_lang['mediamanager.files.ai.reset.button']                    = 'Reset';
 
 /* Sources */
 $_lang['mediamanager.sources.root']                                         = 'None';
@@ -237,3 +241,6 @@ $_lang['mediamanager.license.email.message']                                = 'M
 $_lang['mediamanager.license.email.image_source_expired']                   = 'Image source expired.';
 $_lang['mediamanager.license.email.image_about_to_expire_by_image_source']  = 'Image is about to expire based on the image source expiry date.';
 $_lang['mediamanager.license.email.footer']                                 = 'This is an automated message sent by the <strong>MediaManager</strong> from <strong>[[++site_name]]</strong>.';
+
+$_lang['mediamanager.ai.error.required_modai']                              = 'This Extra requires "modAI". Please install it first.';
+$_lang['mediamanager.ai.error.required_modai_version']                      = 'This Extra requires at least "modAI" version [[+version]].';

@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="col-md-5">
+    <div class="col-md-5 clearfix">
 
         <div class="file-preview">
             [[+preview]]
@@ -10,10 +10,24 @@
             [[+categories]]
         </select>
 
+        <button type="button" class="btn btn-primary dz-ai pull-right"
+                data-preview-call-ai="categories" data-loading-text="[[%mediamanager.files.ai.loading]]">[[%mediamanager.files.ai.button]]</button>
+        <button type="button" class="btn btn-success dz-ai dz-ai-apply pull-right hidden"
+                data-apply-ai="categories">[[%mediamanager.files.ai.apply.button]]</button>
+        <button type="button" class="btn btn-danger dz-ai dz-ai-reset pull-right hidden"
+                data-reset-ai="categories">[[%mediamanager.files.ai.reset.button]]</button>
+
         <label class="spacing">[[%mediamanager.global.tags]]</label>
         <select name="tags[]" class="form-control" multiple="multiple" data-placeholder="[[%mediamanager.global.tags]]" data-file-tags [[+can_edit:is=`0`:then=` disabled`]]>
             [[+tags]]
         </select>
+
+        <button type="button" class="btn btn-primary dz-ai pull-right"
+                data-preview-call-ai="tags" data-loading-text="[[%mediamanager.files.ai.loading]]">[[%mediamanager.files.ai.button]]</button>
+        <button type="button" class="btn btn-success dz-ai dz-ai-apply pull-right hidden"
+                data-apply-ai="tags">[[%mediamanager.files.ai.apply.button]]</button>
+        <button type="button" class="btn btn-danger dz-ai dz-ai-reset pull-right hidden"
+                data-reset-ai="tags">[[%mediamanager.files.ai.reset.button]]</button>
 
         [[-<label class="spacing">[[%mediamanager.files.source_tags]]</label>
         <select name="source_tags[]" class="form-control" multiple="multiple" data-placeholder="[[%mediamanager.files.source_tags]]" data-file-source-tags [[+can_edit:is=`0`:then=` disabled`]]>

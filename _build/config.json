@@ -4,6 +4,9 @@
     "description": "Media Manager for MODX.",
     "author": "Sterc",
     "version": "0.3.3",
+    "dependencies": {
+      "modAI": ">=0.13.1-pl"
+    },
     "package":{
         "menus": [{
             "text": "mediamanager",

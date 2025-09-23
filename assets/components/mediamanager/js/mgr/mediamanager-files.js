@@ -54,6 +54,11 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
         $fileRevertButton        : 'button[data-revert-button]',
         $fileCrop                : 'img.crop',
         $filePreviewLink         : 'a[data-preview-link]',
+        $fileDzAIButton          : 'button[data-dz-call-ai]',
+        $fileEditAIButton        : 'button[data-edit-call-ai]',
+        $filePreviewAiButton     : 'button[data-preview-call-ai]',
+        $fileApplyAiButton       : 'button[data-apply-ai]',
+        $fileResetAiButton       : 'button[data-reset-ai]',
 
         $selectSource            : 'select[data-select-source]',
         $categoryTree            : 'div[data-category-tree]',
@@ -187,6 +192,108 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
                         var $fieldTags          = $(self.$fileTags, $file).select2(self.$filterTagsOptions);
                         var $fieldsMeta         = $(self.$fileMeta, $file);
                         var $fieldsLicense      = $(self.$fileLicense, $file);
+
+                        if (typeof modAI !== 'undefined' && modAI) {
+                            var $fileAIButton = $(self.$fileDzAIButton, $file);
+
+                            const fieldSchema = {}
+                            window.mediaManagerOptions.ai.forEach((item) => {
+                                fieldSchema[item.key] = item.prompt && item.prompt.trim() !== ''
+                                    ? 'string (' + item.prompt + ')'
+                                    : 'string';
+                            });
+
+                            const categoryPromt = `
+                            First, create your own descriptive categories freely based on the image content.
+                            Then, compare those freely created categories to the following predefined list, ignore the language and select all categories from the list that best match
+                            semantically, emotionally, or visually: ${self.$filterCategoriesOptions.data.map(item => item.text).join(',')}
+                            You may choose multiple matching categories from the list.
+                            If none of the freely created categories match the predefined list, use an empty array for “categories”.
+                            `;
+                            const tagPromt = `
+                            First, create your own descriptive tags freely based on the image content.
+                            Then, compare those freely created tags to the following predefined list, ignore the language and select all tags from the list that best match
+                            semantically, emotionally, or visually: ${self.$filterTagsOptions.data.map(item => item.text).join(',')}
+                            You may choose multiple matching tags from the list.
+                            If none of the freely created tags match the predefined list, use an empty array for “tags”.
+                            `;
+                            const AIPrompt = `Please analyze the following image.
+                            The output language must be in "${window.MODx.config.cultureKey}"
+                            Return the result as a JSON object with the following structure:
+    
+                            ${JSON.stringify(fieldSchema)}
+    
+                            ${tagPromt}
+    
+                            ${categoryPromt}
+    
+                            Ensure the output is valid JSON and matches the format exactly.
+                            Respond only with a single-line, compact, valid JSON object. Do not include code blocks, markdown, or any line breaks.
+                            The output must contain no \\n characters, no indentation, and no extra whitespace.`;
+
+                            $fileAIButton.on('click', async function (){
+                                const button = $(this).button('loading');
+                                try {
+                                    const img = $(file.previewElement).find('img').attr('src');
+                                    const result = await modAI.executor.mgr.prompt.vision(
+                                        {
+                                            image: img,
+                                            field: '',
+                                            prompt: AIPrompt,
+                                        }
+                                    )
+                                    const data = JSON.parse(result.content);
+                                    Object.entries(data).forEach(([key, value]) => {
+                                        let index = 0;
+                                        const $input = $(`[name="m[${key}]"]`, $file);
+                                        const inputField = $input[0];
+                                        function typeChar() {
+                                            const currentValue = (index === 0) ? '' : inputField.value;
+                                            if (index < value.length) {
+                                                inputField.value = currentValue + value.charAt(index);
+                                                index++;
+                                                inputField.scrollLeft = inputField.scrollWidth;
+                                                setTimeout(typeChar,30);
+                                            }
+                                        }
+                                        if (!['tags', 'categories'].includes(key)) {
+                                            typeChar();
+                                        }
+                                    })
+
+                                    function applySelectValues(sourceArray, targetArray, valueField, textField, $field) {
+                                        if (!Array.isArray(sourceArray) || sourceArray.length === 0) return;
+                                        if (!Array.isArray(targetArray) || targetArray.length === 0) return;
+
+                                        const matchedIds = targetArray
+                                            .filter(option => sourceArray.includes(option[textField]))
+                                            .map(option => option[valueField]);
+
+                                        $field.val(matchedIds).trigger('change');
+                                    }
+
+                                    applySelectValues(
+                                        data.tags,
+                                        self?.$filterTagsOptions?.data,
+                                        'id',
+                                        'text',
+                                        $fieldTags
+                                    );
+                                    applySelectValues(
+                                        data.categories,
+                                        self?.$filterCategoriesOptions?.data,
+                                        'id',
+                                        'text',
+                                        $fieldCategories
+                                    );
+                                } catch (e) {
+                                    console.error(e);
+                                } finally {
+                                    button.button('reset');
+                                }
+                            })
+                        }
+
 
                         if (data[$fieldCategories.attr('name')]) {
                             $fieldCategories.val(data[$fieldCategories.attr('name')]).trigger('change');

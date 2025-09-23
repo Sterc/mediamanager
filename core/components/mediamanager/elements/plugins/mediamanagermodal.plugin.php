@@ -15,5 +15,28 @@ switch ($modx->event->name) {
         $modx->regClientStartupScript($mediamanager->config['assets_url'] . 'libs/jquery-ui/1.11.4/js/jquery-ui.min.js');
         $modx->regClientStartupScript($mediamanager->config['assets_url'] . 'js/mgr/mediamanager-modal.js');
 
+        if (!$modx->services->has('modai')) {
+            return;
+        }
+        /** @var \modAI\modAI | null $modAI */
+        $modAI = $modx->services->get('modai');
+
+        if ($modAI === null) {
+            return;
+        }
+
+        $baseConfig = $modAI->getBaseConfig();
+        $modx->controller->addHtml(
+            <<<HTML
+                <script type="text/javascript">
+                let modAI;
+                Ext.onReady(function() {
+                    modAI = ModAI.init(' . json_encode($baseConfig) . ');
+                });
+                </script>
+            HTML
+        );
+
+        $modx->regClientStartupScript($modAI->getJSFile());
         break;
 }

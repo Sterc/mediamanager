@@ -11,6 +11,14 @@
         <div class="col-md-6">
             <input type="text" class="form-control" name="meta[ [[+prefix]] ][value]" placeholder="[[%mediamanager.files.meta.value]]" value="[[+meta_value]]" />
         </div>
+        <button type="button" class="btn btn-primary dz-ai pull-right"
+                data-edit-call-ai="[[+meta_key]]" data-loading-text="[[%mediamanager.files.ai.loading]]">
+            [[%mediamanager.files.ai.button]]
+        </button>
+        <button type="button" class="btn btn-success dz-ai dz-ai-apply pull-right hidden"
+                data-apply-ai="[[+meta_key]]">[[%mediamanager.files.ai.apply.button]]</button>
+        <button type="button" class="btn btn-danger dz-ai dz-ai-reset pull-right hidden"
+                data-reset-ai="[[+meta_key]]">[[%mediamanager.files.ai.reset.button]]</button>
         <div class="col-md-1">
             [[+disabled:eq=`1`:then=`
 

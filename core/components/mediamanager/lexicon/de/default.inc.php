@@ -33,6 +33,7 @@ $_lang['mediamanager.global.use']               = 'Benutzen';
 $_lang['mediamanager.global.yes']               = 'Ja';
 $_lang['mediamanager.global.no']                = 'Nein';
 $_lang['mediamanager.global.error.mediasource'] = 'Ihr default mediasource (ID [[+ mediasource_id]]) ist nicht mit dem Media Manager konfiguriert. Bitte fügen Sie eine Property \'mediamanagerSource \' mit dem Wert \'1 \' zu diesem mediasource und alle anderen mediasources Sie mit dem Media Manager verwenden möchten.';
+$_lang['mediamanager.global.ai.button']         = 'Mit KI genrieren';
 
 /* Tags */
 $_lang['mediamanager.tags']                                     = 'Medien-Tags';
@@ -192,7 +193,10 @@ $_lang['mediamanager.files.source_valid_until']                 = 'Gültig bis [
 $_lang['mediamanager.files.license_file']                       = 'Hochladen der Lizenz- oder Zustimmungsdatei';
 $_lang['mediamanager.files.license_file_help']                  = 'Erlaubte Dateierweiterungen sind [[+extensions]].';
 $_lang['mediamanager.error.extension_not_allowed_for_field']    = 'Die Dateierweiterung ist für das Feld "[[+field]]" nicht zulässig. Erlaubte Dateierweiterungen sind [[+extensions]].';
-
+$_lang['mediamanager.files.ai.loading']                         = 'Generieren...';
+$_lang['mediamanager.files.ai.button']                          = $_lang['mediamanager.global.ai.button'];
+$_lang['mediamanager.files.ai.apply.button']                    = 'Anwenden';
+$_lang['mediamanager.files.ai.reset.button']                    = 'Zurücksetzen';
 /* Sources */
 $_lang['mediamanager.sources.root']                                         = 'None';
 
@@ -237,3 +241,6 @@ $_lang['mediamanager.license.email.message']                                = 'N
 $_lang['mediamanager.license.email.image_source_expired']                   = 'Bildquelle abgelaufen.';
 $_lang['mediamanager.license.email.image_about_to_expire_by_image_source']  = 'Das Bild läuft bald ab, basierend auf dem Ablaufdatum der Bildquelle.';
 $_lang['mediamanager.license.email.footer']                                 = 'Dies ist eine automatische Nachricht, die vom <strong>MediaManager</strong> von <strong>[[++site_name]]</strong> gesendet wird.';
+
+$_lang['mediamanager.ai.error.required_modai']                              = 'This Extra requires "modAI". Please install it first.';
+$_lang['mediamanager.ai.error.required_modai_version']                      = 'This Extra requires at least "modAI" version [[+version]].';
