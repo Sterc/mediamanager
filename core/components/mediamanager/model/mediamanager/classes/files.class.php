@@ -1477,6 +1477,9 @@ class MediaManagerFilesHelper
         // Check whether or not a file version should be created.
         $createFileVersion = false;
         $actionName        = '';
+
+        // sanitize early before change-check
+        $data['name'] = $this->sanitizeFileName($data['name']);
         if ($file->get('name') !== $data['name']) {
             $createFileVersion = true;
             $actionName        = 'rename';
@@ -1490,11 +1493,7 @@ class MediaManagerFilesHelper
             ];
         }
 
-        $version                = $this->createVersionNumber($file->get('id'));
-        $data['version']        = $version;
-
         $file->set('name',      $this->sanitizeFileName($data['name']));
-        $file->set('version',   $data['version']);
         $file->set('edited_on', time());
         $file->set('edited_by', $this->mediaManager->modx->getUser()->get('id'));
 
@@ -1576,6 +1575,8 @@ class MediaManagerFilesHelper
         }
 
         if ($createFileVersion) {
+            $data['version'] = $this->createVersionNumber($file->get('id'));
+            $file->set('version', $data['version']);
             $this->saveFileVersion($file->get('id'), $data, $actionName);
         }
         $file->save();
