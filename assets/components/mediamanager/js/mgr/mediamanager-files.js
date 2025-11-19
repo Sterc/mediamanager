@@ -65,6 +65,7 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
         $bulkShareButton         : 'button[data-bulk-share]',
         $bulkDownloadButton      : 'button[data-bulk-download]',
         $bulkDeleteButton        : 'button[data-bulk-delete]',
+        $bulkUseButton           : 'button[data-bulk-use]',
         $bulkCancelButton        : 'button[data-bulk-cancel]',
 
         $search                  : 'input[data-search]',
@@ -1465,6 +1466,19 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
             });
         },
 
+        useFiles: function (e) {
+            e.target.dispatchEvent(
+                new CustomEvent(
+                    'files_selected',
+                    {
+                        detail: {
+                            files: this.$selectedFiles
+                        }
+                    }
+                )
+            )
+        },
+
         /**
          * Copy file to source.
          *
@@ -1904,6 +1918,10 @@ $.fn.modal.Constructor.prototype.enforceFocus = function () {};
     $(document).on({
         click : $.proxy(MediaManagerFiles, 'deleteFiles')
     }, MediaManagerFiles.$bulkDeleteButton);
+
+    $(document).on({
+        click : $.proxy(MediaManagerFiles, 'useFiles')
+    }, MediaManagerFiles.$bulkUseButton);
 
     $(document).on({
         click : $.proxy(MediaManagerFiles, 'shareFiles')
