@@ -354,6 +354,8 @@ class MediaManagerFilesHelper
                 if ($user) {
                     $profile = $user->getOne('Profile');
                     $versionArr['created_by'] = $profile->get('fullname');
+                } else {
+                    $versionArr['created_by'] = $this->mediaManager->modx->lexicon('mediamanager.files.file_unknown_user');
                 }
             }
 
