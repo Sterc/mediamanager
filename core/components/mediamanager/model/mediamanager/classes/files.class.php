@@ -1580,6 +1580,16 @@ class MediaManagerFilesHelper
         }
         $file->save();
 
+        $this->mediaManager->modx->invokeEvent(
+            'MediaManagerFileSaved',
+            [
+                'file_id' => $fileId,
+                'file' => $file,
+                'created_new_version' => $createFileVersion,
+                'version_number' => $file->get('version'),
+            ]
+        );
+
         return [];
     }
 
