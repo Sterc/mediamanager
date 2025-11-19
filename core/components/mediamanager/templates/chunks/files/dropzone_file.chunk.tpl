@@ -32,6 +32,8 @@
             <div class="col-sm-1">
                 <p>
                     <button type="button" class="btn btn-danger dz-remove pull-right" data-dz-remove="">[[%mediamanager.global.delete]]</button>
+                    <button type="button" class="btn btn-primary dz-ai pull-right"
+                            data-dz-call-ai data-loading-text="[[%mediamanager.files.ai.loading]]">[[%mediamanager.files.ai.button]]</button>
                 </p>
             </div>
         </div>

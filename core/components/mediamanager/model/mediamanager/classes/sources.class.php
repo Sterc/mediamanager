@@ -234,6 +234,8 @@ class MediaManagerSourcesHelper
             }
         }
 
+        $output[] = '<script> window.mediaManagerOptions.ai = ' . json_encode($source['meta']) . '</script>';
+
         return implode(PHP_EOL, $output);
     }
 

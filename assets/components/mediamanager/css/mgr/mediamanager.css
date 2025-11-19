@@ -93,6 +93,20 @@
     margin: 0 0 10px;
 }
 
+.mediamanager-browser div.modal-body div.col-md-5 .dz-ai {
+    margin-bottom: 6px;
+    margin-top: 6px;
+}
+.mediamanager-browser div.modal.fade.in input ~ .dz-ai,
+.mediamanager-browser .dropzone-form .dz-preview .dz-ai {
+    margin-top: 6px;
+}
+
+.mediamanager-browser .dz-ai-reset,
+.mediamanager-browser .dz-ai-apply {
+    margin-right: 5px;
+}
+
 .mediamanager-browser .dropzone-form .dz-preview img {
     max-width: 80px;
     margin: 0 0 10px;
