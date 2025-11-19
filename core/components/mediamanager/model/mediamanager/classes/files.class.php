@@ -351,8 +351,12 @@ class MediaManagerFilesHelper
                 $versionArr['created_by'] != 0
             ) {
                 $user = $this->mediaManager->modx->getObject('modUser', ['id' => $versionArr['created_by']]);
-                $profile = $user->getOne('Profile');
-                $versionArr['created_by'] = $profile->get('fullname');
+                if ($user) {
+                    $profile = $user->getOne('Profile');
+                    $versionArr['created_by'] = $profile->get('fullname');
+                } else {
+                    $versionArr['created_by'] = $this->mediaManager->modx->lexicon('mediamanager.files.file_unknown_user');
+                }
             }
 
             $fileInformation                = pathinfo($versionArr['path']);
