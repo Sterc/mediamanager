@@ -5,6 +5,7 @@
     <input type="hidden" class="file_id" value="{%=o.file_id%}">
 
     <div class="contentblocks-field-actions">
+        <button type="button" class="contentblocks-field-crop-image contentblocks-field-button">{%=_('contentblocks.crop_image')%}</button>
         <button type="button" class="contentblocks-field-delete-image contentblocks-field-button">&times; {%=_('contentblocks.delete_image')%}</button>
     </div>
 

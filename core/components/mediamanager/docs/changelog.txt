@@ -1,5 +1,9 @@
 Changelog for MediaManager.
 
+MediaManager 0.3.4
+====================================
+- Add cropping to CB image field
+
 MediaManager 0.3.3
 ====================================
 - Add custom plugin events:
