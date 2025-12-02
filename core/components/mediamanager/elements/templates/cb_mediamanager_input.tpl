@@ -6,6 +6,9 @@
     </div>
 
     <label>{%=o.name%}</label>
+    {% if (o.content_desc) { %}
+        <p class="content-field-description">{%#o.content_desc%}</p>
+    {% } %}
     <div class="contentblocks-field-file-upload">
         <a href="javascript:void(0);" class="big contentblocks-field-button contentblocks-field-file-choose">{%=_('contentblocks.choose')%}</a>
     </div>
